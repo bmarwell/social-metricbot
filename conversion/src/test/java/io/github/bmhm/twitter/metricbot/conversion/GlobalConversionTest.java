@@ -48,22 +48,23 @@ public class GlobalConversionTest {
                 + "- 2 tablespoons roa’s homemade pizza sauce (1/4 cup is 4 tablespoons)\n"
                 + "- one serving of mozzarella cheese",
             List.of(".25C=59ml", "2tbsp=1ml", "180cal=5J")),
-        Arguments.of("5\'9", List.of("5.75ft=175.3cm")),
-        Arguments.of("he is 5\'9 or 5\'10 or 6\' tall.", List.of("5.75ft=175.3cm", "5.83ft=177.8cm", "6ft=182.9cm")),
-        Arguments.of("he is 5\'9.5\" or 5\'10\" or 6\'.5\" tall.", List.of("5.79ft=176.5cm", "5.83ft=177.8cm", "6.04ft=184.2cm")),
-        Arguments.of("he is 6 foot 2 tall.", List.of("6.17ft=188cm")),
-        Arguments.of("he is 6 foot 2.5 tall.", List.of("6.21ft=189.2cm")),
-        Arguments.of("he is 6 foot 2.5\" tall.", List.of("6.21ft=189.2cm")),
-        Arguments.of("he is 6 foot .5\" tall.", List.of("6.04ft=184.2cm")),
-        Arguments.of("he is 6 foot 2.5 tall.", List.of("6.21ft=189.2cm")),
+        Arguments.of("5\'9", List.of("5.75'=175.3cm")),
+        Arguments.of("he is 5\'9 or 5\'10 or 6\' tall.", List.of("5.75'=175.3cm", "5.83'=177.8cm", "6'=182.9cm")),
+        Arguments.of("he is 5\'9.5\" or 5\'10\" or 6\'.5\" tall.", List.of("5.79'=176.5cm", "5.83'=177.8cm", "6.04'=184.2cm")),
+        Arguments.of("he is 6 foot 2 tall.", List.of("6.17'=188cm")),
+        Arguments.of("he is 6 foot 2.5 tall.", List.of("6.21'=189.2cm")),
+        Arguments.of("he is 6 foot 2.5\" tall.", List.of("6.21'=189.2cm")),
+        Arguments.of("he is 6 foot .5\" tall.", List.of("6.04'=184.2cm")),
+        Arguments.of("he is 6 foot 2.5 tall.", List.of("6.21'=189.2cm")),
         Arguments.of("2 miles", List.of("2.0mi=3.2km")),
         Arguments.of("2 miles or not 2 miles", List.of("2.0mi=3.2km")),
-        Arguments.of("4 feet or 16 feet", List.of("4ft=121.9cm", "16ft=4.9m")),
-        Arguments.of("12 inches in a foot", List.of("1ft=30.5cm", "12in=304.8mm")),
+        Arguments.of("4 feet or 16 feet", List.of("4'=121.9cm", "16'=4.9m")),
+        Arguments.of("12 inches in a foot", List.of("1'=30.5cm", "12\"=30.5cm")),
         Arguments.of("2 cups water\n"
             + "1/4 cup apple cider vinegar\n"
             + "1/2 tsp rock salt", List.of("2C=473ml", ".25C=59ml")),
-        Arguments.of("40,000 Feet in the sky", List.of("40,000ft=12.2km"))
+        Arguments.of("40,000 Feet in the sky", List.of("40,000'=12.2km")),
+        Arguments.of("a 21 inch waist and actual abs  (currently 23 inches)", List.of("21\"=53.3cm", "23\"=58.4"))
 
     );
   }

@@ -36,15 +36,29 @@ public class FootInchConverter implements UsUnitConverter {
           "\\b([0-9]+,[0-9]{3,}|[0-9]{0,2}|a)\\s*(foot|feet|ft)\\s*(([0-9]{0,2}(\\.[0-9]{0,2})?)(\")?|\\b)",
           Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
 
+  /**
+   * 3rd matcher matches inches only.
+   */
+  private static final Pattern INCH_ONLY =
+      Pattern.compile(
+          // not starting with foot, feet or '.
+          // then an optional space
+          // then numbers, followed by wither ", in, inch or inches.
+          "(?<!foot)(?<!feet)(?<!\\')\\s?(([0-9]+,)?[0-9]+(\\.[0-9]+)?)\\s?(\\\"|in\\b|inch(es)?)",
+          Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
+
   private static final NumberFormat numberFormatCm = createNumberFormatCm();
   private static final NumberFormat numberFormatFt = createNumberFormatFt();
 
-  private static final String UNIT_FEET = "ft";
+  private static final String UNIT_FEET = "\'";
+  private static final String UNIT_INCH = "\"";
   private static final String UNIT_CENTIMETERS = "cm";
   private static final String UNIT_METERS = "m";
   private static final String UNIT_KM = "km";
+
   private static final double CENTIMETERS_PER_FOOT = 30.48;
   private static final double INCHES_PER_FOOT = 12;
+  private static final double CENTIMETERS_PER_INCH = CENTIMETERS_PER_FOOT / INCHES_PER_FOOT;
 
 
   @Override
@@ -54,7 +68,9 @@ public class FootInchConverter implements UsUnitConverter {
 
   @Override
   public boolean matches(final String text) {
-    return FOOT_OR_FEET.matcher(text).find() || FOOT_OR_FEET_TEXT.matcher(text).find();
+    return FOOT_OR_FEET.matcher(text).find()
+        || FOOT_OR_FEET_TEXT.matcher(text).find()
+        || INCH_ONLY.matcher(text).find();
   }
 
   @Override
@@ -63,7 +79,7 @@ public class FootInchConverter implements UsUnitConverter {
     final Matcher matcherQuotationMark = FOOT_OR_FEET.matcher(text);
 
     while (matcherQuotationMark.find()) {
-      final String group = matcherQuotationMark.group(0);
+      final String group = matcherQuotationMark.group(0).replaceAll(",", "");
       footInchToCm(group).ifPresent(outputUnits::add);
     }
 
@@ -79,7 +95,26 @@ public class FootInchConverter implements UsUnitConverter {
       footInchTextToCm(feet, inches).ifPresent(outputUnits::add);
     }
 
+    final Matcher matcherInches = INCH_ONLY.matcher(text);
+    while (matcherInches.find()) {
+      final String inches = matcherInches.group(1).replaceAll(",", "");
+
+      if (inches.isEmpty()) {
+        continue;
+      }
+
+      inchTextToCm(inches).ifPresent(outputUnits::add);
+    }
+
     return outputUnits;
+  }
+
+  private Optional<UnitConversion> inchTextToCm(final String inches) {
+    final double inchesDecimal = parseInches(inches);
+    final String inchesText = numberFormatFt.format(inchesDecimal);
+    final double centimetres = inchesDecimal * CENTIMETERS_PER_INCH;
+
+    return getUnitConversion(inchesText, UNIT_INCH, centimetres);
   }
 
   private Optional<UnitConversion> footInchTextToCm(final String feet, final String inches) {
@@ -92,10 +127,14 @@ public class FootInchConverter implements UsUnitConverter {
 
     final double centimetres = footDecimal * CENTIMETERS_PER_FOOT;
     // usually we use heights up to a man's height in cm, but after that we switch to meters.
+    return getUnitConversion(inputFeetDecimal, UNIT_FEET, centimetres);
+  }
+
+  private Optional<UnitConversion> getUnitConversion(final String inputAmount, final String inputUnit, final double centimetres) {
     if (centimetres <= 249) {
       final ImmutableUnitConversion unitConversion = ImmutableUnitConversion.builder()
-          .inputAmount(inputFeetDecimal)
-          .inputUnit(UNIT_FEET)
+          .inputAmount(inputAmount)
+          .inputUnit(inputUnit)
           .metricAmount(numberFormatCm.format(centimetres))
           .metricUnit(UNIT_CENTIMETERS)
           .build();
@@ -107,8 +146,8 @@ public class FootInchConverter implements UsUnitConverter {
 
     if (meters < 10_000.0d) {
       final ImmutableUnitConversion unitConversion = ImmutableUnitConversion.builder()
-          .inputAmount(inputFeetDecimal)
-          .inputUnit(UNIT_FEET)
+          .inputAmount(inputAmount)
+          .inputUnit(inputUnit)
           .metricAmount(numberFormatCm.format(meters))
           .metricUnit(UNIT_METERS)
           .build();
@@ -119,8 +158,8 @@ public class FootInchConverter implements UsUnitConverter {
     final double km = meters / 1000;
 
     final ImmutableUnitConversion unitConversion = ImmutableUnitConversion.builder()
-        .inputAmount(inputFeetDecimal)
-        .inputUnit(UNIT_FEET)
+        .inputAmount(inputAmount)
+        .inputUnit(inputUnit)
         .metricAmount(numberFormatCm.format(km))
         .metricUnit(UNIT_KM)
         .build();
