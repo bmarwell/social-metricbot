@@ -32,6 +32,7 @@
     <picocli.version>4.0.1</picocli.version>
     <logback-classic.version>1.2.3</logback-classic.version>
     <maven-assembly-plugin.version>3.1.1</maven-assembly-plugin.version>
+    <dependency.twitter4j.version>4.0.7</dependency.twitter4j.version>
   </properties>
 
   <dependencyManagement>
@@ -76,6 +77,13 @@
         <groupId>io.micronaut</groupId>
         <artifactId>micronaut-http-server-netty</artifactId>
         <version>${micronaut.version}</version>
+      </dependency>
+
+       <!-- https://mvnrepository.com/artifact/org.twitter4j/twitter4j-core -->
+      <dependency>
+          <groupId>org.twitter4j</groupId>
+          <artifactId>twitter4j-core</artifactId>
+          <version>${dependency.twitter4j.version}</version>
       </dependency>
 
       <dependency>

@@ -6,9 +6,10 @@
   </appender>
 
   <logger name="io.micronaut" level="info" />
-  <logger name="io.micronaut.context.condition" level="debug" />
+  <logger name="io.micronaut.core" level="info" />
+  <logger name="io.micronaut.context.condition" level="info" />
 
-  <root level="debug">
+  <root level="info">
     <appender-ref ref="STDOUT" />
   </root>
 </configuration>
