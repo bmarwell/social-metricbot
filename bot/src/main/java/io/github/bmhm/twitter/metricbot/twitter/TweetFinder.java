@@ -16,24 +16,25 @@
 
 package io.github.bmhm.twitter.metricbot.twitter;
 
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
+
 import io.github.bmhm.twitter.metricbot.conversion.ImperialConversion;
 import io.micronaut.context.annotation.Prototype;
 import io.micronaut.scheduling.annotation.Scheduled;
 import java.time.Instant;
-import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.StringJoiner;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import twitter4j.GeoLocation;
 import twitter4j.Query;
 import twitter4j.Query.ResultType;
 import twitter4j.QueryResult;
@@ -49,10 +50,20 @@ public class TweetFinder {
   @Inject
   private Twitter twitter;
 
+  @Inject
+  private ImperialConversion converter;
+
   /** recent replies. */
   @Inject
   @Named("recentMatches")
   private Map<Long, Instant> recentMatches;
+
+  private static final List<String> ACCOUNT_NAME_WORD_BLACKLIST = asList(
+      "Boutique", "Crazy I Buy", "weather");
+
+  public TweetFinder() {
+    // injection constructor
+  }
 
   @Scheduled(
       initialDelay="${io.github.bmhm.twitter.metricbot.tweetfinder.initialdelay:5s}",
@@ -60,62 +71,86 @@ public class TweetFinder {
   )
   public void findNewTweets() {
     LOG.info("Loading tweets.");
-    Query query = new Query("lang:en \"degrees Fahrenheit\"");
+    // TODO: Converters
+    final Query query = new Query("lang:en (\"degrees Fahrenheit\" OR \"degree F.\") OR (\"fl. oz.\" OR \"fl.oz.\") "
+        + "()");
     query.setLang("en");
     query.setResultType(ResultType.recent);
     query.setCount(50);
+    query.setSince(LocalDate.now().toString());
 
     try {
-      final QueryResult queryResult = twitter.search(query);
+      final QueryResult queryResult = this.twitter.search(query);
       findMatching(queryResult);
-    } catch (TwitterException twitterEx) {
+    } catch (final TwitterException twitterEx) {
       LOG.error("unable to retrieve tweets!", twitterEx);
     }
   }
 
-  private void findNextTweets(QueryResult oldQueryResult) {
+  private void findNextTweets(final QueryResult oldQueryResult) {
     if (!oldQueryResult.hasNext()) {
       return;
     }
 
     try {
-      final QueryResult queryResult = twitter.search(oldQueryResult.nextQuery());
+      final QueryResult queryResult = this.twitter.search(oldQueryResult.nextQuery());
       findMatching(queryResult);
-    } catch (TwitterException twitterEx) {
+    } catch (final TwitterException twitterEx) {
       LOG.error("unable to retrieve tweets!", twitterEx);
     }
   }
 
-  private void findMatching( QueryResult queryResult) {
-    LOG.info("Searching in [{}] tweets", queryResult.getCount());
-    final Optional<Status> fahrenheitTweet = queryResult.getTweets().stream()
-        .filter(tweet -> !recentMatches.containsKey(tweet.getId()))
-        .filter(tweet -> ImperialConversion.degreesFahrenheit.matcher(tweet.getText()).find())
+  private void findMatching(final QueryResult queryResult) {
+    LOG.info("Searching in [{}] tweets using [{}]", queryResult.getCount(), this.converter);
+
+    final List<Status> availableTweets = queryResult.getTweets().stream()
+        .filter(tweet -> !this.recentMatches.containsKey(tweet.getId()))
+        .filter(this::usernameDoesNotContainBlacklistedWord)
+        // max age: 60 seconds * 60 == 1h.
+        .filter(tweet -> tweet.getCreatedAt().toInstant().isAfter(Instant.now().minusSeconds(60 * 60L)))
+        .collect(toList());
+
+    final Optional<Status> imperialTweet = availableTweets.stream()
+        .filter(tweet -> this.converter.containsImperialUnits(tweet.getText()))
         .findAny();
 
-    fahrenheitTweet.ifPresentOrElse(this::reply, () -> findNextTweets(queryResult));
-  }
-
-  private void reply(Status status) {
-    LOG.info("Matcher for Status: [{}].", status);
-    recentMatches.put(status.getId(), status.getCreatedAt().toInstant());
-    if (recentMatches.size() > 199) {
-      Optional<Entry<Long, Instant>> any = recentMatches.entrySet().stream()
-          .min((one, other) -> (int) (other.getValue().getEpochSecond() - one.getValue().getEpochSecond()));
-      LOG.info("Remove [{}].", status.getId());
-      any.ifPresent(entry -> recentMatches.remove(entry.getKey()));
+    if (imperialTweet.isEmpty() && !availableTweets.isEmpty()) {
+      LOG.warn("Did not discover imperial units: \n{}\n]].", availableTweets.stream()
+          .map(Status::getText)
+          .map(text -> text.replaceAll("\n", ""))
+          .collect(Collectors.joining(",\n ")));
     }
 
-    LOG.trace("Map: [{}].", recentMatches);
+    imperialTweet.ifPresentOrElse(this::reply, () -> findNextTweets(queryResult));
+  }
 
-    final String converted = new ImperialConversion().returnConverted(status.getText());
-    LOG.info("For your convenience, here are the metric units:\n{}.", converted);
+  private boolean usernameDoesNotContainBlacklistedWord(final Status tweet) {
+    final String userName = tweet.getUser().getName();
+
+    return ACCOUNT_NAME_WORD_BLACKLIST.stream()
+        .noneMatch(blacklisted -> userName.toLowerCase(Locale.ENGLISH).contains(blacklisted.toLowerCase(Locale.ENGLISH)));
+  }
+
+  private void reply(final Status status) {
+    LOG.info("Matcher for Status: [{} by {} => {}].", status.getId(), status.getUser().getName(), status.getText().replaceAll("\n", ""));
+    this.recentMatches.put(status.getId(), status.getCreatedAt().toInstant());
+    if (this.recentMatches.size() > 199) {
+      final Optional<Entry<Long, Instant>> any = this.recentMatches.entrySet().stream()
+          .min((one, other) -> (int) (other.getValue().getEpochSecond() - one.getValue().getEpochSecond()));
+      LOG.info("Remove [{}].", status.getId());
+      any.ifPresent(entry -> this.recentMatches.remove(entry.getKey()));
+    }
+
+    LOG.trace("Map: [{}].", this.recentMatches);
+
+    final String converted = this.converter.returnConverted(status.getText());
+    LOG.info("4ur convenience, the metric units:\n{}.", converted);
   }
 
   @Override
   public String toString() {
     return new StringJoiner(", ", TweetFinder.class.getSimpleName() + "[", "]")
-        .add("twitter=" + twitter)
+        .add("twitter=" + this.twitter)
         .toString();
   }
 }

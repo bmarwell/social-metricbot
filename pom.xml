@@ -79,7 +79,14 @@
         <version>${micronaut.version}</version>
       </dependency>
 
-       <!-- https://mvnrepository.com/artifact/org.twitter4j/twitter4j-core -->
+      <dependency>
+        <groupId>org.immutables</groupId>
+        <artifactId>value</artifactId>
+        <version>2.7.4</version>
+        <scope>provided</scope>
+      </dependency>
+
+      <!-- https://mvnrepository.com/artifact/org.twitter4j/twitter4j-core -->
       <dependency>
           <groupId>org.twitter4j</groupId>
           <artifactId>twitter4j-core</artifactId>
@@ -130,6 +137,11 @@
                 <groupId>io.micronaut</groupId>
                 <artifactId>micronaut-validation</artifactId>
                 <version>${micronaut.version}</version>
+              </path>
+              <path>
+                <groupId>org.immutables</groupId>
+                <artifactId>value</artifactId>
+                <version>2.7.4</version>
               </path>
             </annotationProcessorPaths>
           </configuration>

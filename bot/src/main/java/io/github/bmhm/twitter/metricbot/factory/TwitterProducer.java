@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.inject.Qualifier;
 import javax.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,16 +48,17 @@ public class TwitterProducer {
   @Bean
   @Prototype
   public Twitter getTwitter() {
-    if (twitterAttributes == null || twitterAttributes.getConsumerKey() == null || twitterAttributes.getAccessToken() == null) {
+    if (this.twitterAttributes == null || this.twitterAttributes.getConsumerKey() == null
+        || this.twitterAttributes.getAccessToken() == null) {
       throw new IllegalStateException("not configured");
     }
 
     final ConfigurationBuilder cb = new ConfigurationBuilder()
-        .setDebugEnabled(twitterAttributes.isDebug())
-        .setOAuthConsumerKey(twitterAttributes.getConsumerKey())
-        .setOAuthConsumerSecret(twitterAttributes.getConsumerSecret())
-        .setOAuthAccessToken(twitterAttributes.getAccessToken())
-        .setOAuthAccessTokenSecret(twitterAttributes.getAccessTokenSecret());
+        .setDebugEnabled(this.twitterAttributes.isDebug())
+        .setOAuthConsumerKey(this.twitterAttributes.getConsumerKey())
+        .setOAuthConsumerSecret(this.twitterAttributes.getConsumerSecret())
+        .setOAuthAccessToken(this.twitterAttributes.getAccessToken())
+        .setOAuthAccessTokenSecret(this.twitterAttributes.getAccessTokenSecret());
     final twitter4j.TwitterFactory tf = new twitter4j.TwitterFactory(cb.build());
 
     return tf.getInstance();
@@ -69,6 +69,5 @@ public class TwitterProducer {
   public Map<Long, Instant> recentMatches() {
     return new ConcurrentHashMap<>();
   }
-
 
 }

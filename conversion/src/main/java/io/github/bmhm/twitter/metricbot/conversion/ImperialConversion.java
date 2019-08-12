@@ -16,35 +16,60 @@
 
 package io.github.bmhm.twitter.metricbot.conversion;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
+import static java.util.Collections.emptySet;
 
+import io.github.bmhm.twitter.metricbot.conversion.converters.ImperialUnitConverter;
+import io.micronaut.context.annotation.Prototype;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.StringJoiner;
+import java.util.stream.Collectors;
+import javax.inject.Inject;
+
+@Prototype
 public class ImperialConversion {
 
-  /**
-   * first group: matches &qout;-2&qout; or &qout;2&qout; etc.
-   * 2nd group: matches &qout;-&qout; or &qout;word beginning&qout;.
-   */
-  public static final Pattern degreesFahrenheit = Pattern.compile("((\\b|-)?[0-9]+) degrees Fahrenheit",
-      Pattern.CASE_INSENSITIVE | Pattern.MULTILINE );
+
+  private final Set<ImperialUnitConverter> converters;
 
   public ImperialConversion() {
-    //
+    // injection
+    this.converters = emptySet();
   }
 
-  public String returnConverted(String input) {
-    List<String> outputUnits = new ArrayList<>();
-    final Matcher degreesFMatcher = degreesFahrenheit.matcher(input);
-    if (degreesFMatcher.find()) {
-      final long tempFahrenheit = Long.parseLong(degreesFMatcher.group(1));
-      double tempCelsius = (tempFahrenheit - 32) / (9.0 / 5.0);
-      long tempCelsiusWhole = Math.round(tempCelsius);
-      outputUnits.add(String.format("%d°F = %d°C", tempFahrenheit, tempCelsiusWhole));
-    }
+  @Inject
+  public ImperialConversion(final Collection<ImperialUnitConverter> converters) {
+    this.converters = new HashSet<>(converters);
+  }
 
-    return String.join(", ", outputUnits);
+  public String returnConverted(final String input) {
+    final LinkedHashSet<UnitConversion> outputUnits = this.converters.stream()
+        .map(converter -> converter.getConvertedUnits(input))
+        .flatMap(Collection::stream)
+        .collect(Collectors.toCollection(LinkedHashSet::new));
+
+    final List<String> collect = outputUnits.stream()
+        .map(conv -> String.format("%s%s=%s%s",
+            conv.getInputAmount(), conv.getInputUnit(),
+            conv.getMetricAmount(), conv.getMetricUnit()))
+        .distinct()
+        .collect(Collectors.toList());
+
+    return String.join(", ", collect);
+  }
+
+  public boolean containsImperialUnits(final String text) {
+    return this.converters.stream()
+        .anyMatch(converters -> converters.matches(text));
+  }
+
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", ImperialConversion.class.getSimpleName() + "[", "]")
+        .add("converters=" + this.converters)
+        .toString();
   }
 }

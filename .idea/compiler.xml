@@ -20,6 +20,7 @@
           <entry name="$MAVEN_REPOSITORY$/io/micronaut/micronaut-validation/1.2.0/micronaut-validation-1.2.0.jar" />
           <entry name="$MAVEN_REPOSITORY$/io/micronaut/micronaut-http/1.2.0/micronaut-http-1.2.0.jar" />
           <entry name="$MAVEN_REPOSITORY$/javax/validation/validation-api/2.0.1.Final/validation-api-2.0.1.Final.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/immutables/value/2.7.4/value-2.7.4.jar" />
         </processorPath>
         <module name="twitter-metricbot-app" />
         <module name="conversion" />
