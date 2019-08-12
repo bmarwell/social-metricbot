@@ -40,7 +40,7 @@ public class FlouidOunceConverter implements ImperialUnitConverter {
    * Matches 8 oz of water and 8 oz water.
    */
   private static final Pattern PATTERN_OZ_WATER = Pattern.compile(
-      "((\\b|-)?([0-9]+\\.)?[0-9]+) oz(\\.)?( of)? water", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+      "((\\b|-)?([0-9]+\\.)?[0-9]+) oz(\\.)?( of)? (water|oil)", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
   private static final String UNIT_FL_OZ = "fl.oz";
   private static final String UNIT_ML = "ml";
   private static final double FLOUID_OUNCE_IN_ML = 29.5735295625d;
