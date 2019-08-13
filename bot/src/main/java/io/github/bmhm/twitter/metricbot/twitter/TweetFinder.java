@@ -20,19 +20,18 @@ import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 
 import io.github.bmhm.twitter.metricbot.conversion.ImperialConversion;
+import io.github.bmhm.twitter.metricbot.db.dao.TweetRepository;
 import io.micronaut.context.annotation.Prototype;
 import io.micronaut.scheduling.annotation.Scheduled;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Random;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
-import javax.inject.Named;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import twitter4j.Query;
@@ -55,8 +54,7 @@ public class TweetFinder {
 
   /** recent replies. */
   @Inject
-  @Named("recentMatches")
-  private Map<Long, Instant> recentMatches;
+  private TweetRepository tweetRepository;
 
   private static final List<String> ACCOUNT_NAME_WORD_BLACKLIST = asList(
       "Boutique", "Crazy I Buy", "weather");
@@ -104,7 +102,7 @@ public class TweetFinder {
     LOG.info("Searching in [{}] tweets using [{}]", queryResult.getCount(), this.converter);
 
     final List<Status> availableTweets = queryResult.getTweets().stream()
-        .filter(tweet -> !this.recentMatches.containsKey(tweet.getId()))
+        .filter(tweet -> this.tweetRepository.findById(tweet.getId()).isEmpty())
         .filter(this::usernameDoesNotContainBlacklistedWord)
         // max age: 60 seconds * 60 == 1h.
         .filter(tweet -> tweet.getCreatedAt().toInstant().isAfter(Instant.now().minusSeconds(60 * 60L)))
@@ -133,18 +131,11 @@ public class TweetFinder {
 
   private void reply(final Status status) {
     LOG.info("Matcher for Status: [{} by {} => {}].", status.getId(), status.getUser().getName(), status.getText().replaceAll("\n", ""));
-    this.recentMatches.put(status.getId(), status.getCreatedAt().toInstant());
-    if (this.recentMatches.size() > 199) {
-      final Optional<Entry<Long, Instant>> any = this.recentMatches.entrySet().stream()
-          .min((one, other) -> (int) (other.getValue().getEpochSecond() - one.getValue().getEpochSecond()));
-      LOG.info("Remove [{}].", status.getId());
-      any.ifPresent(entry -> this.recentMatches.remove(entry.getKey()));
-    }
-
-    LOG.trace("Map: [{}].", this.recentMatches);
+    this.tweetRepository.save(status.getId());
 
     final String converted = this.converter.returnConverted(status.getText());
     LOG.info("4ur convenience, the metric units:\n{}.", converted);
+    this.tweetRepository.addReply(status.getId(), new Random().nextLong());
   }
 
   @Override

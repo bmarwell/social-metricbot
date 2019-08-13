@@ -14,6 +14,7 @@
   <modules>
     <module>conversion</module>
     <module>bot</module>
+    <module>db</module>
   </modules>
 
   <properties>
@@ -78,6 +79,18 @@
         <artifactId>micronaut-http-server-netty</artifactId>
         <version>${micronaut.version}</version>
       </dependency>
+      <dependency>
+        <groupId>io.micronaut.configuration</groupId>
+        <artifactId>micronaut-hibernate-jpa</artifactId>
+        <scope>compile</scope>
+        <version>${micronaut.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.micronaut.configuration</groupId>
+        <artifactId>micronaut-jdbc-hikari</artifactId>
+        <scope>compile</scope>
+        <version>${micronaut.version}</version>
+      </dependency>
 
       <dependency>
         <groupId>org.immutables</groupId>
@@ -136,6 +149,11 @@
               <path>
                 <groupId>io.micronaut</groupId>
                 <artifactId>micronaut-validation</artifactId>
+                <version>${micronaut.version}</version>
+              </path>
+              <path>
+                <groupId>io.micronaut.configuration</groupId>
+                <artifactId>micronaut-hibernate-jpa</artifactId>
                 <version>${micronaut.version}</version>
               </path>
               <path>
