@@ -1,4 +1,8 @@
 /.idea/
+/.idea/compiler.xml
+/.idea/workspace.xml
+/.idea/vcs.xml
+/.idea/misc.xml
 /*.iml
 /*/dependency-reduced-pom.xml
 /*/target
