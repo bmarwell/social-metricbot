@@ -129,7 +129,7 @@
 
       <dependency>
         <groupId>io.micronaut.data</groupId>
-        <artifactId>micronaut-data-hibernate-jpa</artifactId>
+        <artifactId>micronaut-data-jdbc</artifactId>
         <version>${micronaut-data.version}</version>
       </dependency>
     </dependencies>
@@ -156,11 +156,6 @@
               <path>
                 <groupId>io.micronaut</groupId>
                 <artifactId>micronaut-validation</artifactId>
-                <version>${micronaut.version}</version>
-              </path>
-              <path>
-                <groupId>io.micronaut.configuration</groupId>
-                <artifactId>micronaut-hibernate-jpa</artifactId>
                 <version>${micronaut.version}</version>
               </path>
               <path>

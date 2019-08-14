@@ -132,12 +132,12 @@ public class TweetFinder {
 
   private void reply(final Status status) {
     LOG.info("Matcher for Status: [{} by {} => {}].", status.getId(), status.getUser().getName(), status.getText().replaceAll("\n", ""));
-    final TweetPdo tweetPdo = new TweetPdo(status.getId());
+    final TweetPdo tweetPdo = new TweetPdo(status.getId(), status.getCreatedAt().toInstant());
     this.tweetRepository.save(tweetPdo);
 
     final String converted = this.converter.returnConverted(status.getText());
     LOG.info("4ur convenience, the metric units:\n{}.", converted);
-    this.tweetRepository.update(status.getId(), new Random().nextLong());
+    this.tweetRepository.update(status.getId(), new Random().nextLong(), Instant.now());
   }
 
   @Override

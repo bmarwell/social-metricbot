@@ -18,13 +18,15 @@ package io.github.bmhm.twitter.metricbot.db.dao;
 
 import io.github.bmhm.twitter.metricbot.db.pdo.TweetPdo;
 import io.micronaut.data.annotation.Id;
-import io.micronaut.data.annotation.Repository;
+import io.micronaut.data.jdbc.annotation.JdbcRepository;
+import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
+import java.time.Instant;
 
-@Repository
+@JdbcRepository(dialect = Dialect.H2)
 public interface TweetRepository extends CrudRepository<TweetPdo, Long> {
 
   TweetPdo persist(TweetPdo tweetPdo);
 
-  void update(@Id Long id, long botResponseId);
+  void update(@Id Long id, long botResponseId, Instant responseTime);
 }

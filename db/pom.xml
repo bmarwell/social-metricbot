@@ -30,8 +30,13 @@
 
     <dependency>
       <groupId>io.micronaut.data</groupId>
-      <artifactId>micronaut-data-hibernate-jpa</artifactId>
+      <artifactId>micronaut-data-jdbc</artifactId>
     </dependency>
+    <dependency>
+      <groupId>io.micronaut.configuration</groupId>
+      <artifactId>micronaut-flyway</artifactId>
+    </dependency>
+
   </dependencies>
 
 
