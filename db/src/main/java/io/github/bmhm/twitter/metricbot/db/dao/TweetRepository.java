@@ -22,11 +22,22 @@ import io.micronaut.data.jdbc.annotation.JdbcRepository;
 import io.micronaut.data.model.query.builder.sql.Dialect;
 import io.micronaut.data.repository.CrudRepository;
 import java.time.Instant;
+import java.util.List;
 
 @JdbcRepository(dialect = Dialect.H2)
 public interface TweetRepository extends CrudRepository<TweetPdo, Long> {
 
-  TweetPdo persist(TweetPdo tweetPdo);
-
   void update(@Id Long id, long botResponseId, Instant responseTime);
+
+  List<TweetPdo> findByTweetTimeBefore(Instant createdBefore);
+
+  /**
+   * Deletes tweets before given date.
+   *
+   * <p>Note: int as return cannot be implemented. I wonder why.</p>
+   *
+   * @param createdBefore
+   *     delete tweets before this date.
+   */
+  void deleteByTweetTimeBefore(Instant createdBefore);
 }
