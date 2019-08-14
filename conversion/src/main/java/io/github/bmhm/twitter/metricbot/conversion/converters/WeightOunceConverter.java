@@ -17,14 +17,18 @@
 package io.github.bmhm.twitter.metricbot.conversion.converters;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.unmodifiableSet;
 
 import io.github.bmhm.twitter.metricbot.conversion.ImmutableUnitConversion;
 import io.github.bmhm.twitter.metricbot.conversion.UnitConversion;
 import io.micronaut.context.annotation.Prototype;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,7 +39,7 @@ public class WeightOunceConverter implements UsUnitConverter {
    * Matches 8 fl.oz., 8 fl oz, etc.
    */
   private static final Pattern PATTERN_OZ = Pattern.compile(
-      "((\\b|-)?([0-9]+\\.)?[0-9]+)( )?(oz|ounce(s)+)", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+      "((\\b|[^0-9]-)?([0-9]+\\.)?[0-9]+)( )?(oz|ounce)", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
   private static final double GRAMS_PER_OUNCE = 28.349_523_125d;
   private static final String UNIT_OUNCE = "oz";
   private static final String UNIT_GRAM = "g";
@@ -61,18 +65,22 @@ public class WeightOunceConverter implements UsUnitConverter {
 
     while (matcher.find()) {
       final double ounces = Double.parseDouble(matcher.group(1));
-      final double grams = Math.round(ounces * GRAMS_PER_OUNCE);
+      final NumberFormat df = DecimalFormat.getNumberInstance(Locale.US);
+      df.setMinimumFractionDigits(1);
+      df.setMaximumFractionDigits(1);
+      df.setRoundingMode(RoundingMode.HALF_UP);
+      final String grams = df.format(ounces * GRAMS_PER_OUNCE);
 
       final UnitConversion unitConversion = ImmutableUnitConversion.builder()
-          .inputAmount("" + ounces)
+          .inputAmount(df.format(ounces))
           .inputUnit(UNIT_OUNCE)
-          .metricAmount("" + grams)
+          .metricAmount(grams)
           .metricUnit(UNIT_GRAM)
           .build();
 
       outputUnits.add(unitConversion);
     }
 
-    return Collections.emptySet();
+    return unmodifiableSet(outputUnits);
   }
 }
