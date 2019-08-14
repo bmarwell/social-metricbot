@@ -16,6 +16,7 @@
 
 package io.github.bmhm.twitter.metricbot.conversion.converters;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableSet;
 
 import io.github.bmhm.twitter.metricbot.conversion.ImmutableUnitConversion;
@@ -23,6 +24,7 @@ import io.github.bmhm.twitter.metricbot.conversion.UnitConversion;
 import io.micronaut.context.annotation.Prototype;
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -44,6 +46,11 @@ public class FlouidOunceConverter implements UsUnitConverter {
   private static final String UNIT_FL_OZ = "fl.oz";
   private static final String UNIT_ML = "ml";
   private static final double FLOUID_OUNCE_IN_ML = 29.5735295625d;
+
+  @Override
+  public List<String> getSearchTerms() {
+    return asList("fl. oz.", "fl.oz.");
+  }
 
   @Override
   public boolean matches(final String text) {

@@ -69,10 +69,11 @@ public class TweetFinder {
       fixedRate = "${io.github.bmhm.twitter.metricbot.tweetfinder.rate:5s}"
   )
   public void findNewTweets() {
-    LOG.info("Loading tweets.");
+    LOG.debug("Loading tweets.");
     // TODO: Converters
-    final Query query = new Query("lang:en (\"degrees Fahrenheit\" OR \"degree F.\") OR (\"fl. oz.\" OR \"fl.oz.\") "
-        + "()");
+    final String searchTerms = this.converter.getSerchTerms();
+    LOG.debug("Search terms: [{}].", searchTerms);
+    final Query query = new Query("lang:en " + searchTerms);
     query.setLang("en");
     query.setResultType(ResultType.recent);
     query.setCount(50);
@@ -100,7 +101,7 @@ public class TweetFinder {
   }
 
   private void findMatching(final QueryResult queryResult) {
-    LOG.info("Searching in [{}] tweets using [{}]", queryResult.getCount(), this.converter);
+    LOG.debug("Searching in [{}] tweets using [{}]", queryResult.getCount(), this.converter);
 
     final List<Status> availableTweets = queryResult.getTweets().stream()
         .filter(tweet -> !this.tweetRepository.existsById(tweet.getId()))

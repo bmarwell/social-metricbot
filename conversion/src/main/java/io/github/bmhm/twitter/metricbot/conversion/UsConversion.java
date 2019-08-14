@@ -17,6 +17,7 @@
 package io.github.bmhm.twitter.metricbot.conversion;
 
 import static java.util.Collections.emptySet;
+import static java.util.stream.Collectors.joining;
 
 import io.github.bmhm.twitter.metricbot.conversion.converters.UsUnitConverter;
 import io.micronaut.context.annotation.Prototype;
@@ -64,6 +65,20 @@ public class UsConversion {
   public boolean containsUsUnits(final String text) {
     return this.converters.stream()
         .anyMatch(converters -> converters.matches(text));
+  }
+
+  public String getSerchTerms() {
+    return this.converters.stream()
+        .map(this::toOrSeparatedQuotedTerms)
+        .collect(joining(" OR "));
+  }
+
+  private String toOrSeparatedQuotedTerms(final UsUnitConverter usUnitConverter) {
+    final String orJoined = usUnitConverter.getSearchTerms().stream()
+        .map(term -> String.format("\"%s\"", term))
+        .collect(joining(" OR "));
+
+    return String.format("(%s)", orJoined);
   }
 
   @Override

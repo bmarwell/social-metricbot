@@ -18,8 +18,16 @@ package io.github.bmhm.twitter.metricbot.conversion.converters;
 
 import io.github.bmhm.twitter.metricbot.conversion.UnitConversion;
 import java.util.Collection;
+import java.util.List;
 
 public interface UsUnitConverter {
+
+  /**
+   * List of search terms, the whole set in parantheses, seperated by OR and each enclosed in quotation marks.
+   *
+   * @return the list of search terms.
+   */
+  List<String> getSearchTerms();
 
   boolean matches(String text);
 

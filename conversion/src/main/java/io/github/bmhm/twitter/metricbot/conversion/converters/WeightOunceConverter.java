@@ -16,10 +16,16 @@
 
 package io.github.bmhm.twitter.metricbot.conversion.converters;
 
+import static java.util.Arrays.asList;
+
+import io.github.bmhm.twitter.metricbot.conversion.ImmutableUnitConversion;
 import io.github.bmhm.twitter.metricbot.conversion.UnitConversion;
 import io.micronaut.context.annotation.Prototype;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Prototype
@@ -29,10 +35,18 @@ public class WeightOunceConverter implements UsUnitConverter {
    * Matches 8 fl.oz., 8 fl oz, etc.
    */
   private static final Pattern PATTERN_OZ = Pattern.compile(
-      "((\\b|-)?([0-9]+\\.)?[0-9]+)( )?(oz|ounce)", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+      "((\\b|-)?([0-9]+\\.)?[0-9]+)( )?(oz|ounce(s)+)", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+  private static final double GRAMS_PER_OUNCE = 28.349_523_125d;
+  private static final String UNIT_OUNCE = "oz";
+  private static final String UNIT_GRAM = "g";
 
   public WeightOunceConverter() {
     // injection.
+  }
+
+  @Override
+  public List<String> getSearchTerms() {
+    return asList("ounce", "ounces");
   }
 
   @Override
@@ -42,6 +56,23 @@ public class WeightOunceConverter implements UsUnitConverter {
 
   @Override
   public Collection<UnitConversion> getConvertedUnits(final String text) {
+    final Matcher matcher = PATTERN_OZ.matcher(text);
+    final LinkedHashSet<UnitConversion> outputUnits = new LinkedHashSet<>();
+
+    while (matcher.find()) {
+      final double ounces = Double.parseDouble(matcher.group(1));
+      final double grams = Math.round(ounces * GRAMS_PER_OUNCE);
+
+      final UnitConversion unitConversion = ImmutableUnitConversion.builder()
+          .inputAmount("" + ounces)
+          .inputUnit(UNIT_OUNCE)
+          .metricAmount("" + grams)
+          .metricUnit(UNIT_GRAM)
+          .build();
+
+      outputUnits.add(unitConversion);
+    }
+
     return Collections.emptySet();
   }
 }
