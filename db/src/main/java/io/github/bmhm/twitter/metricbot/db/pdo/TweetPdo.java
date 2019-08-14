@@ -51,6 +51,10 @@ public class TweetPdo {
     this.botResponseId = botResponseId;
   }
 
+  public TweetPdo(final long id) {
+    this.tweedId = id;
+  }
+
   @PrePersist
   public void check() {
     if (this.tweedId == ID_NOT_SET) {

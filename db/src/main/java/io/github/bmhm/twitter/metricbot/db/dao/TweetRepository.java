@@ -1,4 +1,4 @@
-package io.github.bmhm.twitter.metricbot.db.dao;/*
+/*
  *  Copyright 2018 The twittermetricbot contributors
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,18 +14,17 @@ package io.github.bmhm.twitter.metricbot.db.dao;/*
  *  limitations under the License.
  */
 
+package io.github.bmhm.twitter.metricbot.db.dao;
+
 import io.github.bmhm.twitter.metricbot.db.pdo.TweetPdo;
-import java.util.Optional;
+import io.micronaut.data.annotation.Id;
+import io.micronaut.data.annotation.Repository;
+import io.micronaut.data.repository.CrudRepository;
 
-public interface TweetRepository {
+@Repository
+public interface TweetRepository extends CrudRepository<TweetPdo, Long> {
 
-  Optional<TweetPdo> findById(long tweetId);
+  TweetPdo persist(TweetPdo tweetPdo);
 
-  TweetPdo save(TweetPdo toSave);
-
-  TweetPdo save(long id);
-
-  TweetPdo update(int tweetId, TweetPdo updatedPdo);
-
-  TweetPdo addReply(long id, long replyId);
+  void update(@Id Long id, long botResponseId);
 }

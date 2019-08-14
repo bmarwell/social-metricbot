@@ -56,11 +56,14 @@
           <entry name="$MAVEN_REPOSITORY$/io/reactivex/rxjava2/rxjava/2.2.6/rxjava-2.2.6.jar" />
           <entry name="$MAVEN_REPOSITORY$/com/fasterxml/jackson/datatype/jackson-datatype-jdk8/2.9.8/jackson-datatype-jdk8-2.9.8.jar" />
           <entry name="$MAVEN_REPOSITORY$/com/fasterxml/jackson/datatype/jackson-datatype-jsr310/2.9.8/jackson-datatype-jsr310-2.9.8.jar" />
+          <entry name="$MAVEN_REPOSITORY$/io/micronaut/data/micronaut-data-processor/1.0.0.BUILD-SNAPSHOT/micronaut-data-processor-1.0.0.BUILD-SNAPSHOT.jar" />
+          <entry name="$MAVEN_REPOSITORY$/io/micronaut/data/micronaut-data-model/1.0.0.BUILD-SNAPSHOT/micronaut-data-model-1.0.0.BUILD-SNAPSHOT.jar" />
+          <entry name="$MAVEN_REPOSITORY$/com/github/spotbugs/spotbugs-annotations/3.1.12/spotbugs-annotations-3.1.12.jar" />
           <entry name="$MAVEN_REPOSITORY$/org/immutables/value/2.7.4/value-2.7.4.jar" />
         </processorPath>
+        <module name="metricbot-db" />
         <module name="conversion" />
         <module name="twitter-metricbot-app" />
-        <module name="metricbot-db" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>

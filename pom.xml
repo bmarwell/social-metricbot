@@ -34,6 +34,7 @@
     <logback-classic.version>1.2.3</logback-classic.version>
     <maven-assembly-plugin.version>3.1.1</maven-assembly-plugin.version>
     <dependency.twitter4j.version>4.0.7</dependency.twitter4j.version>
+    <micronaut-data.version>1.0.0.BUILD-SNAPSHOT</micronaut-data.version>
   </properties>
 
   <dependencyManagement>
@@ -125,6 +126,12 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
+
+      <dependency>
+        <groupId>io.micronaut.data</groupId>
+        <artifactId>micronaut-data-hibernate-jpa</artifactId>
+        <version>${micronaut-data.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -155,6 +162,11 @@
                 <groupId>io.micronaut.configuration</groupId>
                 <artifactId>micronaut-hibernate-jpa</artifactId>
                 <version>${micronaut.version}</version>
+              </path>
+              <path>
+                <groupId>io.micronaut.data</groupId>
+                <artifactId>micronaut-data-processor</artifactId>
+                <version>${micronaut-data.version}</version>
               </path>
               <path>
                 <groupId>org.immutables</groupId>
@@ -200,5 +212,18 @@
       </plugins>
     </pluginManagement>
   </build>
+
+  <repositories>
+    <repository>
+      <id>oss.sonatype.org-snapshot</id>
+      <url>http://oss.sonatype.org/content/repositories/snapshots</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
 
 </project>

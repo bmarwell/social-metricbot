@@ -21,6 +21,7 @@ import static java.util.stream.Collectors.toList;
 
 import io.github.bmhm.twitter.metricbot.conversion.ImperialConversion;
 import io.github.bmhm.twitter.metricbot.db.dao.TweetRepository;
+import io.github.bmhm.twitter.metricbot.db.pdo.TweetPdo;
 import io.micronaut.context.annotation.Prototype;
 import io.micronaut.scheduling.annotation.Scheduled;
 import java.time.Instant;
@@ -57,7 +58,7 @@ public class TweetFinder {
   private TweetRepository tweetRepository;
 
   private static final List<String> ACCOUNT_NAME_WORD_BLACKLIST = asList(
-      "Boutique", "Crazy I Buy", "weather");
+      "Boutique", "Crazy I Buy", "weather", "Supplements", "DealsSupply");
 
   public TweetFinder() {
     // injection constructor
@@ -65,7 +66,7 @@ public class TweetFinder {
 
   @Scheduled(
       initialDelay="${io.github.bmhm.twitter.metricbot.tweetfinder.initialdelay:5s}",
-      fixedRate="${io.github.bmhm.twitter.metricbot.tweetfinder.rate:5s}"
+      fixedRate = "${io.github.bmhm.twitter.metricbot.tweetfinder.rate:5s}"
   )
   public void findNewTweets() {
     LOG.info("Loading tweets.");
@@ -102,7 +103,7 @@ public class TweetFinder {
     LOG.info("Searching in [{}] tweets using [{}]", queryResult.getCount(), this.converter);
 
     final List<Status> availableTweets = queryResult.getTweets().stream()
-        .filter(tweet -> this.tweetRepository.findById(tweet.getId()).isEmpty())
+        .filter(tweet -> !this.tweetRepository.existsById(tweet.getId()))
         .filter(this::usernameDoesNotContainBlacklistedWord)
         // max age: 60 seconds * 60 == 1h.
         .filter(tweet -> tweet.getCreatedAt().toInstant().isAfter(Instant.now().minusSeconds(60 * 60L)))
@@ -131,11 +132,12 @@ public class TweetFinder {
 
   private void reply(final Status status) {
     LOG.info("Matcher for Status: [{} by {} => {}].", status.getId(), status.getUser().getName(), status.getText().replaceAll("\n", ""));
-    this.tweetRepository.save(status.getId());
+    final TweetPdo tweetPdo = new TweetPdo(status.getId());
+    this.tweetRepository.save(tweetPdo);
 
     final String converted = this.converter.returnConverted(status.getText());
     LOG.info("4ur convenience, the metric units:\n{}.", converted);
-    this.tweetRepository.addReply(status.getId(), new Random().nextLong());
+    this.tweetRepository.update(status.getId(), new Random().nextLong());
   }
 
   @Override
