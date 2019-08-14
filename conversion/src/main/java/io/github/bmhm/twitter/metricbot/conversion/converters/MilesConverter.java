@@ -30,7 +30,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Prototype
-public class MilesConverter implements ImperialUnitConverter {
+public class MilesConverter implements UsUnitConverter {
 
   private static final Pattern MILES = Pattern.compile(
       "((\\b|[^0-9]-)?([0-9]+\\.)?[0-9]+)( )?(mi(les)?)", Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);

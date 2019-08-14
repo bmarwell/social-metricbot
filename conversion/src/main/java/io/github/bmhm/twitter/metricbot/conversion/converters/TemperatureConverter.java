@@ -30,7 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Prototype
-public class TemperatureConverter implements ImperialUnitConverter {
+public class TemperatureConverter implements UsUnitConverter {
 
   private static final Logger LOG = LoggerFactory.getLogger(TemperatureConverter.class);
 

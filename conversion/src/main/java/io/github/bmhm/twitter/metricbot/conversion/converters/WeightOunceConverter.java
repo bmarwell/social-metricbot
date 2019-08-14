@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.regex.Pattern;
 
 @Prototype
-public class WeightOunceConverter implements ImperialUnitConverter {
+public class WeightOunceConverter implements UsUnitConverter {
 
   /**
    * Matches 8 fl.oz., 8 fl oz, etc.

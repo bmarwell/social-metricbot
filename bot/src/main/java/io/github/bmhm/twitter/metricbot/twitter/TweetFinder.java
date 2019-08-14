@@ -19,7 +19,7 @@ package io.github.bmhm.twitter.metricbot.twitter;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 
-import io.github.bmhm.twitter.metricbot.conversion.ImperialConversion;
+import io.github.bmhm.twitter.metricbot.conversion.UsConversion;
 import io.github.bmhm.twitter.metricbot.db.dao.TweetRepository;
 import io.github.bmhm.twitter.metricbot.db.pdo.TweetPdo;
 import io.micronaut.context.annotation.Prototype;
@@ -51,7 +51,7 @@ public class TweetFinder {
   private Twitter twitter;
 
   @Inject
-  private ImperialConversion converter;
+  private UsConversion converter;
 
   /** recent replies. */
   @Inject
@@ -110,7 +110,7 @@ public class TweetFinder {
         .collect(toList());
 
     final Optional<Status> imperialTweet = availableTweets.stream()
-        .filter(tweet -> this.converter.containsImperialUnits(tweet.getText()))
+        .filter(tweet -> this.converter.containsUsUnits(tweet.getText()))
         .findAny();
 
     if (imperialTweet.isEmpty() && !availableTweets.isEmpty()) {

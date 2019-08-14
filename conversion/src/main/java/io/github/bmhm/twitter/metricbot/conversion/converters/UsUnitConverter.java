@@ -19,7 +19,7 @@ package io.github.bmhm.twitter.metricbot.conversion.converters;
 import io.github.bmhm.twitter.metricbot.conversion.UnitConversion;
 import java.util.Collection;
 
-public interface ImperialUnitConverter {
+public interface UsUnitConverter {
 
   boolean matches(String text);
 

@@ -28,7 +28,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Prototype
-public class FlouidOunceConverter implements ImperialUnitConverter {
+public class FlouidOunceConverter implements UsUnitConverter {
 
   /**
    * Matches 8 fl.oz., 8 fl oz, etc.

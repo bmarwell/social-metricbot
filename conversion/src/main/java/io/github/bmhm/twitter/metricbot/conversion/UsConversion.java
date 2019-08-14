@@ -18,7 +18,7 @@ package io.github.bmhm.twitter.metricbot.conversion;
 
 import static java.util.Collections.emptySet;
 
-import io.github.bmhm.twitter.metricbot.conversion.converters.ImperialUnitConverter;
+import io.github.bmhm.twitter.metricbot.conversion.converters.UsUnitConverter;
 import io.micronaut.context.annotation.Prototype;
 import java.util.Collection;
 import java.util.HashSet;
@@ -30,18 +30,18 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 @Prototype
-public class ImperialConversion {
+public class UsConversion {
 
 
-  private final Set<ImperialUnitConverter> converters;
+  private final Set<UsUnitConverter> converters;
 
-  public ImperialConversion() {
+  public UsConversion() {
     // injection
     this.converters = emptySet();
   }
 
   @Inject
-  public ImperialConversion(final Collection<ImperialUnitConverter> converters) {
+  public UsConversion(final Collection<UsUnitConverter> converters) {
     this.converters = new HashSet<>(converters);
   }
 
@@ -61,14 +61,14 @@ public class ImperialConversion {
     return String.join(", ", collect);
   }
 
-  public boolean containsImperialUnits(final String text) {
+  public boolean containsUsUnits(final String text) {
     return this.converters.stream()
         .anyMatch(converters -> converters.matches(text));
   }
 
   @Override
   public String toString() {
-    return new StringJoiner(", ", ImperialConversion.class.getSimpleName() + "[", "]")
+    return new StringJoiner(", ", UsConversion.class.getSimpleName() + "[", "]")
         .add("converters=" + this.converters)
         .toString();
   }
