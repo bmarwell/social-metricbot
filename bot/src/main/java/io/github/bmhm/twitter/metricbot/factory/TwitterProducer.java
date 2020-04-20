@@ -16,18 +16,19 @@
 
 package io.github.bmhm.twitter.metricbot.factory;
 
-import io.github.bmhm.twitter.metricbot.twitter.TwitterConfig;
-import io.micronaut.context.annotation.Bean;
-import io.micronaut.context.annotation.Factory;
-import io.micronaut.context.annotation.Prototype;
-import java.time.Instant;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+import java.time.Instant;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import io.github.bmhm.twitter.metricbot.twitter.TwitterConfig;
+import io.micronaut.context.annotation.Bean;
+import io.micronaut.context.annotation.Factory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import twitter4j.AsyncTwitterFactory;
 import twitter4j.Twitter;
 import twitter4j.conf.ConfigurationBuilder;
 
@@ -46,7 +47,7 @@ public class TwitterProducer {
   private TwitterConfig twitterAttributes;
 
   @Bean
-  @Prototype
+  @Singleton
   public Twitter getTwitter() {
     if (this.twitterAttributes == null || this.twitterAttributes.getConsumerKey() == null
         || this.twitterAttributes.getAccessToken() == null) {
@@ -62,6 +63,24 @@ public class TwitterProducer {
     final twitter4j.TwitterFactory tf = new twitter4j.TwitterFactory(cb.build());
 
     return tf.getInstance();
+  }
+
+  @Bean
+  @Singleton
+  public AsyncTwitterFactory getAsyncTwitter() {
+    if (this.twitterAttributes == null || this.twitterAttributes.getConsumerKey() == null
+        || this.twitterAttributes.getAccessToken() == null) {
+      throw new IllegalStateException("not configured");
+    }
+
+    final ConfigurationBuilder cb = new ConfigurationBuilder()
+        .setDebugEnabled(this.twitterAttributes.isDebug())
+        .setOAuthConsumerKey(this.twitterAttributes.getConsumerKey())
+        .setOAuthConsumerSecret(this.twitterAttributes.getConsumerSecret())
+        .setOAuthAccessToken(this.twitterAttributes.getAccessToken())
+        .setOAuthAccessTokenSecret(this.twitterAttributes.getAccessTokenSecret());
+
+    return new AsyncTwitterFactory(cb.build());
   }
 
   @Singleton

@@ -33,7 +33,6 @@ import javax.inject.Inject;
 @Prototype
 public class UsConversion {
 
-
   private final Set<UsUnitConverter> converters;
 
   public UsConversion() {
@@ -79,6 +78,10 @@ public class UsConversion {
         .collect(joining(" OR "));
 
     return String.format("(%s)", orJoined);
+  }
+
+  protected Set<UsUnitConverter> getConverters() {
+    return this.converters;
   }
 
   @Override

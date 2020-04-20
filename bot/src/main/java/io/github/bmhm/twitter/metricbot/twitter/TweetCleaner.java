@@ -16,14 +16,15 @@
 
 package io.github.bmhm.twitter.metricbot.twitter;
 
-import io.github.bmhm.twitter.metricbot.db.dao.TweetRepository;
-import io.micronaut.context.annotation.Prototype;
-import io.micronaut.scheduling.annotation.Scheduled;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.time.Instant;
 import java.time.ZonedDateTime;
-import javax.inject.Inject;
 
-@Prototype
+import io.github.bmhm.twitter.metricbot.db.dao.TweetRepository;
+import io.micronaut.scheduling.annotation.Scheduled;
+
+@Singleton
 public class TweetCleaner {
 
   /**

@@ -17,12 +17,12 @@
 package io.github.bmhm.twitter.metricbot;
 
 import io.github.bmhm.twitter.metricbot.commands.RunBotCommand;
-import io.micronaut.runtime.Micronaut;
+import io.micronaut.configuration.picocli.PicocliRunner;
 
 public class App {
 
-  public static void main(String[] args) throws Exception {
-    Micronaut.run(RunBotCommand.class, args);
+  public static void main(final String[] args) throws Exception {
+    PicocliRunner.run(RunBotCommand.class, args);
   }
 
 }

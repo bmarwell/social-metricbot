@@ -16,10 +16,10 @@
 
 package io.github.bmhm.twitter.metricbot.twitter;
 
-import io.micronaut.context.annotation.Property;
-import io.micronaut.context.annotation.Value;
-import java.util.StringJoiner;
 import javax.inject.Singleton;
+import java.util.StringJoiner;
+
+import io.micronaut.context.annotation.Property;
 
 @Singleton
 public class TwitterConfig {
@@ -66,11 +66,11 @@ public class TwitterConfig {
   @Override
   public String toString() {
     return new StringJoiner(", ", TwitterConfig.class.getSimpleName() + "[", "]")
-        .add("debug=" + debug)
-        .add("consumerKey='" + consumerKey + "'")
-        .add("consumerSecret='" + consumerSecret + "'")
-        .add("accessToken='" + accessToken + "'")
-        .add("accessTokenSecret='" + accessTokenSecret + "'")
+        .add("debug=" + this.debug)
+        .add("consumerKey='" + this.consumerKey + "'")
+        .add("consumerSecret='" + this.consumerSecret + "'")
+        .add("accessToken='" + this.accessToken + "'")
+        .add("accessTokenSecret='" + this.accessTokenSecret + "'")
         .toString();
   }
 }

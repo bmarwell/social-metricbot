@@ -16,17 +16,21 @@
 
 package io.github.bmhm.twitter.metricbot.commands;
 
-import io.github.bmhm.twitter.metricbot.twitter.TweetFinder;
-import javax.inject.Inject;
+import java.util.StringJoiner;
+import java.util.concurrent.TimeUnit;
+
+import io.github.bmhm.twitter.metricbot.twitter.TweetMentionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import picocli.CommandLine.Command;
 
+@Command(
+    name = "run",
+    description = "runs the bot"
+)
 public class RunBotCommand implements Runnable {
 
-  private static final Logger LOG = LoggerFactory.getLogger(TweetFinder.class);
-
-  @Inject
-  private TweetFinder tweetFinder;
+  private static final Logger LOG = LoggerFactory.getLogger(TweetMentionManager.class);
 
   public RunBotCommand() {
     // injection
@@ -34,12 +38,29 @@ public class RunBotCommand implements Runnable {
 
   @Override
   public void run() {
+    LOG.info("Starting MetricBot: [{}].", this);
+
+    try {
+      runLoop();
+    } catch (final RuntimeException rtEx) {
+      LOG.info("Ending.");
+    }
+  }
+
+
+  private void runLoop() {
     while (true) {
       try {
-        Thread.sleep(1000L);
-      } catch (InterruptedException intEx) {
+        TimeUnit.SECONDS.sleep(1L);
+      } catch (final InterruptedException intEx) {
         LOG.info("Ended.", intEx);
       }
     }
+  }
+
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", "RunBotCommand{", "}")
+        .toString();
   }
 }
