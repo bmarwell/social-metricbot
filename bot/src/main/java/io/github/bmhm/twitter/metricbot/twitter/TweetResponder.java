@@ -3,6 +3,7 @@ package io.github.bmhm.twitter.metricbot.twitter;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.time.Instant;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -25,6 +26,7 @@ import twitter4j.TwitterException;
 public class TweetResponder {
 
   private static final Logger LOG = LoggerFactory.getLogger(TweetResponder.class);
+  private static final String CONVENIENCE_TEXT = "For your convenience, the metric units:\n";
 
   /**
    * recent replies.
@@ -100,19 +102,33 @@ public class TweetResponder {
 
     final String responseText = this.converter.returnConverted(statusWithUnits.getText());
     final String mentions = createMentions(foundTweet, statusWithUnits);
-    final StatusUpdate statusUpdate = new StatusUpdate(mentions + responseText)
-        .inReplyToStatusId(foundTweet.getId());
+    String tweetText = mentions + responseText;
+    if (mentions.length() + responseText.length() + CONVENIENCE_TEXT.length() < 280) {
+      tweetText = mentions + CONVENIENCE_TEXT + responseText;
+    }
+    final StatusUpdate statusUpdate = new StatusUpdate(tweetText)
+        .inReplyToStatusId(statusWithUnits.getId());
 
     try {
       LOG.info("Sending status response: [{}].", statusUpdate);
       final Status response = this.twitter.updateStatus(statusUpdate);
       LOG.info("Response sent: [{}].", response);
       // add to repository so we do not reply again to this.
-      this.tweetRepository.save(foundTweet.getId(), response.getId(), response.getCreatedAt().toInstant());
+      this.tweetRepository.save(statusWithUnits.getId(), response.getId(), response.getCreatedAt().toInstant());
 
+      // if this is a mentioned or qouted tweet, add quote to the reponse we just created.
       if (foundTweet.getId() != statusWithUnits.getId()) {
+        // show the requester the tweet we created.
+        final String url =
+            String.format(Locale.ENGLISH, "https://twitter.com/%s/status/%d", response.getUser().getScreenName(), response.getId());
+
+        final StatusUpdate hintToTranslation =
+            new StatusUpdate(String.format(Locale.ENGLISH, "@%s\nHere you go:\n\n%s\n", foundTweet.getUser().getScreenName(), url))
+                .inReplyToStatusId(foundTweet.getId());
+        final Status hintToTranslationResponse = this.twitter.updateStatus(hintToTranslation);
         // also add the actual status with units, so we do not get mentioned multiple times.
-        this.tweetRepository.save(statusWithUnits.getId(), response.getId(), response.getCreatedAt().toInstant());
+        this.tweetRepository
+            .save(foundTweet.getId(), hintToTranslationResponse.getId(), hintToTranslationResponse.getCreatedAt().toInstant());
       }
     } catch (final TwitterException twitterException) {
       LOG.error("Unable to send reply: [{}].", statusUpdate, twitterException);

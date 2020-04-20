@@ -89,12 +89,12 @@ public class TweetMentionManager {
     final Status foundTweet = mentionEvent.getFoundTweet();
 
     if (this.tweetRepository.findById(foundTweet.getId()).isPresent()) {
-      LOG.info("Skipping tweet [{}] because it was already replied to.", foundTweet);
+      LOG.info("Skipping tweet [{}] because it was already replied to.", foundTweet.getId());
       return;
     }
 
     if (this.processItems.contains(foundTweet)) {
-      LOG.info("Skipping tweet [{}] because it will be processed soon.", foundTweet);
+      LOG.info("Skipping tweet [{}] because it will be processed soon.", foundTweet.getId());
       return;
     }
 
@@ -102,12 +102,12 @@ public class TweetMentionManager {
     final Instant createdAt = foundTweet.getCreatedAt().toInstant();
     // only reply to mentions in the last 10 minutes
     if (createdAt.isBefore(Instant.now().minusSeconds(60 * 10L))) {
-      LOG.info("Skipping tweet [{}] because it is too old: [{}].", foundTweet, createdAt);
+      LOG.info("Skipping tweet [{}] because it is too old: [{}].", foundTweet.getId(), createdAt);
       this.tweetRepository.save(foundTweet.getId(), -1, Instant.now());
     }
 
     if (containsBlockedWord(foundTweet)) {
-      LOG.info("Skipping tweet [{}] because it is from a blocked user.", foundTweet);
+      LOG.info("Skipping tweet [{}] because it is from a blocked user.", foundTweet.getId());
       this.tweetRepository.save(foundTweet.getId(), -1, Instant.now());
 
       return;
