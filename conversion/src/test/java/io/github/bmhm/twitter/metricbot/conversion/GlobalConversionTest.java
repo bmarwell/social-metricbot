@@ -16,6 +16,7 @@
 
 package io.github.bmhm.twitter.metricbot.conversion;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
@@ -27,6 +28,7 @@ import io.micronaut.context.ApplicationContext;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -47,7 +49,7 @@ public class GlobalConversionTest {
                 + "- 1 mission carb balance tortilla\n"
                 + "- 2 tablespoons roa’s homemade pizza sauce (1/4 cup is 4 tablespoons)\n"
                 + "- one serving of mozzarella cheese",
-            List.of(".25C=59ml", "2tbsp=1ml", "180cal=5J")),
+            List.of(".25C=59ml", "2tbsp=1ml", "180cal=753kJ")),
         Arguments.of("5\'9", List.of("5.75'=175.3cm")),
         Arguments.of("he is 5\'9 or 5\'10 or 6\' tall.", List.of("5.75'=175.3cm", "5.83'=177.8cm", "6'=182.9cm")),
         Arguments.of("he is 5\'9.5\" or 5\'10\" or 6\'.5\" tall.", List.of("5.79'=176.5cm", "5.83'=177.8cm", "6.04'=184.2cm")),
@@ -64,7 +66,14 @@ public class GlobalConversionTest {
             + "1/4 cup apple cider vinegar\n"
             + "1/2 tsp rock salt", List.of("2C=473ml", ".25C=59ml")),
         Arguments.of("40,000 Feet in the sky", List.of("40,000'=12.2km")),
-        Arguments.of("a 21 inch waist and actual abs  (currently 23 inches)", List.of("21\"=53.3cm", "23\"=58.4"))
+        Arguments.of("a 21 inch waist and actual abs  (currently 23 inches)", List.of("21\"=53.3cm", "23\"=58.4")),
+        Arguments.of("1 cup of self rising flour\n"
+            + "1 tsp of vanilla extract\n"
+            + "1/4 cup sugar\n"
+            + "*3/4 cup powdered sugar\n"
+            + "2 TBSP  butter\n"
+            + "* 4 TBSP coconut oil\n"
+            + "Pineapple 16 oz", List.of("a=b"))
 
     );
   }
@@ -88,11 +97,19 @@ public class GlobalConversionTest {
   public void testTweet(final String tweet, final List<String> expectedOutputs) {
     final String convertedUnits = this.conversion.returnConverted(tweet);
 
-    Assertions.assertAll(
-        () -> expectedOutputs.forEach(
-            expectedOutput -> assertTrue(convertedUnits.contains(expectedOutput),
-                "expected " + convertedUnits + " to contain " + expectedOutput))
-    );
+    final Stream<Executable> assertions = expectedOutputs.stream()
+        .map(expectedConversion -> makeAssertion(convertedUnits, expectedConversion));
+
+    LOG.debug("Checking tweet [{}].", tweet);
+
+    assertAll(
+        "Checking that list " + convertedUnits + " contains each of these: " + expectedOutputs + ".",
+        assertions);
+  }
+
+  private org.junit.jupiter.api.function.Executable makeAssertion(final String convertedUnits, final String expectedConversion) {
+    return () -> assertTrue(convertedUnits.contains(expectedConversion),
+        "expected " + convertedUnits + " to contain " + expectedConversion);
   }
 
 }

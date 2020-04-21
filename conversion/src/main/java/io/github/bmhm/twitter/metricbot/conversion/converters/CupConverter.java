@@ -38,6 +38,7 @@ public class CupConverter implements UsUnitConverter {
   private static final NumberFormat NUMBER_FORMAT_CUPS = createNumberFormatCups();
 
   private static final NumberFormat NUMBER_FORMAT_MILLIS = createNumberFormatMillis();
+  private static final long serialVersionUID = 3577857810056970727L;
 
   @Override
   public List<String> getSearchTerms() {
@@ -68,7 +69,7 @@ public class CupConverter implements UsUnitConverter {
 
         final String cupsDecimalString = NUMBER_FORMAT_CUPS.format(cupsDouble);
         final String millisDecimalString = NUMBER_FORMAT_MILLIS.format(millis);
-        LOG.info("Converted [{}]C to [{}]ml.", cupsDecimalString, millisDecimalString);
+        LOG.debug("Converted [{}]C to [{}]ml.", cupsDecimalString, millisDecimalString);
 
         final ImmutableUnitConversion conversion = ImmutableUnitConversion.builder()
             .inputAmount(cupsDecimalString)

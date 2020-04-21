@@ -16,12 +16,13 @@
 
 package io.github.bmhm.twitter.metricbot.conversion.converters;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
 import io.github.bmhm.twitter.metricbot.conversion.UnitConversion;
 
-public interface UsUnitConverter {
+public interface UsUnitConverter extends Serializable {
 
   /**
    * List of search terms, the whole set in parantheses, seperated by OR and each enclosed in quotation marks.
