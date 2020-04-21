@@ -35,7 +35,8 @@ public class FootConverter implements UsUnitConverter {
       Pattern.compile("\\b([0-9]{0,2}|a)\\s*(foot|feet|ft)\\s*(([0-9]{0,2}(\\.[0-9]{0,2})?)(\")?|\\b)",
           Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
 
-  private static final NumberFormat defaultNumberFormat = createNumberFormat();
+  private static final NumberFormat numberFormatCm = createNumberFormatCm();
+  private static final NumberFormat numberFormatFt = createNumberFormatFt();
 
   private static final String UNIT_FEET = "ft";
   private static final String UNIT_CENTIMETERS = "cm";
@@ -84,14 +85,14 @@ public class FootConverter implements UsUnitConverter {
 
     final double footDecimal = feetDecimal + (inchesDecimal / INCHES_PER_FOOT);
 
-    final String inputFeetDecimal = defaultNumberFormat.format(footDecimal);
+    final String inputFeetDecimal = numberFormatFt.format(footDecimal);
 
     final double centimetres = footDecimal * CENTIMETERS_PER_FOOT;
 
     final ImmutableUnitConversion unitConversion = ImmutableUnitConversion.builder()
         .inputAmount(inputFeetDecimal)
         .inputUnit(UNIT_FEET)
-        .metricAmount(defaultNumberFormat.format(centimetres))
+        .metricAmount(numberFormatCm.format(centimetres))
         .metricUnit(UNIT_CENTIMETERS)
         .build();
 
@@ -110,20 +111,30 @@ public class FootConverter implements UsUnitConverter {
     final double inches = parseInches(footAndInches);
     final double footDecimal = feet + (inches / INCHES_PER_FOOT);
 
-    final String inputFeetDecimal = defaultNumberFormat.format(footDecimal);
+    final String inputFeetDecimal = numberFormatFt.format(footDecimal);
 
     final double centimetres = footDecimal * CENTIMETERS_PER_FOOT;
 
     final ImmutableUnitConversion unitConversion = ImmutableUnitConversion.builder()
         .inputAmount(inputFeetDecimal)
         .inputUnit(UNIT_FEET)
-        .metricAmount(defaultNumberFormat.format(centimetres))
+        .metricAmount(numberFormatCm.format(centimetres))
         .metricUnit(UNIT_CENTIMETERS)
         .build();
     return Optional.of(unitConversion);
   }
 
-  private static NumberFormat createNumberFormat() {
+  private static NumberFormat createNumberFormatCm() {
+    final NumberFormat df = DecimalFormat.getNumberInstance(Locale.US);
+
+    df.setMinimumFractionDigits(0);
+    df.setMaximumFractionDigits(1);
+    df.setRoundingMode(RoundingMode.HALF_UP);
+
+    return df;
+  }
+
+  private static NumberFormat createNumberFormatFt() {
     final NumberFormat df = DecimalFormat.getNumberInstance(Locale.US);
 
     df.setMinimumFractionDigits(0);

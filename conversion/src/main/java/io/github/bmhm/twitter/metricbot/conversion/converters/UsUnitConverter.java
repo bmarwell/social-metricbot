@@ -16,14 +16,17 @@
 
 package io.github.bmhm.twitter.metricbot.conversion.converters;
 
-import io.github.bmhm.twitter.metricbot.conversion.UnitConversion;
 import java.util.Collection;
 import java.util.List;
+
+import io.github.bmhm.twitter.metricbot.conversion.UnitConversion;
 
 public interface UsUnitConverter {
 
   /**
    * List of search terms, the whole set in parantheses, seperated by OR and each enclosed in quotation marks.
+   *
+   * <p>Those terms can be used to search twitter for matching tweets.</p>
    *
    * @return the list of search terms.
    */

@@ -19,9 +19,7 @@ package io.github.bmhm.twitter.metricbot.conversion.converters;
 import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableSet;
 
-import io.github.bmhm.twitter.metricbot.conversion.ImmutableUnitConversion;
-import io.github.bmhm.twitter.metricbot.conversion.UnitConversion;
-import io.micronaut.context.annotation.Prototype;
+
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -33,11 +31,15 @@ import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import io.github.bmhm.twitter.metricbot.conversion.ImmutableUnitConversion;
+import io.github.bmhm.twitter.metricbot.conversion.UnitConversion;
+import io.micronaut.context.annotation.Prototype;
+
 @Prototype
 public class MilesConverter implements UsUnitConverter {
 
   private static final Pattern MILES = Pattern.compile(
-      "((\\b|[^0-9]-)?([0-9]+,){0,4}([0-9]+\\.)?[0-9]+)( )?(mi(les)?)", Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
+      "((\\b|[^0-9]-)?([0-9]+,){0,4}([0-9]+\\.)?[0-9]+)( )?(mi(le(s)?)?\\b)", Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
   private static final String UNIT_MILES = "mi";
   private static final String UNIT_KM = "km";
   private static final double MILES_IN_METERS = 1609.344;
