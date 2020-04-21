@@ -43,13 +43,13 @@ public class GlobalConversionTest {
     return Stream.of(
         Arguments.of(
             "1 cup oats\n2 bananas mashed\n2 tbsp peanut butter\n1/4 tsp vanilla extract",
-            List.of("1C=237ml", "2tbsp=29.6mL", "0.25tsp=1.23mL")),
+            List.of("1C=237ml", "2tbsp=30g", "0.25tsp=1g")),
         Arguments.of(
             "180 cal pizza recipe \n"
                 + "- 1 mission carb balance tortilla\n"
                 + "- 2 tablespoons roa’s homemade pizza sauce (1/4 cup is 4 tablespoons)\n"
                 + "- one serving of mozzarella cheese",
-            List.of(".25C=59ml", "2tbsp=1ml", "180cal=753kJ")),
+            List.of(".25C=59ml", "2tbsp=30g", "180cal=753kJ")),
         Arguments.of("5\'9", List.of("5.75'=175.3cm")),
         Arguments.of("he is 5\'9 or 5\'10 or 6\' tall.", List.of("5.75'=175.3cm", "5.83'=177.8cm", "6'=182.9cm")),
         Arguments.of("he is 5\'9.5\" or 5\'10\" or 6\'.5\" tall.", List.of("5.79'=176.5cm", "5.83'=177.8cm", "6.04'=184.2cm")),
@@ -73,7 +73,7 @@ public class GlobalConversionTest {
             + "*3/4 cup powdered sugar\n"
             + "2 TBSP  butter\n"
             + "* 4 TBSP coconut oil\n"
-            + "Pineapple 16 oz", List.of("a=b"))
+            + "Pineapple 16 oz", List.of("1tsp=4g", "0.25C=59ml", "0.75C=177ml", "2tbsp=30g", "4tbsp=60g", "16.0oz=453.6g"))
 
     );
   }
@@ -103,13 +103,15 @@ public class GlobalConversionTest {
     LOG.debug("Checking tweet [{}].", tweet);
 
     assertAll(
-        "Checking that list " + convertedUnits + " contains each of these: " + expectedOutputs + ".",
+        "Checking that list "
+            + convertedUnits + " contains each of these: " + expectedOutputs + ".\n"
+            + "Original Tweet: [" + tweet.replaceAll("\n", "\\\\n") + "].\n",
         assertions);
   }
 
   private org.junit.jupiter.api.function.Executable makeAssertion(final String convertedUnits, final String expectedConversion) {
     return () -> assertTrue(convertedUnits.contains(expectedConversion),
-        "expected " + convertedUnits + " to contain " + expectedConversion);
+        "expected [" + convertedUnits + "] to contain **[" + expectedConversion + "]**.");
   }
 
 }

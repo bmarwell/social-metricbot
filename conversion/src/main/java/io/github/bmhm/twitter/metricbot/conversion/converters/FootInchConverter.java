@@ -3,8 +3,6 @@ package io.github.bmhm.twitter.metricbot.conversion.converters;
 import static java.util.Arrays.asList;
 
 
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -14,6 +12,7 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import io.github.bmhm.twitter.metricbot.conversion.DecimalFormats;
 import io.github.bmhm.twitter.metricbot.conversion.ImmutableUnitConversion;
 import io.github.bmhm.twitter.metricbot.conversion.UnitConversion;
 import io.micronaut.context.annotation.Prototype;
@@ -22,6 +21,8 @@ import org.slf4j.LoggerFactory;
 
 @Prototype
 public class FootInchConverter implements UsUnitConverter {
+
+  private static final long serialVersionUID = 1869416432498279219L;
 
   private static final Logger LOG = LoggerFactory.getLogger(FootInchConverter.class);
 
@@ -47,8 +48,8 @@ public class FootInchConverter implements UsUnitConverter {
           "(?<!foot)(?<!feet)(?<!\\')\\s?(([0-9]+,)?[0-9]+(\\.[0-9]+)?)\\s?(\\\"|in\\b|inch(es)?)",
           Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
 
-  private static final NumberFormat numberFormatCm = createNumberFormatCm();
-  private static final NumberFormat numberFormatFt = createNumberFormatFt();
+  private static final NumberFormat numberFormatCm = DecimalFormats.atMostOneFractionDigits();
+  private static final NumberFormat numberFormatFt = DecimalFormats.atMostTwoFractionDigits();
 
   private static final String UNIT_FEET = "\'";
   private static final String UNIT_INCH = "\"";
@@ -190,26 +191,6 @@ public class FootInchConverter implements UsUnitConverter {
         .metricUnit(UNIT_CENTIMETERS)
         .build();
     return Optional.of(unitConversion);
-  }
-
-  private static NumberFormat createNumberFormatCm() {
-    final NumberFormat df = DecimalFormat.getNumberInstance(Locale.US);
-
-    df.setMinimumFractionDigits(0);
-    df.setMaximumFractionDigits(1);
-    df.setRoundingMode(RoundingMode.HALF_UP);
-
-    return df;
-  }
-
-  private static NumberFormat createNumberFormatFt() {
-    final NumberFormat df = DecimalFormat.getNumberInstance(Locale.US);
-
-    df.setMinimumFractionDigits(0);
-    df.setMaximumFractionDigits(2);
-    df.setRoundingMode(RoundingMode.HALF_UP);
-
-    return df;
   }
 
   private double parseInches(final String[] footAndInches) {

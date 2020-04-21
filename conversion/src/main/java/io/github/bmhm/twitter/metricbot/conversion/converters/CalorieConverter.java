@@ -4,16 +4,14 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.unmodifiableList;
 
 
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import io.github.bmhm.twitter.metricbot.conversion.DecimalFormats;
 import io.github.bmhm.twitter.metricbot.conversion.ImmutableUnitConversion;
 import io.github.bmhm.twitter.metricbot.conversion.UnitConversion;
 import io.micronaut.context.annotation.Prototype;
@@ -33,15 +31,8 @@ public class CalorieConverter implements UsUnitConverter {
 
   private static final double KILOJOULE_PER_CALORIE = 4.184d;
 
-  private static final NumberFormat NUMBER_FORMAT_CALS = createNumberFormatCals();
+  private static final NumberFormat NUMBER_FORMAT_CALS = DecimalFormats.noFractionDigits();
 
-  private static NumberFormat createNumberFormatCals() {
-    final NumberFormat numberFormat = DecimalFormat.getInstance(Locale.US);
-    numberFormat.setMinimumFractionDigits(0);
-    numberFormat.setMaximumFractionDigits(0);
-    numberFormat.setRoundingMode(RoundingMode.HALF_UP);
-    return numberFormat;
-  }
 
   @Override
   public List<String> getSearchTerms() {
