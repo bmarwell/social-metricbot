@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -80,7 +81,6 @@ public class CupConverter implements UsUnitConverter {
       } catch (final NumberFormatException | ArithmeticException nfe) {
         LOG.error("Unable to convert [{}].", text, nfe);
       }
-
     }
 
     return conversions;
@@ -96,7 +96,6 @@ public class CupConverter implements UsUnitConverter {
     return df;
   }
 
-
   private static NumberFormat createNumberFormatMillis() {
     final NumberFormat df = DecimalFormat.getNumberInstance(Locale.US);
     df.setMinimumFractionDigits(0);
@@ -104,5 +103,11 @@ public class CupConverter implements UsUnitConverter {
     df.setRoundingMode(RoundingMode.HALF_UP);
 
     return df;
+  }
+
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", "CupConverter{", "}")
+        .toString();
   }
 }

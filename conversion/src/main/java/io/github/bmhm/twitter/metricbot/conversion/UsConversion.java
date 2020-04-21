@@ -17,10 +17,11 @@
 package io.github.bmhm.twitter.metricbot.conversion;
 
 import static java.util.Collections.emptySet;
+import static java.util.Collections.unmodifiableSet;
 import static java.util.stream.Collectors.joining;
 
-import io.github.bmhm.twitter.metricbot.conversion.converters.UsUnitConverter;
-import io.micronaut.context.annotation.Prototype;
+
+import javax.inject.Inject;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -28,7 +29,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
-import javax.inject.Inject;
+
+import io.github.bmhm.twitter.metricbot.conversion.converters.UsUnitConverter;
+import io.micronaut.context.annotation.Prototype;
 
 @Prototype
 public class UsConversion {
@@ -80,8 +83,8 @@ public class UsConversion {
     return String.format("(%s)", orJoined);
   }
 
-  protected Set<UsUnitConverter> getConverters() {
-    return this.converters;
+  public Set<UsUnitConverter> getConverters() {
+    return unmodifiableSet(this.converters);
   }
 
   @Override

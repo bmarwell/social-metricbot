@@ -58,8 +58,12 @@ public class GlobalConversionTest {
         Arguments.of("he is 6 foot 2.5 tall.", List.of("6.21ft=189.2cm")),
         Arguments.of("2 miles", List.of("2.0mi=3.2km")),
         Arguments.of("2 miles or not 2 miles", List.of("2.0mi=3.2km")),
-        Arguments.of("4 feet or 16 feet", List.of("4ft=121.9cm", "16ft=487.7cm")),
-        Arguments.of("12 inches in a foot", List.of("1ft=30.5cm", "12in=304.8mm"))
+        Arguments.of("4 feet or 16 feet", List.of("4ft=121.9cm", "16ft=4.9m")),
+        Arguments.of("12 inches in a foot", List.of("1ft=30.5cm", "12in=304.8mm")),
+        Arguments.of("2 cups water\n"
+            + "1/4 cup apple cider vinegar\n"
+            + "1/2 tsp rock salt", List.of("2C=473ml", ".25C=59ml")),
+        Arguments.of("40,000 Feet in the sky", List.of("40,000ft=12.2km"))
 
     );
   }

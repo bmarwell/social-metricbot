@@ -16,9 +16,11 @@
 
 package io.github.bmhm.twitter.metricbot.commands;
 
+import javax.inject.Inject;
 import java.util.StringJoiner;
 import java.util.concurrent.TimeUnit;
 
+import io.github.bmhm.twitter.metricbot.conversion.UsConversion;
 import io.github.bmhm.twitter.metricbot.twitter.TweetMentionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +33,9 @@ import picocli.CommandLine.Command;
 public class RunBotCommand implements Runnable {
 
   private static final Logger LOG = LoggerFactory.getLogger(TweetMentionManager.class);
+
+  @Inject
+  private UsConversion converter;
 
   public RunBotCommand() {
     // injection
@@ -61,6 +66,7 @@ public class RunBotCommand implements Runnable {
   @Override
   public String toString() {
     return new StringJoiner(", ", "RunBotCommand{", "}")
+        .add("converters=" + this.converter.getConverters())
         .toString();
   }
 }

@@ -21,9 +21,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Prototype
-public class FootConverter implements UsUnitConverter {
+public class FootInchConverter implements UsUnitConverter {
 
-  private static final Logger LOG = LoggerFactory.getLogger(FootConverter.class);
+  private static final Logger LOG = LoggerFactory.getLogger(FootInchConverter.class);
 
   /** 1st matcher is single quotation mark to find numbers. */
   private static final Pattern FOOT_OR_FEET =
@@ -32,7 +32,8 @@ public class FootConverter implements UsUnitConverter {
    * 2nd matcher is using foot|feet|ft find numbers.
    */
   private static final Pattern FOOT_OR_FEET_TEXT =
-      Pattern.compile("\\b([0-9]{0,2}|a)\\s*(foot|feet|ft)\\s*(([0-9]{0,2}(\\.[0-9]{0,2})?)(\")?|\\b)",
+      Pattern.compile(
+          "\\b([0-9]+,[0-9]{3,}|[0-9]{0,2}|a)\\s*(foot|feet|ft)\\s*(([0-9]{0,2}(\\.[0-9]{0,2})?)(\")?|\\b)",
           Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
 
   private static final NumberFormat numberFormatCm = createNumberFormatCm();
@@ -40,6 +41,8 @@ public class FootConverter implements UsUnitConverter {
 
   private static final String UNIT_FEET = "ft";
   private static final String UNIT_CENTIMETERS = "cm";
+  private static final String UNIT_METERS = "m";
+  private static final String UNIT_KM = "km";
   private static final double CENTIMETERS_PER_FOOT = 30.48;
   private static final double INCHES_PER_FOOT = 12;
 
@@ -66,7 +69,7 @@ public class FootConverter implements UsUnitConverter {
 
     final Matcher matcherTextFt = FOOT_OR_FEET_TEXT.matcher(text);
     while (matcherTextFt.find()) {
-      final String feet = matcherTextFt.group(1);
+      final String feet = matcherTextFt.group(1).replaceAll(",", "");
       final String inches = matcherTextFt.group(4);
 
       if (feet.isEmpty()) {
@@ -88,12 +91,38 @@ public class FootConverter implements UsUnitConverter {
     final String inputFeetDecimal = numberFormatFt.format(footDecimal);
 
     final double centimetres = footDecimal * CENTIMETERS_PER_FOOT;
+    // usually we use heights up to a man's height in cm, but after that we switch to meters.
+    if (centimetres <= 249) {
+      final ImmutableUnitConversion unitConversion = ImmutableUnitConversion.builder()
+          .inputAmount(inputFeetDecimal)
+          .inputUnit(UNIT_FEET)
+          .metricAmount(numberFormatCm.format(centimetres))
+          .metricUnit(UNIT_CENTIMETERS)
+          .build();
+
+      return Optional.of(unitConversion);
+    }
+
+    final double meters = centimetres / 100;
+
+    if (meters < 10_000.0d) {
+      final ImmutableUnitConversion unitConversion = ImmutableUnitConversion.builder()
+          .inputAmount(inputFeetDecimal)
+          .inputUnit(UNIT_FEET)
+          .metricAmount(numberFormatCm.format(meters))
+          .metricUnit(UNIT_METERS)
+          .build();
+
+      return Optional.of(unitConversion);
+    }
+
+    final double km = meters / 1000;
 
     final ImmutableUnitConversion unitConversion = ImmutableUnitConversion.builder()
         .inputAmount(inputFeetDecimal)
         .inputUnit(UNIT_FEET)
-        .metricAmount(numberFormatCm.format(centimetres))
-        .metricUnit(UNIT_CENTIMETERS)
+        .metricAmount(numberFormatCm.format(km))
+        .metricUnit(UNIT_KM)
         .build();
 
     return Optional.of(unitConversion);

@@ -154,7 +154,7 @@ public class TweetResponder {
     }
 
     // quoted?
-    final Optional<Status> quotedStatus = containsUnits(foundTweet.getQuotedStatusId());
+    final Optional<Status> quotedStatus = containsUnits(foundTweet.getQuotedStatus());
     if (quotedStatus.isPresent()) {
       return quotedStatus;
     }
