@@ -121,7 +121,7 @@ public class TweetMentionManager {
    */
   @Scheduled(
       initialDelay = "${io.github.bmhm.twitter.metricbot.tweetfinder.initialdelay:5s}",
-      fixedRate = "${io.github.bmhm.twitter.metricbot.tweetfinder.rate:5s}"
+      fixedRate = "${io.github.bmhm.twitter.metricbot.tweetfinder.rate:2s}"
   )
   protected void emitMention() {
     synchronized (this.processItems) {

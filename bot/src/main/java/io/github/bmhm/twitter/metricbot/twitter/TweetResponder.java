@@ -55,7 +55,11 @@ public class TweetResponder {
     }
 
     // check for units
+    tryRespond(foundTweet);
 
+  }
+
+  protected void tryRespond(final Status foundTweet) {
     // respond
     // either this tweet, or quoted or retweeted or reply to (in this order).
     final Optional<Status> optStatusWithUnits = getStatusWithUnits(foundTweet);
@@ -79,6 +83,7 @@ public class TweetResponder {
     }
 
     final Status statusWithUnits = optStatusWithUnits.orElseThrow();
+    
     final Optional<TweetPdo> optExistingResponse = this.tweetRepository.findById(statusWithUnits.getId());
 
     if (optExistingResponse.isPresent()) {
@@ -92,6 +97,10 @@ public class TweetResponder {
       return;
     }
 
+    doRespond(foundTweet, statusWithUnits);
+  }
+
+  protected void doRespond(final Status foundTweet, final Status statusWithUnits) {
     if (!this.converter.containsUsUnits(statusWithUnits.getText())) {
       LOG.error("No units found, although they were found earlier?! [{}].", statusWithUnits.getText());
 
