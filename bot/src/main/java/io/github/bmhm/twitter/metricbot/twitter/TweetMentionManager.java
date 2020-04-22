@@ -77,7 +77,7 @@ public class TweetMentionManager {
     this.asyncTwitter.addListener(mentionListener);
   }
 
-  @Scheduled(initialDelay = "5s", fixedDelay = "10s")
+  @Scheduled(initialDelay = "5s", fixedDelay = "15s")
   protected void retrieveMentions() {
     this.asyncTwitter.getMentions();
   }
@@ -85,11 +85,11 @@ public class TweetMentionManager {
   @Async
   @EventListener
   protected void addPotentialTweet(final MentionEvent mentionEvent) {
-    LOG.info("Processing potential mention: [{}].", mentionEvent);
+    LOG.debug("Processing potential mention: [{}].", mentionEvent);
     final Status foundTweet = mentionEvent.getFoundTweet();
 
     if (this.tweetRepository.findById(foundTweet.getId()).isPresent()) {
-      LOG.info("Skipping tweet [{}] because it was already replied to.", foundTweet.getId());
+      LOG.debug("Skipping tweet [{}] because it was already replied to.", foundTweet.getId());
       return;
     }
 
@@ -107,7 +107,7 @@ public class TweetMentionManager {
     }
 
     if (containsBlockedWord(foundTweet)) {
-      LOG.info("Skipping tweet [{}] because it is from a blocked user.", foundTweet.getId());
+      LOG.debug("Skipping tweet [{}] because it is from a blocked user.", foundTweet.getId());
       this.tweetRepository.save(foundTweet.getId(), -1, Instant.now());
 
       return;
@@ -131,7 +131,7 @@ public class TweetMentionManager {
       }
 
       final Status foundTweet = this.processItems.poll();
-      LOG.info("Emitting event for tweet: [{}].", foundTweet);
+      LOG.info("Emitting event for tweet: [{}]/[{}].", foundTweet.getId(), foundTweet.getText().replaceAll("\n", "\\\\n"));
 
       this.eventPublisher.publishEvent(new TweetProcessRequest(this, foundTweet));
     }

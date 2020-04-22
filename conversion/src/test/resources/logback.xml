@@ -5,6 +5,7 @@
     </encoder>
   </appender>
 
+
   <logger name="io.micronaut" level="info" />
   <logger name="io.micronaut.core" level="info" />
   <logger name="io.micronaut.context.env" level="warn"/>

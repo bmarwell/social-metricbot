@@ -82,7 +82,15 @@ public class GlobalConversionTest {
                 + "▪️2 teaspoons dried rosemary\n"
                 + "▪️1 tablespoon cracked black pepper\n"
                 + "▪️1/2 teaspoon red pepper flake",
-            List.of("4C=946ml", "0.25C=59ml", "0.33C=78ml", "2tsp=8g", "0.5tsp=2g", "3tbsp=45g", "1tbsp=15g"))
+            List.of("4C=946ml", "0.25C=59ml", "0.33C=78ml", "2tsp=8g", "0.5tsp=2g", "3tbsp=45g", "1tbsp=15g")),
+        Arguments.of("2 CUPS (180G) ROLLED OATS\n"
+                + "\n"
+                + "1 CUP (150G) PLAIN (ALL-PURPOSE) FLOUR \n"
+                + "⅔ CUP (150G) CASTER (SUPERFINE) SUGAR \n"
+                + "¾ CUP (60G) DESICCATED COCONUT \n"
+                + "⅓ CUP (115G) GOLDEN SYRUP \n"
+                + "125G UNSALTED BUTTER ",
+            List.of("2C=473ml", "1C=237ml", "0.67C=158ml", "0.75C=177ml", "0.33C=79ml"))
 
     );
   }

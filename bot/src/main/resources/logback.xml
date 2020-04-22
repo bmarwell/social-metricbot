@@ -15,7 +15,12 @@
   <logger name="io.micronaut.context.condition" level="info"/>
   <logger name="io.micronaut.data" level="info"/>
 
-  <root level="info">
+  <logger name="org.flywaydb" level="info"/>
+  <logger name="com.zaxxer.hikari" level="info"/>
+  <logger name="twitter4j" level="debug"/>
+  <logger name="twitter4j.HttpClientImpl" level="info"/>
+
+  <root level="debug">
     <appender-ref ref="STDOUT"/>
   </root>
 </configuration>

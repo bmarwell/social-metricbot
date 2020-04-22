@@ -68,7 +68,8 @@ public class TweetResponder {
 
       // reply with sorry
       final StatusUpdate statusUpdate =
-          new StatusUpdate("Sorry, I did not find any units in either your status nor in a quoted, retweeted or mentioned status.")
+          new StatusUpdate("@" + foundTweet.getUser().getScreenName() + "\n"
+              + "Sorry, I did not find any units in either your status nor in a quoted, retweeted or mentioned status.")
               .inReplyToStatusId(foundTweet.getId());
 
       try {
@@ -83,7 +84,7 @@ public class TweetResponder {
     }
 
     final Status statusWithUnits = optStatusWithUnits.orElseThrow();
-    
+
     final Optional<TweetPdo> optExistingResponse = this.tweetRepository.findById(statusWithUnits.getId());
 
     if (optExistingResponse.isPresent()) {
@@ -110,6 +111,17 @@ public class TweetResponder {
     }
 
     final String responseText = this.converter.returnConverted(statusWithUnits.getText(), "\n");
+
+    if (foundTweet.getQuotedStatusId() == statusWithUnits.getId()) {
+      // reply to foundTweet only. Do not bother the originals post's author.
+      doRespondToFirst(foundTweet, responseText);
+      return;
+    }
+
+    doRespondTwoPotentallyBoth(foundTweet, statusWithUnits, responseText);
+  }
+
+  private void doRespondTwoPotentallyBoth(final Status foundTweet, final Status statusWithUnits, final String responseText) {
     final String mentions = createMentions(foundTweet, statusWithUnits);
     String tweetText = mentions + responseText;
     if (mentions.length() + responseText.length() + CONVENIENCE_TEXT.length() < 280) {
@@ -144,6 +156,27 @@ public class TweetResponder {
       LOG.error("Unable to send reply: [{}].", statusUpdate, twitterException);
       this.tweetRepository.save(foundTweet.getId(), -1, Instant.now());
       this.tweetRepository.save(statusWithUnits.getId(), -1, Instant.now());
+    }
+  }
+
+  protected void doRespondToFirst(final Status foundTweet, final String responseText) {
+    final String mentions = "@" + foundTweet.getUser().getScreenName() + "\n";
+    String tweetText = mentions + responseText;
+    if (mentions.length() + responseText.length() + CONVENIENCE_TEXT.length() < 280) {
+      tweetText = mentions + CONVENIENCE_TEXT + responseText;
+    }
+
+    final StatusUpdate statusUpdate = new StatusUpdate(tweetText)
+        .inReplyToStatusId(foundTweet.getId());
+
+    try {
+      LOG.info("Sending status response: [{}].", statusUpdate);
+      final Status response = this.twitter.updateStatus(statusUpdate);
+      LOG.info("Response sent: [{}].", response);
+      this.tweetRepository.save(foundTweet.getId(), response.getId(), Instant.now());
+    } catch (final TwitterException twitterException) {
+      LOG.error("Unable to send reply: [{}].", statusUpdate, twitterException);
+      this.tweetRepository.save(foundTweet.getId(), -1, Instant.now());
     }
   }
 

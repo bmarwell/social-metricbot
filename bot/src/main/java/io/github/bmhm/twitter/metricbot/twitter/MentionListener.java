@@ -1,15 +1,19 @@
 package io.github.bmhm.twitter.metricbot.twitter;
 
 import java.time.Instant;
+import java.util.Map;
 import java.util.StringJoiner;
 
 import io.github.bmhm.twitter.metricbot.events.MentionEvent;
 import io.micronaut.context.event.ApplicationEventPublisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import twitter4j.RateLimitStatus;
 import twitter4j.ResponseList;
 import twitter4j.Status;
 import twitter4j.TwitterAdapter;
+import twitter4j.TwitterException;
+import twitter4j.TwitterMethod;
 
 public class MentionListener extends TwitterAdapter {
 
@@ -29,6 +33,16 @@ public class MentionListener extends TwitterAdapter {
     statuses.stream()
         .filter(status -> status.getCreatedAt().toInstant().isAfter(Instant.now().minusSeconds(60 * 10L)))
         .forEach(this::publishEvent);
+  }
+
+  @Override
+  public void gotRateLimitStatus(final Map<String, RateLimitStatus> rateLimitStatus) {
+    LOG.info("Rate limit status: [{}].", rateLimitStatus);
+  }
+
+  @Override
+  public void onException(final TwitterException te, final TwitterMethod method) {
+    LOG.error("Problem executing [{}].", method, te);
   }
 
   private void publishEvent(final Status status) {

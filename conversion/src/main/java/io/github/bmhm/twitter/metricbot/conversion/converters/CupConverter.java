@@ -27,7 +27,11 @@ public class CupConverter implements UsUnitConverter {
   private static final Logger LOG = LoggerFactory.getLogger(CupConverter.class);
 
   private static final Pattern PATTERN_CUPS =
-      Pattern.compile("\\b((?:[0-9]+\\.)?[0-9\\u00BC-\\u00BE\\u2150-\\u215E/]+)\\s?cup(?:s)?\\b",
+      Pattern.compile("\\b((?:[0-9]+\\.)?[0-9/]+)\\s?cup(?:s)?\\b",
+          Pattern.MULTILINE | Pattern.CASE_INSENSITIVE | Pattern.CANON_EQ);
+
+  private static final Pattern PATTERN_CUPS_FRACTIONS =
+      Pattern.compile("([\u00BC-\u00BE\u2150-\u215E]+)\\s?cup(?:s)?\\b",
           Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
 
   private static final String UNIT_CUPS = "C";
@@ -45,7 +49,8 @@ public class CupConverter implements UsUnitConverter {
 
   @Override
   public boolean matches(final String text) {
-    return PATTERN_CUPS.matcher(text).matches();
+    return PATTERN_CUPS.matcher(text).find()
+        || PATTERN_CUPS_FRACTIONS.matcher(text).find();
   }
 
   @Override
@@ -60,6 +65,32 @@ public class CupConverter implements UsUnitConverter {
     while (matcher.find()) {
       try {
         final String cups = matcher.group(1);
+        final String cupsDecimal = FractionUtil.replaceFractions(cups);
+        final double cupsDouble = Double.parseDouble(cupsDecimal);
+
+        final double millis = cupsDouble * ML_PER_CUP;
+
+        final String cupsDecimalString = NUMBER_FORMAT_CUPS.format(cupsDouble);
+        final String millisDecimalString = NUMBER_FORMAT_MILLIS.format(millis);
+        LOG.debug("Converted [{}]C to [{}]ml.", cupsDecimalString, millisDecimalString);
+
+        final ImmutableUnitConversion conversion = ImmutableUnitConversion.builder()
+            .inputAmount(cupsDecimalString)
+            .inputUnit(UNIT_CUPS)
+            .metricAmount(millisDecimalString)
+            .metricUnit(UNIT_METRIC)
+            .build();
+
+        conversions.add(conversion);
+      } catch (final NumberFormatException | ArithmeticException nfe) {
+        LOG.error("Unable to convert [{}].", text, nfe);
+      }
+    }
+
+    final Matcher fractionMatcher = PATTERN_CUPS_FRACTIONS.matcher(text);
+    while (fractionMatcher.find()) {
+      try {
+        final String cups = fractionMatcher.group(1);
         final String cupsDecimal = FractionUtil.replaceFractions(cups);
         final double cupsDouble = Double.parseDouble(cupsDecimal);
 

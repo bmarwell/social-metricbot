@@ -28,8 +28,13 @@ public class TeapoonConverter implements UsUnitConverter {
   private static final Logger LOG = LoggerFactory.getLogger(TeapoonConverter.class);
 
   private static final Pattern PATTERN_TSP = Pattern.compile(
-      "\\b((?:[0-9]+,)?(?:[0-9]+\\.)?[0-9\\u00BC-\\u00BE\\u2150-\\u215E\\/]+)\\s?(?:tsp|teaspoon)(?:s)?\\b",
+      "\\b((?:[0-9]+,)?(?:[0-9]+\\.)?[0-9/]+)\\s?(?:tsp|teaspoon)(?:s)?\\b",
       Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
+
+  private static final Pattern PATTERN_TSP_FRAC = Pattern.compile(
+      "([0-9\u00BC-\u00BE\u2150-\u215E]+)\\s?(?:tsp|teaspoon)(?:s)?\\b",
+      Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
+
 
   private static final double GRAMS_PER_TSP = 4.2;
 
@@ -47,7 +52,8 @@ public class TeapoonConverter implements UsUnitConverter {
       return false;
     }
 
-    return PATTERN_TSP.matcher(text).find();
+    return PATTERN_TSP.matcher(text).find()
+        || PATTERN_TSP_FRAC.matcher(text).find();
   }
 
   @Override
@@ -78,7 +84,28 @@ public class TeapoonConverter implements UsUnitConverter {
       } catch (final NumberFormatException | ArithmeticException nfe) {
         LOG.error("Unable to parse: [{}].", text, nfe);
       }
+    }
 
+    final Matcher matcherFrac = PATTERN_TSP_FRAC.matcher(text);
+    while (matcherFrac.find()) {
+      try {
+        final String tbspText = matcherFrac.group(1).replaceAll(",", "");
+        final String tbspTextDecimal = FractionUtil.replaceFractions(tbspText);
+        final double tbspDecimal = Double.parseDouble(tbspTextDecimal);
+
+        final double grams = tbspDecimal * GRAMS_PER_TSP;
+
+        final ImmutableUnitConversion conversion = ImmutableUnitConversion.builder()
+            .inputAmount(TBSP_NUMBER_FORMAT.format(tbspDecimal))
+            .inputUnit("tsp")
+            .metricAmount(GRAM_NUMBER_FORMAT.format(grams))
+            .metricUnit("g")
+            .build();
+
+        conversions.add(conversion);
+      } catch (final NumberFormatException | ArithmeticException nfe) {
+        LOG.error("Unable to parse: [{}].", text, nfe);
+      }
     }
 
     return unmodifiableList(conversions);
