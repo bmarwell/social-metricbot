@@ -23,12 +23,12 @@ import org.slf4j.LoggerFactory;
 public class CupConverter implements UsUnitConverter {
 
   private static final long serialVersionUID = 3577857810056970727L;
-  
+
   private static final Logger LOG = LoggerFactory.getLogger(CupConverter.class);
 
   private static final Pattern PATTERN_CUPS =
-      Pattern.compile("\\b(([0-9]+\\.)?[0-9\\u00BC-\\u00BE\\u2150-\\u215E\\/]+)\\s?cup(?:s)?\\b",
-          Pattern.MULTILINE | Pattern.UNICODE_CHARACTER_CLASS | Pattern.CASE_INSENSITIVE);
+      Pattern.compile("\\b((?:[0-9]+\\.)?[0-9\\u00BC-\\u00BE\\u2150-\\u215E/]+)\\s?cup(?:s)?\\b",
+          Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
 
   private static final String UNIT_CUPS = "C";
   private static final String UNIT_METRIC = "ml";

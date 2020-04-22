@@ -49,6 +49,10 @@ public class UsConversion {
   }
 
   public String returnConverted(final String input) {
+    return returnConverted(input, ", ");
+  }
+
+  public String returnConverted(final String input, final String separator) {
     final LinkedHashSet<UnitConversion> outputUnits = this.converters.stream()
         .map(converter -> converter.getConvertedUnits(input))
         .flatMap(Collection::stream)
@@ -61,8 +65,9 @@ public class UsConversion {
         .distinct()
         .collect(Collectors.toList());
 
-    return String.join(", ", collect);
+    return String.join(separator, collect);
   }
+
 
   public boolean containsUsUnits(final String text) {
     return this.converters.stream()

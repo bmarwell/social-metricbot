@@ -1,5 +1,6 @@
 package io.github.bmhm.twitter.metricbot.twitter;
 
+import java.time.Instant;
 import java.util.StringJoiner;
 
 import io.github.bmhm.twitter.metricbot.events.MentionEvent;
@@ -23,10 +24,11 @@ public class MentionListener extends TwitterAdapter {
 
   @Override
   public void gotMentions(final ResponseList<Status> statuses) {
-    super.gotMentions(statuses);
     LOG.info("Found mention: [{}].", statuses.size());
 
-    statuses.forEach(this::publishEvent);
+    statuses.stream()
+        .filter(status -> status.getCreatedAt().toInstant().isAfter(Instant.now().minusSeconds(60 * 10L)))
+        .forEach(this::publishEvent);
   }
 
   private void publishEvent(final Status status) {

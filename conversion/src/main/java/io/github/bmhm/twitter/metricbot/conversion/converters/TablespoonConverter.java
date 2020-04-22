@@ -29,7 +29,7 @@ public class TablespoonConverter implements UsUnitConverter {
 
   private static final Pattern PATTERN_TBSP = Pattern.compile(
       "\\b((?:[0-9]+,)?(?:[0-9]+\\.)?[0-9\\u00BC-\\u00BE\\u2150-\\u215E\\/]+)\\s?(?:tbsp|tablespoon)(?:s)?\\b",
-      Pattern.MULTILINE | Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CHARACTER_CLASS);
+      Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
 
   private static final double GRAMS_PER_TBSP = 15;
 

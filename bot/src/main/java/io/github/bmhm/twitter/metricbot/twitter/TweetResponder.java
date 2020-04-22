@@ -100,12 +100,13 @@ public class TweetResponder {
       return;
     }
 
-    final String responseText = this.converter.returnConverted(statusWithUnits.getText());
+    final String responseText = this.converter.returnConverted(statusWithUnits.getText(), "\n");
     final String mentions = createMentions(foundTweet, statusWithUnits);
     String tweetText = mentions + responseText;
     if (mentions.length() + responseText.length() + CONVENIENCE_TEXT.length() < 280) {
       tweetText = mentions + CONVENIENCE_TEXT + responseText;
     }
+
     final StatusUpdate statusUpdate = new StatusUpdate(tweetText)
         .inReplyToStatusId(statusWithUnits.getId());
 

@@ -73,7 +73,16 @@ public class GlobalConversionTest {
             + "*3/4 cup powdered sugar\n"
             + "2 TBSP  butter\n"
             + "* 4 TBSP coconut oil\n"
-            + "Pineapple 16 oz", List.of("1tsp=4g", "0.25C=59ml", "0.75C=177ml", "2tbsp=30g", "4tbsp=60g", "16.0oz=453.6g"))
+            + "Pineapple 16 oz", List.of("1tsp=4g", "0.25C=59ml", "0.75C=177ml", "2tbsp=30g", "4tbsp=60g", "16.0oz=453.6g")),
+        Arguments.of("▪️4 cups cold water\n"
+                + "▪️1/4 cup salt\n"
+                + "▪️1/3 cup maple syrup\n"
+                + "▪️3 cloves garlic, crushed\n"
+                + "▪️3 tablespoons chopped fresh ginger\n"
+                + "▪️2 teaspoons dried rosemary\n"
+                + "▪️1 tablespoon cracked black pepper\n"
+                + "▪️1/2 teaspoon red pepper flake",
+            List.of("4C=946ml", "0.25C=59ml", "0.33C=78ml", "2tsp=8g", "0.5tsp=2g", "3tbsp=45g", "1tbsp=15g"))
 
     );
   }

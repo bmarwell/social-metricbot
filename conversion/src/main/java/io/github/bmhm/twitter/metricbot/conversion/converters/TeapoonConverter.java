@@ -27,9 +27,9 @@ public class TeapoonConverter implements UsUnitConverter {
 
   private static final Logger LOG = LoggerFactory.getLogger(TeapoonConverter.class);
 
-  private static final Pattern PATTERN_TBSP = Pattern.compile(
+  private static final Pattern PATTERN_TSP = Pattern.compile(
       "\\b((?:[0-9]+,)?(?:[0-9]+\\.)?[0-9\\u00BC-\\u00BE\\u2150-\\u215E\\/]+)\\s?(?:tsp|teaspoon)(?:s)?\\b",
-      Pattern.MULTILINE | Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CHARACTER_CLASS);
+      Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
 
   private static final double GRAMS_PER_TSP = 4.2;
 
@@ -47,7 +47,7 @@ public class TeapoonConverter implements UsUnitConverter {
       return false;
     }
 
-    return PATTERN_TBSP.matcher(text).find();
+    return PATTERN_TSP.matcher(text).find();
   }
 
   @Override
@@ -58,7 +58,7 @@ public class TeapoonConverter implements UsUnitConverter {
 
     final List<UnitConversion> conversions = new ArrayList<>();
 
-    final Matcher matcher = PATTERN_TBSP.matcher(text);
+    final Matcher matcher = PATTERN_TSP.matcher(text);
     while (matcher.find()) {
       try {
         final String tbspText = matcher.group(1).replaceAll(",", "");
