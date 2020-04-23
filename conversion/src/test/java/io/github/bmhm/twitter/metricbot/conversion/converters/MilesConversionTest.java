@@ -16,10 +16,11 @@
 
 package io.github.bmhm.twitter.metricbot.conversion.converters;
 
-import io.github.bmhm.twitter.metricbot.conversion.UnitConversion;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Stream;
+
+import io.github.bmhm.twitter.metricbot.conversion.UnitConversion;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -31,12 +32,13 @@ public class MilesConversionTest {
 
   static Stream<Arguments> tweetsAndUnits() {
     return Stream.of(
-        Arguments.of("2. WTF I got an unsolicited e-mail from a wedding planner 2400 miles away.", "2,400.0", "3,862.4"),
+        Arguments.of("2. WTF I got an unsolicited e-mail from a wedding planner 2400 miles away.", "2,400", "3,862.4"),
         Arguments.of("2 distillery's2 projects2 unusual casks10469.70 miles apart", "10,469.7", "16,849.3"),
-        Arguments.of("putting down 250 miles in 5 days", "250.0", "402.3"),
-        Arguments.of("It's nearing 12,000 miles", "12,000.0", "19,312.1"),
-        Arguments.of("1-2 mi", "2.0", "3.2"),
-        Arguments.of("-1 to -2 mi", "-2.0", "-3.2")
+        Arguments.of("putting down 250 miles in 5 days", "250", "402.3"),
+        Arguments.of("It's nearing 12,000 miles", "12,000", "19,312.1"),
+        Arguments.of("1-2 mi", "2", "3.2"),
+        Arguments.of("-1 to -2 mi", "-2", "-3.2"),
+        Arguments.of("1k miles", "1,000", "1,609.3")
     );
   }
 

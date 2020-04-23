@@ -58,8 +58,8 @@ public class GlobalConversionTest {
         Arguments.of("he is 6 foot 2.5\" tall.", List.of("6.21'=189.2cm")),
         Arguments.of("he is 6 foot .5\" tall.", List.of("6.04'=184.2cm")),
         Arguments.of("he is 6 foot 2.5 tall.", List.of("6.21'=189.2cm")),
-        Arguments.of("2 miles", List.of("2.0mi=3.2km")),
-        Arguments.of("2 miles or not 2 miles", List.of("2.0mi=3.2km")),
+        Arguments.of("2 miles", List.of("2mi=3.2km")),
+        Arguments.of("2 miles or not 2 miles", List.of("2mi=3.2km")),
         Arguments.of("4 feet or 16 feet", List.of("4'=121.9cm", "16'=4.9m")),
         Arguments.of("12 inches in a foot", List.of("1'=30.5cm", "12\"=30.5cm")),
         Arguments.of("2 cups water\n"
@@ -90,7 +90,20 @@ public class GlobalConversionTest {
                 + "¾ CUP (60G) DESICCATED COCONUT \n"
                 + "⅓ CUP (115G) GOLDEN SYRUP \n"
                 + "125G UNSALTED BUTTER ",
-            List.of("2C=473ml", "1C=237ml", "0.67C=158ml", "0.75C=177ml", "0.33C=79ml"))
+            List.of("2C=473ml", "1C=237ml", "0.67C=158ml", "0.75C=177ml", "0.33C=79ml")),
+        // horse powers
+        Arguments.of(
+            "This treadmill features a powerful 4.0 HP motor",
+            List.of("4hp=3kW")),
+        Arguments.of(
+            "and up to 1,500 hp",
+            List.of("1,500hp=1,118.5kW")),
+        Arguments.of(
+            "with a view counter in 2020\uD83D\uDE02700 miles, 1,500 hp, 0-60 2.9 seconds. ",
+            List.of("1,500hp=1,118.5kW", "700mi=1,126.5km")),
+        Arguments.of(
+            "my two mile time. ",
+            List.of("2mi=3.2km"))
 
     );
   }

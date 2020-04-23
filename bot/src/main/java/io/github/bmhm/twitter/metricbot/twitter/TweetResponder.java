@@ -132,9 +132,9 @@ public class TweetResponder {
         .inReplyToStatusId(statusWithUnits.getId());
 
     try {
-      LOG.info("Sending status response: [{}].", statusUpdate);
+      LOG.info("Sending status response to [{}]: [{}].", statusUpdate.getInReplyToStatusId(), statusUpdate.getStatus());
       final Status response = this.twitter.updateStatus(statusUpdate);
-      LOG.info("Response sent: [{}].", response);
+      LOG.info("Response sent: [{}] => [{}].", response.getId(), response.getText());
       // add to repository so we do not reply again to this.
       this.tweetRepository.save(statusWithUnits.getId(), response.getId(), response.getCreatedAt().toInstant());
 
@@ -170,9 +170,9 @@ public class TweetResponder {
         .inReplyToStatusId(foundTweet.getId());
 
     try {
-      LOG.info("Sending status response: [{}].", statusUpdate);
+      LOG.info("Sending status response to [{}]: [{}].", statusUpdate.getInReplyToStatusId(), statusUpdate.getStatus());
       final Status response = this.twitter.updateStatus(statusUpdate);
-      LOG.info("Response sent: [{}].", response);
+      LOG.info("Response sent: [{}] => [{}].", response.getId(), response.getText());
       this.tweetRepository.save(foundTweet.getId(), response.getId(), Instant.now());
     } catch (final TwitterException twitterException) {
       LOG.error("Unable to send reply: [{}].", statusUpdate, twitterException);
