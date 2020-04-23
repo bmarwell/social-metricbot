@@ -28,7 +28,7 @@ public class FootInchConverter implements UsUnitConverter {
 
   /** 1st matcher is single quotation mark to find numbers. */
   private static final Pattern FOOT_OR_FEET =
-      Pattern.compile("\\b[0-9]{0,2}'(([0-9]{0,2}(\\.[0-9]{0,2})?)(\")?|\\b)", Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
+      Pattern.compile("\\b([0-9]+)'(([0-9]{0,2}(\\.[0-9]{0,2})?)(\")?|\\b)", Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
   /**
    * 2nd matcher is using foot|feet|ft find numbers.
    */
@@ -45,13 +45,13 @@ public class FootInchConverter implements UsUnitConverter {
           // not starting with foot, feet or '.
           // then an optional space
           // then numbers, followed by wither ", in, inch or inches.
-          "(?<!foot)(?<!feet)(?<!\\')\\s?(([0-9]+,)?[0-9]+(\\.[0-9]+)?)\\s?(\\\"|in\\b|inch(es)?)",
+          "(?<!foot)(?<!feet)(?<!')\\s?(([0-9]+,)?[0-9]+(\\.[0-9]+)?)\\s?(\"|in\\b|inch(es)?)",
           Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
 
   private static final NumberFormat numberFormatCm = DecimalFormats.atMostOneFractionDigits();
   private static final NumberFormat numberFormatFt = DecimalFormats.atMostTwoFractionDigits();
 
-  private static final String UNIT_FEET = "\'";
+  private static final String UNIT_FEET = "'";
   private static final String UNIT_INCH = "\"";
   private static final String UNIT_CENTIMETERS = "cm";
   private static final String UNIT_METERS = "m";
@@ -80,6 +80,9 @@ public class FootInchConverter implements UsUnitConverter {
     final Matcher matcherQuotationMark = FOOT_OR_FEET.matcher(text);
 
     while (matcherQuotationMark.find()) {
+      if (matcherQuotationMark.groupCount() < 1) {
+        continue;
+      }
       final String group = matcherQuotationMark.group(0).replaceAll(",", "");
       footInchToCm(group).ifPresent(outputUnits::add);
     }

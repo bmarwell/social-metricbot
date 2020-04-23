@@ -19,15 +19,19 @@ package io.github.bmhm.twitter.metricbot.conversion.converters;
 import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableSet;
 
-import io.github.bmhm.twitter.metricbot.conversion.ImmutableUnitConversion;
-import io.github.bmhm.twitter.metricbot.conversion.UnitConversion;
-import io.micronaut.context.annotation.Prototype;
+
+import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import io.github.bmhm.twitter.metricbot.conversion.DecimalFormats;
+import io.github.bmhm.twitter.metricbot.conversion.ImmutableUnitConversion;
+import io.github.bmhm.twitter.metricbot.conversion.UnitConversion;
+import io.micronaut.context.annotation.Prototype;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,13 +40,24 @@ public class TemperatureConverter implements UsUnitConverter {
 
   private static final Logger LOG = LoggerFactory.getLogger(TemperatureConverter.class);
 
+  private static final long serialVersionUID = -1586935341494577390L;
+
+  /**
+   * Matches &quot;degrees&quot; or just {@code F|°F} or both.
+   */
+  private static final String DEGREES_F_OR_DEGREES_OR_F = "(?:(?:degree(?:s)?(?:\\s)?(?:F(ahrenheit)?|°F)?)|(?:\\s)?(?:F(ahrenheit)?|°F))";
   /**
    * group '1': matches {@code -2} or {@code 2} etc.
    */
-  private static final Pattern degreesFahrenheit = Pattern.compile("((\\b|[^0-9]-)?([0-9]+\\.)?[0-9]+)( )?(degrees F(ahrenheit)?|°F)",
-      Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+  private static final Pattern degreesFahrenheit =
+      Pattern.compile(
+          "\\b(([^0-9][-])?(?:[0-9]+\\.)?[0-9]+)(?:\\s)?" + DEGREES_F_OR_DEGREES_OR_F + "\\b",
+          Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+
   private static final String DEGREE_FAHRENHEIT = "°F";
   private static final String DEGREE_CELSIUS = "°C";
+
+  private static final NumberFormat FORMAT_NO_FRAC = DecimalFormats.noFractionDigits();
 
   public TemperatureConverter() {
     // injection.
@@ -72,12 +87,11 @@ public class TemperatureConverter implements UsUnitConverter {
         tempFahrenheit = Double.parseDouble(group);
       }
       final double tempCelsius = (tempFahrenheit - 32) / (9.0 / 5.0);
-      final long tempCelsiusWhole = Math.round(tempCelsius);
 
       final UnitConversion unitConversion = ImmutableUnitConversion.builder()
-          .inputAmount("" + tempFahrenheit)
+          .inputAmount(FORMAT_NO_FRAC.format(tempFahrenheit))
           .inputUnit(DEGREE_FAHRENHEIT)
-          .metricAmount("" + tempCelsiusWhole)
+          .metricAmount(FORMAT_NO_FRAC.format(tempCelsius))
           .metricUnit(DEGREE_CELSIUS)
           .build();
       LOG.debug("Adding: [{}].", unitConversion);

@@ -54,6 +54,7 @@ public class UsConversion {
 
   public String returnConverted(final String input, final String separator) {
     final LinkedHashSet<UnitConversion> outputUnits = this.converters.stream()
+        .filter(converter -> converter.matches(input))
         .map(converter -> converter.getConvertedUnits(input))
         .flatMap(Collection::stream)
         .collect(Collectors.toCollection(LinkedHashSet::new));
