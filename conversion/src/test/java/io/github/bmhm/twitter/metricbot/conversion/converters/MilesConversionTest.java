@@ -22,10 +22,16 @@ import java.util.stream.Stream;
 
 import io.github.bmhm.twitter.metricbot.conversion.UnitConversion;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayNameGeneration;
+import org.junit.jupiter.api.DisplayNameGenerator;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 public class MilesConversionTest {
 
   private final MilesConverter mc = new MilesConverter();
@@ -45,14 +51,34 @@ public class MilesConversionTest {
   @ParameterizedTest
   @MethodSource("tweetsAndUnits")
   public void testTweet(final String tweet, final String expectedFinding, final String expectedOutput) {
+    // given:
+    // parameters
+
+    // when:
     final Collection<UnitConversion> convertedUnits = this.mc.getConvertedUnits(tweet);
 
-    final Optional<UnitConversion> first = convertedUnits.stream().findFirst();
-    Assertions.assertAll(
-        () -> Assertions.assertEquals(1, convertedUnits.size()),
-        () -> Assertions.assertEquals(expectedFinding, first.map(UnitConversion::getInputAmount).orElse("")),
-        () -> Assertions.assertEquals(expectedOutput, first.map(UnitConversion::getMetricAmount).orElse(""))
-    );
+    // then
+    assertThat(convertedUnits)
+        .hasSize(1)
+        .first()
+        .hasFieldOrPropertyWithValue("inputAmount", expectedFinding)
+        .hasFieldOrPropertyWithValue("metricAmount", expectedOutput);
+  }
+
+  @Test
+  public void specific_tweet_with_2_miles_converions() {
+    // given:
+    String tweet = "I walk 1mi or 2 miles";
+
+    // when:
+    final Collection<UnitConversion> convertedUnits = this.mc.getConvertedUnits(tweet);
+
+    // then:
+    assertThat(convertedUnits)
+        .hasSize(2)
+        .first()
+        .hasFieldOrPropertyWithValue("InputAmount", "1")
+        .hasFieldOrPropertyWithValue("MetricAmount", "1.6");
   }
 
 }
