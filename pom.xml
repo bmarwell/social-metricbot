@@ -33,7 +33,7 @@
     <logback-classic.version>1.2.6</logback-classic.version>
     <maven-assembly-plugin.version>3.1.1</maven-assembly-plugin.version>
     <dependency.twitter4j.version>4.0.7</dependency.twitter4j.version>
-    <micronaut-data.version>1.0.2</micronaut-data.version>
+    <micronaut-data.version>3.1.2</micronaut-data.version>
   </properties>
 
   <dependencyManagement>
