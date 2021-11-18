@@ -4,23 +4,21 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.unmodifiableList;
 
-
+import io.github.bmhm.twitter.metricbot.conversion.DecimalFormats;
+import io.github.bmhm.twitter.metricbot.conversion.FractionUtil;
+import io.github.bmhm.twitter.metricbot.conversion.ImmutableUnitConversion;
+import io.github.bmhm.twitter.metricbot.conversion.UnitConversion;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import io.github.bmhm.twitter.metricbot.conversion.DecimalFormats;
-import io.github.bmhm.twitter.metricbot.conversion.FractionUtil;
-import io.github.bmhm.twitter.metricbot.conversion.ImmutableUnitConversion;
-import io.github.bmhm.twitter.metricbot.conversion.UnitConversion;
-import io.micronaut.context.annotation.Prototype;
+import javax.enterprise.context.Dependent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Prototype
+@Dependent
 public class TeapoonConverter implements UsUnitConverter {
 
   private static final long serialVersionUID = -3692749135515082850L;

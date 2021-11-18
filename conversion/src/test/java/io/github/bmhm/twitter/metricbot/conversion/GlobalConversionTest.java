@@ -18,13 +18,25 @@ package io.github.bmhm.twitter.metricbot.conversion;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-
-import javax.inject.Inject;
+import io.github.bmhm.twitter.metricbot.conversion.converters.CalorieConverter;
+import io.github.bmhm.twitter.metricbot.conversion.converters.CupConverter;
+import io.github.bmhm.twitter.metricbot.conversion.converters.FlouidOunceConverter;
+import io.github.bmhm.twitter.metricbot.conversion.converters.FootInchConverter;
+import io.github.bmhm.twitter.metricbot.conversion.converters.HorsePowerConverter;
+import io.github.bmhm.twitter.metricbot.conversion.converters.MilesConverter;
+import io.github.bmhm.twitter.metricbot.conversion.converters.TablespoonConverter;
+import io.github.bmhm.twitter.metricbot.conversion.converters.TeapoonConverter;
+import io.github.bmhm.twitter.metricbot.conversion.converters.TemperatureConverter;
+import io.github.bmhm.twitter.metricbot.conversion.converters.UsUnitConverter;
+import io.github.bmhm.twitter.metricbot.conversion.converters.WeightOunceConverter;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
-
-import io.micronaut.context.ApplicationContext;
+import javax.enterprise.inject.Instance;
+import javax.inject.Inject;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -131,18 +143,35 @@ public class GlobalConversionTest {
     );
   }
 
-  @Inject UsConversion conversion;
+  @Inject
+  UsConversion conversion;
 
+  Set<UsUnitConverter> converters;
 
   @BeforeEach
   public void setUp() {
-    ApplicationContext.build().start().inject(this);
+    this.converters = Set.of(
+        new CalorieConverter(),
+        new CupConverter(),
+        new FlouidOunceConverter(),
+        new FootInchConverter(),
+        new HorsePowerConverter(),
+        new MilesConverter(),
+        new TablespoonConverter(),
+        new TeapoonConverter(),
+        new TemperatureConverter(),
+        new WeightOunceConverter()
+    );
+    final Instance<UsUnitConverter> usUnitConverters = mock(Instance.class);
+    when(usUnitConverters.stream()).then(args -> Stream.of(this.converters.toArray()));
+    this.conversion = new UsConversion();
+    this.conversion.setConverters(usUnitConverters);
   }
 
 
   @Test
   public void setUpTestTest() {
-    Assertions.assertFalse(this.conversion.getConverters().isEmpty());
+    Assertions.assertFalse(this.conversion.getConverters().stream().findAny().isEmpty());
   }
 
   @ParameterizedTest

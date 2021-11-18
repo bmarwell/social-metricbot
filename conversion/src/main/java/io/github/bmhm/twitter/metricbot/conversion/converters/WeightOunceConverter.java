@@ -19,20 +19,18 @@ package io.github.bmhm.twitter.metricbot.conversion.converters;
 import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableSet;
 
-
+import io.github.bmhm.twitter.metricbot.conversion.DecimalFormats;
+import io.github.bmhm.twitter.metricbot.conversion.ImmutableUnitConversion;
+import io.github.bmhm.twitter.metricbot.conversion.UnitConversion;
 import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.enterprise.context.Dependent;
 
-import io.github.bmhm.twitter.metricbot.conversion.DecimalFormats;
-import io.github.bmhm.twitter.metricbot.conversion.ImmutableUnitConversion;
-import io.github.bmhm.twitter.metricbot.conversion.UnitConversion;
-import io.micronaut.context.annotation.Prototype;
-
-@Prototype
+@Dependent
 public class WeightOunceConverter implements UsUnitConverter {
 
   /**

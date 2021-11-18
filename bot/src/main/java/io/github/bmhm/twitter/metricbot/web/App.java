@@ -14,15 +14,12 @@
  *  limitations under the License.
  */
 
-package io.github.bmhm.twitter.metricbot;
+package io.github.bmhm.twitter.metricbot.web;
 
-import io.github.bmhm.twitter.metricbot.commands.RunBotCommand;
-import io.micronaut.configuration.picocli.PicocliRunner;
+import javax.ws.rs.ApplicationPath;
+import javax.ws.rs.core.Application;
 
-public class App {
-
-  public static void main(final String[] args) throws Exception {
-    PicocliRunner.run(RunBotCommand.class, args);
-  }
+@ApplicationPath("/")
+public class App extends Application {
 
 }

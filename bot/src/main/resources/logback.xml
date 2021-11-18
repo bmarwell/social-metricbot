@@ -1,7 +1,7 @@
 <configuration>
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
-      <pattern>%d{yyyy-MM-dd'T'HH:mm:ss.SSS} [%-5level] %logger{36} - %msg%n</pattern>
+      <pattern>[%d{yyyy-MM-dd'T'HH:mm:ss.SSS}] [%-5level] %logger{36} - %msg%n</pattern>
     </encoder>
   </appender>
 
@@ -10,14 +10,9 @@
   <logger name="io.github.bmhm.twitter.metricbot.conversion" level="debug"/>
   <logger name="io.github.bmhm.twitter.metricbot.db" level="debug"/>
 
-  <logger name="io.micronaut" level="info"/>
-  <logger name="io.micronaut.core" level="info"/>
-  <logger name="io.micronaut.context.condition" level="info"/>
-  <logger name="io.micronaut.data" level="info"/>
-
   <logger name="org.flywaydb" level="info"/>
   <logger name="com.zaxxer.hikari" level="info"/>
-  <logger name="twitter4j" level="debug"/>
+  <logger name="twitter4j" level="info"/>
   <logger name="twitter4j.HttpClientImpl" level="info"/>
 
   <root level="debug">

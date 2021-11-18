@@ -16,26 +16,31 @@
 
 package io.github.bmhm.twitter.metricbot.db.pdo;
 
-import edu.umd.cs.findbugs.annotations.Nullable;
-import io.micronaut.data.annotation.Id;
-import io.micronaut.data.annotation.MappedEntity;
 import java.time.Instant;
-import java.util.Objects;
 import java.util.StringJoiner;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
-@MappedEntity("Tweet")
+@Entity
+@Table(name = "Tweet")
 public class TweetPdo {
 
   public static final long ID_NOT_SET = -1L;
 
   @Id
+  @Column(name = "tweet_id")
   private long tweetId = ID_NOT_SET;
 
+  @Column(name = "TWEET_TIME")
   private Instant tweetTime;
 
+  @Column(name = "bot_response_id")
   private long botResponseId = ID_NOT_SET;
 
-  private @Nullable Instant responseTime;
+  @Column(name = "RESPONSE_TIME", nullable = true)
+  private Instant responseTime;
 
   public TweetPdo() {
     // jpa requirement
@@ -90,31 +95,9 @@ public class TweetPdo {
   }
 
   @Override
-  public boolean equals(final @Nullable Object other) {
-    if (this == other) {
-      return true;
-    }
-
-    if (other == null || getClass() != other.getClass()) {
-      return false;
-    }
-
-    final TweetPdo tweetPdo = (TweetPdo) other;
-    return this.tweetId == tweetPdo.tweetId;
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(this.tweetId);
-  }
-
-  @Override
   public String toString() {
     return new StringJoiner(", ", TweetPdo.class.getSimpleName() + "[", "]")
-        .add("tweetId=" + this.tweetId)
-        .add("tweetTime=" + this.tweetTime)
-        .add("botResponseId=" + this.botResponseId)
-        .add("responseTime=" + this.responseTime)
+        .add("tweetId=" + getTweetId())
         .toString();
   }
 }

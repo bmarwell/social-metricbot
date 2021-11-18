@@ -2,7 +2,10 @@ package io.github.bmhm.twitter.metricbot.conversion.converters;
 
 import static java.util.Collections.emptyList;
 
-
+import io.github.bmhm.twitter.metricbot.conversion.DecimalFormats;
+import io.github.bmhm.twitter.metricbot.conversion.FractionUtil;
+import io.github.bmhm.twitter.metricbot.conversion.ImmutableUnitConversion;
+import io.github.bmhm.twitter.metricbot.conversion.UnitConversion;
 import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -10,16 +13,11 @@ import java.util.List;
 import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import io.github.bmhm.twitter.metricbot.conversion.DecimalFormats;
-import io.github.bmhm.twitter.metricbot.conversion.FractionUtil;
-import io.github.bmhm.twitter.metricbot.conversion.ImmutableUnitConversion;
-import io.github.bmhm.twitter.metricbot.conversion.UnitConversion;
-import io.micronaut.context.annotation.Prototype;
+import javax.enterprise.context.Dependent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Prototype
+@Dependent
 public class CupConverter implements UsUnitConverter {
 
   private static final long serialVersionUID = 3577857810056970727L;

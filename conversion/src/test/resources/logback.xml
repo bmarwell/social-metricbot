@@ -5,13 +5,6 @@
     </encoder>
   </appender>
 
-
-  <logger name="io.micronaut" level="info" />
-  <logger name="io.micronaut.core" level="info" />
-  <logger name="io.micronaut.context.env" level="warn"/>
-  <logger name="io.micronaut.context.condition" level="info" />
-  <logger name="io.micronaut.data" level="info"/>
-
   <root level="info">
     <appender-ref ref="STDOUT" />
   </root>

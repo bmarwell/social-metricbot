@@ -16,38 +16,91 @@
 
 package io.github.bmhm.twitter.metricbot.db.dao;
 
-import javax.transaction.Transactional;
+import io.github.bmhm.twitter.metricbot.db.pdo.TweetPdo;
+import io.github.bmhm.twitter.metricbot.db.pdo.TweetPdo_;
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
+import javax.enterprise.context.Dependent;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
+import javax.persistence.criteria.ParameterExpression;
+import javax.persistence.criteria.Root;
 
-import io.github.bmhm.twitter.metricbot.db.pdo.TweetPdo;
-import io.micronaut.data.annotation.Id;
-import io.micronaut.data.jdbc.annotation.JdbcRepository;
-import io.micronaut.data.model.query.builder.sql.Dialect;
-import io.micronaut.data.repository.CrudRepository;
+@Dependent
+public class TweetRepository {
 
-@JdbcRepository(dialect = Dialect.H2)
-public abstract class TweetRepository implements CrudRepository<TweetPdo, Long> {
+  @PersistenceContext(name = "metricbot-persistence-unit")
+  private EntityManager entityManager;
 
-  @Transactional
-  public abstract void update(@Id Long id, long botResponseId, Instant responseTime);
+  public Optional<TweetPdo> findById(final long tweetId) {
+    final TweetPdo tweetPdo = this.entityManager.find(TweetPdo.class, tweetId);
 
-  @Transactional
-  public TweetPdo save(@Id final Long id, final long botResponseId, final Instant responseTime) {
+    return Optional.ofNullable(tweetPdo);
+  }
+
+  public void update(final Long id, final long botResponseId, final Instant responseTime) {
+    final Optional<TweetPdo> existingTweet = findById(id);
+    if (existingTweet.isPresent()) {
+      final TweetPdo tweet = existingTweet.orElseThrow();
+      tweet.setBotResponseId(botResponseId);
+      tweet.setResponseTime(responseTime);
+      this.entityManager.merge(tweet);
+
+      return;
+    }
+
+    final TweetPdo tweetPdo = new TweetPdo(id, Instant.now(), botResponseId);
+    tweetPdo.setResponseTime(responseTime);
+
+    save(tweetPdo);
+  }
+
+  public TweetPdo save(final Long id, final long botResponseId, final Instant responseTime) {
     final TweetPdo tweetPdo = new TweetPdo(id, responseTime, botResponseId);
 
     return save(tweetPdo);
   }
 
-  public abstract List<TweetPdo> findByTweetTimeBefore(Instant createdBefore);
+  private TweetPdo save(final TweetPdo tweetPdo) {
+    final EntityManager em = this.entityManager;
+    final TweetPdo merge = em.merge(tweetPdo);
+    em.detach(merge);
+
+    return merge;
+  }
+
+  public List<TweetPdo> findByTweetTimeBefore(final Instant createdBefore) {
+    // TODO: implement
+    throw new UnsupportedOperationException(
+        "not yet implemented: [io.github.bmhm.twitter.metricbot.db.dao.TweetRepository::findByTweetTimeBefore].");
+  }
 
   /**
    * Deletes tweets before given date.
    *
-   * <p>Note: int as return cannot be implemented. I wonder why.</p>
-   *
-   * @param createdBefore
-   *     delete tweets before this date.
+   * @param createdBefore delete tweets before this date.
    */
-  public abstract void deleteByTweetTimeBefore(Instant createdBefore);
+  public int deleteByTweetTimeBefore(final Instant createdBefore) {
+    final EntityManager em = this.entityManager;
+    final CriteriaBuilder cb = em.getCriteriaBuilder();
+    final CriteriaDelete<TweetPdo> criteriaDeleteQuery = cb.createCriteriaDelete(TweetPdo.class);
+    final Root<TweetPdo> from = criteriaDeleteQuery.from(TweetPdo.class);
+    final ParameterExpression<Instant> beforeParameter =
+        cb.parameter(Instant.class, "createdBefore");
+    criteriaDeleteQuery.where(
+        cb.lessThan(
+            from.get(TweetPdo_.tweetTime),
+            beforeParameter
+        )
+    );
+
+    final Query deleteQuery = em.createQuery(criteriaDeleteQuery);
+    deleteQuery.setParameter(beforeParameter, createdBefore);
+
+    return deleteQuery.executeUpdate();
+  }
 }

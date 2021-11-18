@@ -1,20 +1,17 @@
-package io.github.bmhm.twitter.metricbot.twitter;
+package io.github.bmhm.twitter.metricbot.web.twitter;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import io.github.bmhm.twitter.metricbot.conversion.UsConversion;
+import io.github.bmhm.twitter.metricbot.db.dao.TweetRepository;
+import io.github.bmhm.twitter.metricbot.db.pdo.TweetPdo;
+import io.github.bmhm.twitter.metricbot.web.events.TweetProcessRequest;
 import java.time.Instant;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import edu.umd.cs.findbugs.annotations.Nullable;
-import io.github.bmhm.twitter.metricbot.conversion.UsConversion;
-import io.github.bmhm.twitter.metricbot.db.dao.TweetRepository;
-import io.github.bmhm.twitter.metricbot.db.pdo.TweetPdo;
-import io.github.bmhm.twitter.metricbot.events.TweetProcessRequest;
-import io.micronaut.runtime.event.annotation.EventListener;
-import io.micronaut.scheduling.annotation.Async;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.ObservesAsync;
+import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import twitter4j.Status;
@@ -22,7 +19,7 @@ import twitter4j.StatusUpdate;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 
-@Singleton
+@ApplicationScoped
 public class TweetResponder {
 
   private static final Logger LOG = LoggerFactory.getLogger(TweetResponder.class);
@@ -40,13 +37,12 @@ public class TweetResponder {
   @Inject
   private UsConversion converter;
 
-  @EventListener
-  @Async
-  public void onTweetFound(final TweetProcessRequest event) {
+  public void onTweetFound(final @ObservesAsync TweetProcessRequest event) {
     LOG.info("Checking response to event [{}].", event);
     final Status foundTweet = event.getFoundTweet();
 
-    final Optional<TweetPdo> alreadyRespondedToMention = this.tweetRepository.findById(foundTweet.getId());
+    final Optional<TweetPdo> alreadyRespondedToMention = this.tweetRepository.findById(
+        foundTweet.getId());
     if (alreadyRespondedToMention.isPresent()) {
       final TweetPdo tweetPdo = alreadyRespondedToMention.orElseThrow();
       LOG.info("Already responded: [{}]", tweetPdo);
@@ -237,7 +233,7 @@ public class TweetResponder {
     return Optional.empty();
   }
 
-  protected Optional<Status> containsUnits(final @Nullable Status otherStatus) {
+  protected Optional<Status> containsUnits(final Status otherStatus) {
     if (otherStatus == null) {
       return Optional.empty();
     }

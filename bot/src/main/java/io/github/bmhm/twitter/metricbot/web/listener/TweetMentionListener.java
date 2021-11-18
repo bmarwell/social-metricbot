@@ -14,40 +14,41 @@
  *  limitations under the License.
  */
 
-package io.github.bmhm.twitter.metricbot.twitter;
+package io.github.bmhm.twitter.metricbot.web.listener;
 
 import static java.util.Arrays.asList;
 
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import io.github.bmhm.twitter.metricbot.common.TwitterConfig;
+import io.github.bmhm.twitter.metricbot.db.dao.TweetRepository;
+import io.github.bmhm.twitter.metricbot.web.events.MentionEvent;
+import io.github.bmhm.twitter.metricbot.web.events.UnprocessedTweetQueueHolder;
+import io.github.bmhm.twitter.metricbot.web.factory.TwitterProducer;
+import io.github.bmhm.twitter.metricbot.web.twitter.MentionEventHandler;
 import java.time.Instant;
-import java.util.ArrayDeque;
 import java.util.List;
 import java.util.Locale;
 import java.util.StringJoiner;
-
-import io.github.bmhm.twitter.metricbot.db.dao.TweetRepository;
-import io.github.bmhm.twitter.metricbot.events.MentionEvent;
-import io.github.bmhm.twitter.metricbot.events.TweetProcessRequest;
-import io.micronaut.context.event.ApplicationEventPublisher;
-import io.micronaut.context.event.StartupEvent;
-import io.micronaut.runtime.event.annotation.EventListener;
-import io.micronaut.scheduling.annotation.Async;
-import io.micronaut.scheduling.annotation.Scheduled;
+import java.util.concurrent.TimeUnit;
+import javax.annotation.Resource;
+import javax.enterprise.concurrent.ManagedScheduledExecutorService;
+import javax.enterprise.event.ObservesAsync;
+import javax.inject.Inject;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+import javax.servlet.annotation.WebListener;
+import javax.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import twitter4j.AsyncTwitter;
-import twitter4j.AsyncTwitterFactory;
 import twitter4j.Status;
 
-@Singleton
-public class TweetMentionManager {
+@WebListener
+public class TweetMentionListener implements ServletContextListener {
 
-  private static final Logger LOG = LoggerFactory.getLogger(TweetMentionManager.class);
+  private static final Logger LOG = LoggerFactory.getLogger(TweetMentionListener.class);
 
-  @Inject
-  private ApplicationEventPublisher eventPublisher;
+  @Resource
+  private ManagedScheduledExecutorService scheduler;
 
   /**
    * recent replies.
@@ -56,35 +57,48 @@ public class TweetMentionManager {
   private TweetRepository tweetRepository;
 
   @Inject
-  private AsyncTwitterFactory asyncTwitterFactory;
+  private TwitterProducer twitterProducer;
+
+  @Inject
+  private TwitterConfig twitterConfig;
+
+  @Inject
+  private MentionEventHandler mentionEventHandler;
+
+  @Inject
+  private UnprocessedTweetQueueHolder unprocessedTweetQueueHolder;
 
   private AsyncTwitter asyncTwitter;
-
-  private final ArrayDeque<Status> processItems = new ArrayDeque<>();
 
   private static final List<String> ACCOUNT_NAME_WORD_BLACKLIST = asList(
       "Boutique", "Crazy I Buy", "weather", "Supplements", "DealsSupply");
 
-  public TweetMentionManager() {
+  public TweetMentionListener() {
     // injection constructor
   }
 
-  @EventListener
-  protected void onStartup(final StartupEvent event) {
+  @Override
+  public void contextInitialized(final ServletContextEvent sce) {
+    ServletContextListener.super.contextInitialized(sce);
     LOG.info("init: [{}].", this);
-    this.asyncTwitter = this.asyncTwitterFactory.getInstance();
-    final MentionListener mentionListener = new MentionListener(this.eventPublisher);
-    this.asyncTwitter.addListener(mentionListener);
+    this.asyncTwitter = this.twitterProducer.getAsyncTwitter().getInstance();
+    this.asyncTwitter.addListener(this.mentionEventHandler);
+
+    // set up scheduler
+    this.scheduler.scheduleWithFixedDelay(
+        this::retrieveMentions,
+        this.twitterConfig.getTweetFinderInitialDelay(),
+        this.twitterConfig.getTweetFinderRetrieveRate(),
+        TimeUnit.SECONDS
+    );
   }
 
-  @Scheduled(initialDelay = "5s", fixedDelay = "15s")
   protected void retrieveMentions() {
     this.asyncTwitter.getMentions();
   }
 
-  @Async
-  @EventListener
-  protected void addPotentialTweet(final MentionEvent mentionEvent) {
+  @Transactional
+  protected void addPotentialTweet(final @ObservesAsync MentionEvent mentionEvent) {
     LOG.debug("Processing potential mention: [{}].", mentionEvent);
     final Status foundTweet = mentionEvent.getFoundTweet();
 
@@ -93,7 +107,7 @@ public class TweetMentionManager {
       return;
     }
 
-    if (this.processItems.contains(foundTweet)) {
+    if (this.unprocessedTweetQueueHolder.contains(foundTweet)) {
       LOG.info("Skipping tweet [{}] because it will be processed soon.", foundTweet.getId());
       return;
     }
@@ -113,28 +127,7 @@ public class TweetMentionManager {
       return;
     }
 
-    this.processItems.add(foundTweet);
-  }
-
-  /**
-   * Only emit a new tweet once every 5 seconds.
-   */
-  @Scheduled(
-      initialDelay = "${io.github.bmhm.twitter.metricbot.tweetfinder.initialdelay:5s}",
-      fixedRate = "${io.github.bmhm.twitter.metricbot.tweetfinder.rate:2s}"
-  )
-  protected void emitMention() {
-    synchronized (this.processItems) {
-      if (this.processItems.isEmpty()) {
-        LOG.debug("No tweet to reply to.");
-        return;
-      }
-
-      final Status foundTweet = this.processItems.poll();
-      LOG.info("Emitting event for tweet: [{}]/[{}].", foundTweet.getId(), foundTweet.getText().replaceAll("\n", "\\\\n"));
-
-      this.eventPublisher.publishEvent(new TweetProcessRequest(this, foundTweet));
-    }
+    this.unprocessedTweetQueueHolder.add(foundTweet);
   }
 
   protected boolean containsBlockedWord(final Status tweet) {
@@ -146,10 +139,14 @@ public class TweetMentionManager {
 
   @Override
   public String toString() {
-    return new StringJoiner(", ", TweetMentionManager.class.getSimpleName() + "[", "]")
+    return new StringJoiner(", ", TweetMentionListener.class.getSimpleName() + "[", "]")
+        .add("scheduler=" + this.scheduler)
         .add("tweetRepository=" + this.tweetRepository)
-        .add("eventPublisher=" + this.eventPublisher)
-        .add("processItems=" + this.processItems)
+        .add("twitterProducer=" + this.twitterProducer)
+        .add("twitterConfig=" + this.twitterConfig)
+        .add("mentionEventHandler=" + this.mentionEventHandler)
+        .add("unprocessedTweetQueueHolder=" + this.unprocessedTweetQueueHolder)
+        .add("asyncTwitter=" + this.asyncTwitter)
         .toString();
   }
 }

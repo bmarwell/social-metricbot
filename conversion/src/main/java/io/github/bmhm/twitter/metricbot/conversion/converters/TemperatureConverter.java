@@ -19,7 +19,9 @@ package io.github.bmhm.twitter.metricbot.conversion.converters;
 import static java.util.Arrays.asList;
 import static java.util.Collections.unmodifiableSet;
 
-
+import io.github.bmhm.twitter.metricbot.conversion.DecimalFormats;
+import io.github.bmhm.twitter.metricbot.conversion.ImmutableUnitConversion;
+import io.github.bmhm.twitter.metricbot.conversion.UnitConversion;
 import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -27,15 +29,11 @@ import java.util.List;
 import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import io.github.bmhm.twitter.metricbot.conversion.DecimalFormats;
-import io.github.bmhm.twitter.metricbot.conversion.ImmutableUnitConversion;
-import io.github.bmhm.twitter.metricbot.conversion.UnitConversion;
-import io.micronaut.context.annotation.Prototype;
+import javax.enterprise.context.Dependent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Prototype
+@Dependent
 public class TemperatureConverter implements UsUnitConverter {
 
   private static final Logger LOG = LoggerFactory.getLogger(TemperatureConverter.class);

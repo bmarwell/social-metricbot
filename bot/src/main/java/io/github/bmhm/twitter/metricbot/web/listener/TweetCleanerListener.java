@@ -14,18 +14,25 @@
  *  limitations under the License.
  */
 
-package io.github.bmhm.twitter.metricbot.twitter;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import java.time.Instant;
-import java.time.ZonedDateTime;
+package io.github.bmhm.twitter.metricbot.web.listener;
 
 import io.github.bmhm.twitter.metricbot.db.dao.TweetRepository;
-import io.micronaut.scheduling.annotation.Scheduled;
+import java.time.Instant;
+import java.time.ZonedDateTime;
+import java.util.concurrent.TimeUnit;
+import javax.annotation.Resource;
+import javax.enterprise.concurrent.ManagedScheduledExecutorService;
+import javax.inject.Inject;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+import javax.servlet.annotation.WebListener;
+import javax.transaction.Transactional;
 
-@Singleton
-public class TweetCleaner {
+@WebListener
+public class TweetCleanerListener implements ServletContextListener {
+
+  @Resource
+  private ManagedScheduledExecutorService scheduler;
 
   /**
    * recent replies.
@@ -33,11 +40,21 @@ public class TweetCleaner {
   @Inject
   private TweetRepository tweetRepository;
 
-  public TweetCleaner() {
+  public TweetCleanerListener() {
     // injection
   }
 
-  @Scheduled(initialDelay = "5s", fixedDelay = "10m")
+  @Override
+  public void contextInitialized(final ServletContextEvent sce) {
+    this.scheduler.scheduleWithFixedDelay(
+        this::removeOldTweets,
+        5,
+        10 * 60,
+        TimeUnit.SECONDS
+    );
+  }
+
+  @Transactional
   public void removeOldTweets() {
     final ZonedDateTime now = ZonedDateTime.now();
     final ZonedDateTime oneWeekAgo = now.minusDays(7L);

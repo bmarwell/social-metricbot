@@ -14,18 +14,16 @@
  *  limitations under the License.
  */
 
-package io.github.bmhm.twitter.metricbot.factory;
+package io.github.bmhm.twitter.metricbot.web.factory;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
+import io.github.bmhm.twitter.metricbot.common.TwitterConfig;
 import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import io.github.bmhm.twitter.metricbot.twitter.TwitterConfig;
-import io.micronaut.context.annotation.Bean;
-import io.micronaut.context.annotation.Factory;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Produces;
+import javax.inject.Inject;
+import javax.inject.Named;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import twitter4j.AsyncTwitterFactory;
@@ -38,7 +36,7 @@ import twitter4j.conf.ConfigurationBuilder;
  * <p>Called this factory 'producer', to avoid name clash with {@link twitter4j.TwitterFactory},
  * and because in CDI you'd call this a producer method anyway.</p>
  */
-@Factory
+@ApplicationScoped
 public class TwitterProducer {
 
   private static final Logger LOG = LoggerFactory.getLogger(TwitterProducer.class);
@@ -46,8 +44,8 @@ public class TwitterProducer {
   @Inject
   private TwitterConfig twitterAttributes;
 
-  @Bean
-  @Singleton
+  @Produces
+  @ApplicationScoped
   public Twitter getTwitter() {
     if (this.twitterAttributes == null || this.twitterAttributes.getConsumerKey() == null
         || this.twitterAttributes.getAccessToken() == null) {
@@ -65,8 +63,8 @@ public class TwitterProducer {
     return tf.getInstance();
   }
 
-  @Bean
-  @Singleton
+  @Produces
+  @ApplicationScoped
   public AsyncTwitterFactory getAsyncTwitter() {
     if (this.twitterAttributes == null || this.twitterAttributes.getConsumerKey() == null
         || this.twitterAttributes.getAccessToken() == null) {
@@ -83,7 +81,7 @@ public class TwitterProducer {
     return new AsyncTwitterFactory(cb.build());
   }
 
-  @Singleton
+  @ApplicationScoped
   @Named("recentMatches")
   public Map<Long, Instant> recentMatches() {
     return new ConcurrentHashMap<>();

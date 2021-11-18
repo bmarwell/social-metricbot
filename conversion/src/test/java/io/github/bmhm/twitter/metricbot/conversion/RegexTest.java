@@ -1,14 +1,10 @@
 package io.github.bmhm.twitter.metricbot.conversion;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.oneOf;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +30,8 @@ public class RegexTest {
 
     while (matcher.find()) {
       LOG.info("Find: [{}] g1[{}]", matcher.group(0), matcher.group(1));
-      assertThat(matcher.group(1), is(oneOf("4", "1/4", "1/3")));
+      assertThat(matcher.group(1))
+          .isIn("4", "1/4", "1/3");
     }
   }
 }
