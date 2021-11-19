@@ -47,8 +47,10 @@ public class MentionEventHandler extends TwitterAdapter implements Serializable 
     final Set<Status> newMentions = statuses.stream()
         .filter(status -> status.getCreatedAt().toInstant()
             .isAfter(Instant.now().minusSeconds(60 * 10L)))
-        // don't consider replies to mentions
+        // don't consider replies to mentions, tweet must contain the account name EXPLICITELY.
         .filter(status -> status.getText().contains(this.twitterConfig.getAccountName()))
+        // don't reply to own replies containing the original unit.
+        .filter(status -> !this.twitterConfig.getAccountName().contains(status.getUser().getName()))
         .collect(Collectors.toSet());
 
     if (LOG.isInfoEnabled() && newMentions.size() > 0) {
@@ -69,7 +71,7 @@ public class MentionEventHandler extends TwitterAdapter implements Serializable 
   }
 
   private void publishEvent(final Status status) {
-    this.mentionEvent.fireAsync(new MentionEvent(status));
+    this.mentionEvent.fire(new MentionEvent(status));
   }
 
   @Override

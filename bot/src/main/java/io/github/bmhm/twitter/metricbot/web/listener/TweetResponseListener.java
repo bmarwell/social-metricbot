@@ -64,7 +64,7 @@ public class TweetResponseListener implements ServletContextListener {
       LOG.info("Emitting event for tweet: [{}]/[{}].", foundTweet.getId(),
           foundTweet.getText().replaceAll("\n", "\\\\n"));
 
-      this.processEvent.fireAsync(new TweetProcessRequest(foundTweet));
+      this.processEvent.fire(new TweetProcessRequest(foundTweet));
     }
   }
 

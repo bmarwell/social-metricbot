@@ -5,10 +5,10 @@
     </encoder>
   </appender>
 
-  <logger name="io.github.bmhm.twitter.metricbot" level="debug"/>
-  <logger name="io.github.bmhm.twitter.metricbot.app" level="debug"/>
-  <logger name="io.github.bmhm.twitter.metricbot.conversion" level="debug"/>
-  <logger name="io.github.bmhm.twitter.metricbot.db" level="debug"/>
+  <logger name="io.github.bmhm.twitter.metricbot" level="trace"/>
+  <logger name="io.github.bmhm.twitter.metricbot.app" level="trace"/>
+  <logger name="io.github.bmhm.twitter.metricbot.conversion" level="trace"/>
+  <logger name="io.github.bmhm.twitter.metricbot.db" level="trace"/>
 
   <logger name="org.flywaydb" level="info"/>
   <logger name="com.zaxxer.hikari" level="info"/>
