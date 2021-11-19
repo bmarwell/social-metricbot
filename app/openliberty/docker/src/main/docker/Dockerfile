@@ -6,7 +6,7 @@ RUN features.sh
 
 ARG ARTIFACT_NAME
 COPY --chown=1001:0 ${ARTIFACT_NAME} /config/apps/${ARTIFACT_NAME}
-COPY --chown=1001:0 h2 /config/
+COPY --chown=1001:0 h2 /config/h2/
 
 ENV OPENJ9_SCC=true
 RUN configure.sh

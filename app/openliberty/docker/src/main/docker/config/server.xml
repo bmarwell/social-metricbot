@@ -17,9 +17,6 @@
     httpsPort="-1"
     protocolVersion="http/2"
   >
-    <accessLogging
-      id="accessLogging"
-    />
     <compression
       serverPreferredAlgorithm="deflate|gzip|x-gzip|zlib|identity|none"
     >
@@ -70,7 +67,7 @@
     id="H2JDBCLib"
   >
     <fileset
-      dir="${shared.resource.dir}/h2"
+      dir="${server.config.dir}/h2"
       includes="*.jar"
     />
   </library>
