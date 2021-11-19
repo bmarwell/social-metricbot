@@ -1,0 +1,10 @@
+-Xms64m
+-Xmx128m
+
+# ignore hotspot options
+-XX:+IgnoreUnrecognizedVMOptions
+
+# use less CPU for cloud hosting
+-XX:+IdleTuningGcOnIdle
+-XX:+ClassRelationshipVerifier
+-Xtune:virtualize

@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>io.github.bmhm.twitter</groupId>
+    <artifactId>twitter-metricbot</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <relativePath>../../../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>twitter-metricbot-app-ol-docker</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <name>Twitter-MetricBot :: app :: OL :: Docker</name>
+
+  <properties>
+    <app.filename>twitter-metricbot-app-${project.version}.war</app.filename>
+    <app.context.root>/</app.context.root>
+    <docker.context.directory>${basedir}/target/dockerfiles</docker.context.directory>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>io.github.bmhm.twitter</groupId>
+      <artifactId>twitter-metricbot-app</artifactId>
+      <version>${project.version}</version>
+      <type>war</type>
+    </dependency>
+
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <version>1.4.200</version>
+      <type>jar</type>
+    </dependency>
+  </dependencies>
+
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-resources</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${docker.context.directory}</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>src/main/docker</directory>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-war</id>
+            <phase>process-sources</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <includeTypes>war</includeTypes>
+              <outputDirectory>${docker.context.directory}</outputDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <id>copy-h2</id>
+            <phase>process-sources</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <includeTypes>jar</includeTypes>
+              <outputDirectory>${docker.context.directory}/h2</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+
+      <plugin>
+        <groupId>com.spotify</groupId>
+        <artifactId>dockerfile-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>docker-build</id>
+            <goals>
+              <goal>build</goal>
+              <goal>tag</goal>
+            </goals>
+            <configuration>
+              <contextDirectory>${docker.context.directory}</contextDirectory>
+              <repository>${project.groupId}/${project.artifactId}</repository>
+              <pullNewerImage>false</pullNewerImage>
+              <tag>${project.version}</tag>
+              <buildArgs>
+                <ARTIFACT_NAME>${app.filename}</ARTIFACT_NAME>
+              </buildArgs>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>docker-deploy</id>
+
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.spotify</groupId>
+            <artifactId>dockerfile-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>docker-push</id>
+                <goals>
+                  <goal>push</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
+</project>

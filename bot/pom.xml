@@ -15,9 +15,6 @@
   <version>1.0.0-SNAPSHOT</version>
   <name>Twitter-MetricBot :: war</name>
 
-  <properties>
-  </properties>
-
   <dependencies>
     <!-- own dependencies -->
     <dependency>
@@ -118,10 +115,5 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
-  <build>
-    <plugins>
-    </plugins>
-  </build>
 
 </project>
