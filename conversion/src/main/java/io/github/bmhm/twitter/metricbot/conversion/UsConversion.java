@@ -16,36 +16,31 @@
 
 package io.github.bmhm.twitter.metricbot.conversion;
 
-import static java.util.Collections.emptySet;
-import static java.util.Collections.unmodifiableSet;
 import static java.util.stream.Collectors.joining;
 
-
-import javax.inject.Inject;
+import io.github.bmhm.twitter.metricbot.conversion.converters.UsUnitConverter;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
+import javax.enterprise.context.Dependent;
+import javax.enterprise.inject.Any;
+import javax.enterprise.inject.Instance;
+import javax.inject.Inject;
 
-import io.github.bmhm.twitter.metricbot.conversion.converters.UsUnitConverter;
-import io.micronaut.context.annotation.Prototype;
-
-@Prototype
+@Dependent
 public class UsConversion {
 
-  private final Set<UsUnitConverter> converters;
+  private Instance<UsUnitConverter> converters;
 
   public UsConversion() {
     // injection
-    this.converters = emptySet();
   }
 
   @Inject
-  public UsConversion(final Collection<UsUnitConverter> converters) {
-    this.converters = new HashSet<>(converters);
+  public UsConversion(final @Any Instance<UsUnitConverter> converters) {
+    this.converters = converters;
   }
 
   public String returnConverted(final String input) {
@@ -54,6 +49,7 @@ public class UsConversion {
 
   public String returnConverted(final String input, final String separator) {
     final LinkedHashSet<UnitConversion> outputUnits = this.converters.stream()
+        .filter(converter -> converter.matches(input))
         .map(converter -> converter.getConvertedUnits(input))
         .flatMap(Collection::stream)
         .collect(Collectors.toCollection(LinkedHashSet::new));
@@ -88,8 +84,13 @@ public class UsConversion {
     return String.format("(%s)", orJoined);
   }
 
-  public Set<UsUnitConverter> getConverters() {
-    return unmodifiableSet(this.converters);
+  public Instance<UsUnitConverter> getConverters() {
+    return this.converters;
+  }
+
+  public void setConverters(
+      final Instance<UsUnitConverter> converters) {
+    this.converters = converters;
   }
 
   @Override

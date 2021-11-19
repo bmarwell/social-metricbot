@@ -9,3 +9,4 @@
 /*/target/*
 /bot/twitter-metricbot-app.iml
 */*.iml
+/app/openliberty/docker/target/

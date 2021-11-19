@@ -18,13 +18,25 @@ package io.github.bmhm.twitter.metricbot.conversion;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-
-import javax.inject.Inject;
+import io.github.bmhm.twitter.metricbot.conversion.converters.CalorieConverter;
+import io.github.bmhm.twitter.metricbot.conversion.converters.CupConverter;
+import io.github.bmhm.twitter.metricbot.conversion.converters.FlouidOunceConverter;
+import io.github.bmhm.twitter.metricbot.conversion.converters.FootInchConverter;
+import io.github.bmhm.twitter.metricbot.conversion.converters.HorsePowerConverter;
+import io.github.bmhm.twitter.metricbot.conversion.converters.MilesConverter;
+import io.github.bmhm.twitter.metricbot.conversion.converters.TablespoonConverter;
+import io.github.bmhm.twitter.metricbot.conversion.converters.TeapoonConverter;
+import io.github.bmhm.twitter.metricbot.conversion.converters.TemperatureConverter;
+import io.github.bmhm.twitter.metricbot.conversion.converters.UsUnitConverter;
+import io.github.bmhm.twitter.metricbot.conversion.converters.WeightOunceConverter;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
-
-import io.micronaut.context.ApplicationContext;
+import javax.enterprise.inject.Instance;
+import javax.inject.Inject;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -103,23 +115,63 @@ public class GlobalConversionTest {
             List.of("1,500hp=1,118.5kW", "700mi=1,126.5km")),
         Arguments.of(
             "my two mile time. ",
-            List.of("2mi=3.2km"))
+            List.of("2mi=3.2km")),
+        Arguments.of("- five mile walk\n"
+                + "- With no food in body\n"
+                + "- In 84 degree weather",
+            List.of("5mi=8km", "84°F=29°C")),
+        Arguments.of("2 cups of Pancake Mix\n"  // 2C=473ml
+                + "1 1/2 cups of Milk\n"        // 0.5C=118ml TODO: 1 1/2
+                + "2 Tsp Vanilla Extract\n"     // 2tsp=8g
+                + "1 tsp Cinnamon\n"            // 1tsp=4g
+                + "\n"
+                + "Key lime Icing\n"
+                + "1/2 Cup of confection sugar\n"                 // 0.5C=118ml
+                + "2 tablespoons of sweetened condensed milk\n"   // 2tbsp=30g
+                + "2 tablespoons of lime Juice\n"                 // 2tbsp=30g
+                + "\n"
+                + "Garnish \n"
+                + "1/2 cup crushed Biscoff cookies \n"            // 0.5C=118ml
+                + "1 lime for lime zest",
+            List.of("2C=473ml", "0.5C=118ml", "2tsp=8g", "1tsp=4g", "2tbsp=30g")),
+        Arguments.of("- 2.25 teaspoons active instant yeast \n"               // 2.25tsp=9g
+                + "- 2 large baking potatoes \n"
+                + "-3.5 cups of flour \n"                                     // 3.5C=828ml
+                + "- salt, paprika, sour cream, tons of garlic, & cheese",
+            List.of("2.25tsp=9g", "3.5C=828ml"))
 
     );
   }
 
-  @Inject UsConversion conversion;
+  @Inject
+  UsConversion conversion;
 
+  Set<UsUnitConverter> converters;
 
   @BeforeEach
   public void setUp() {
-    ApplicationContext.build().start().inject(this);
+    this.converters = Set.of(
+        new CalorieConverter(),
+        new CupConverter(),
+        new FlouidOunceConverter(),
+        new FootInchConverter(),
+        new HorsePowerConverter(),
+        new MilesConverter(),
+        new TablespoonConverter(),
+        new TeapoonConverter(),
+        new TemperatureConverter(),
+        new WeightOunceConverter()
+    );
+    final Instance<UsUnitConverter> usUnitConverters = mock(Instance.class);
+    when(usUnitConverters.stream()).then(args -> Stream.of(this.converters.toArray()));
+    this.conversion = new UsConversion();
+    this.conversion.setConverters(usUnitConverters);
   }
 
 
   @Test
   public void setUpTestTest() {
-    Assertions.assertFalse(this.conversion.getConverters().isEmpty());
+    Assertions.assertFalse(this.conversion.getConverters().stream().findAny().isEmpty());
   }
 
   @ParameterizedTest
