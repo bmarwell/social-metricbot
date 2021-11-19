@@ -16,6 +16,7 @@
 
 package io.github.bmhm.twitter.metricbot.web.listener;
 
+import io.github.bmhm.twitter.metricbot.common.TwitterConfig;
 import io.github.bmhm.twitter.metricbot.db.dao.TweetRepository;
 import java.time.Instant;
 import java.time.ZonedDateTime;
@@ -40,6 +41,9 @@ public class TweetCleanerListener implements ServletContextListener {
   @Inject
   private TweetRepository tweetRepository;
 
+  @Inject
+  private TwitterConfig twitterConfig;
+
   public TweetCleanerListener() {
     // injection
   }
@@ -48,7 +52,7 @@ public class TweetCleanerListener implements ServletContextListener {
   public void contextInitialized(final ServletContextEvent sce) {
     this.scheduler.scheduleWithFixedDelay(
         this::removeOldTweets,
-        5,
+        this.twitterConfig.getTweetFinderInitialDelay(),
         10 * 60,
         TimeUnit.SECONDS
     );

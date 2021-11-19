@@ -10,5 +10,14 @@
     </description>
     <jta-data-source>jdbc/metricbotjpadatasource</jta-data-source>
     <shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
+
+    <properties>
+      <property name="eclipselink.weaving" value="static"/>
+      <property name="eclipselink.logging.level" value="FINEST"/>
+      <property name="eclipselink.logging.level.sql" value="FINEST"/>
+      <property name="eclipselink.logging.parameters" value="true"/>
+      <property name="eclipselink.logging.level.cache" value="FINEST"/>
+
+    </properties>
   </persistence-unit>
 </persistence>

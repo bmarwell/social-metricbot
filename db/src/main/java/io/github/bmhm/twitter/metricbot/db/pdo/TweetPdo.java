@@ -29,6 +29,8 @@ public class TweetPdo {
 
   public static final long ID_NOT_SET = -1L;
 
+  public static final Instant TIME_NOT_SET = Instant.EPOCH;
+
   @Id
   @Column(name = "tweet_id")
   private long tweetId = ID_NOT_SET;
@@ -39,8 +41,8 @@ public class TweetPdo {
   @Column(name = "bot_response_id")
   private long botResponseId = ID_NOT_SET;
 
-  @Column(name = "RESPONSE_TIME", nullable = true)
-  private Instant responseTime;
+  @Column(name = "RESPONSE_TIME")
+  private Instant responseTime = TIME_NOT_SET;
 
   public TweetPdo() {
     // jpa requirement
@@ -48,8 +50,8 @@ public class TweetPdo {
 
   public TweetPdo(final long tweetId, final Instant tweetTime, final long botResponseId) {
     this.tweetId = tweetId;
-    this.botResponseId = botResponseId;
     this.tweetTime = tweetTime;
+    this.botResponseId = botResponseId;
   }
 
   public TweetPdo(final long id, final Instant tweetTime) {

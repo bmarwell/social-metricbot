@@ -49,6 +49,7 @@ public class TweetRepository {
       tweet.setBotResponseId(botResponseId);
       tweet.setResponseTime(responseTime);
       this.entityManager.merge(tweet);
+      this.entityManager.flush();
 
       return;
     }
@@ -67,10 +68,11 @@ public class TweetRepository {
 
   private TweetPdo save(final TweetPdo tweetPdo) {
     final EntityManager em = this.entityManager;
-    final TweetPdo merge = em.merge(tweetPdo);
-    em.detach(merge);
+    em.persist(tweetPdo);
+    em.flush();
+    em.detach(tweetPdo);
 
-    return merge;
+    return tweetPdo;
   }
 
   public List<TweetPdo> findByTweetTimeBefore(final Instant createdBefore) {
@@ -101,6 +103,8 @@ public class TweetRepository {
     final Query deleteQuery = em.createQuery(criteriaDeleteQuery);
     deleteQuery.setParameter(beforeParameter, createdBefore);
 
-    return deleteQuery.executeUpdate();
+    final int executeUpdate = deleteQuery.executeUpdate();
+    em.flush();
+    return executeUpdate;
   }
 }

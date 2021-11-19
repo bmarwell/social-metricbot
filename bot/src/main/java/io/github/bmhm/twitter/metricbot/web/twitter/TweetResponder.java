@@ -32,7 +32,7 @@ public class TweetResponder {
    * recent replies.
    */
   @Inject
-  private TweetRepository tweetRepository;
+  private Instance<TweetRepository> tweetRepository;
 
   @Inject
   private Twitter twitter;
@@ -50,8 +50,8 @@ public class TweetResponder {
     LOG.info("Checking response to event [{}].", event);
     final Status foundTweet = event.getFoundTweet();
 
-    final Optional<TweetPdo> alreadyRespondedToMention = this.self.get().findById(
-        foundTweet.getId());
+    final Optional<TweetPdo> alreadyRespondedToMention = this.self.get()
+        .findById(foundTweet.getId());
     if (alreadyRespondedToMention.isPresent()) {
       final TweetPdo tweetPdo = alreadyRespondedToMention.orElseThrow();
       LOG.info("Already responded: [{}]", tweetPdo);
@@ -275,11 +275,11 @@ public class TweetResponder {
 
   @Transactional
   public void save(final long foundTweetId, final long responseId, final Instant responseTime) {
-    this.tweetRepository.save(foundTweetId, responseId, responseTime);
+    this.tweetRepository.get().save(foundTweetId, responseId, responseTime);
   }
 
   @Transactional
   private Optional<TweetPdo> findById(final long id) {
-    return this.tweetRepository.findById(id);
+    return this.tweetRepository.get().findById(id);
   }
 }
