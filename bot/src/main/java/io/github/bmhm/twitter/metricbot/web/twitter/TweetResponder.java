@@ -80,9 +80,9 @@ public class TweetResponder {
       try {
         final Status status = this.twitter.updateStatus(statusUpdate);
         final long botResponseId = status.getId();
-        this.self.get().save(foundTweet.getId(), botResponseId, Instant.now());
+        this.self.get().upsert(foundTweet.getId(), botResponseId, Instant.now());
       } catch (final TwitterException twitterException) {
-        this.self.get().save(foundTweet.getId(), -1, Instant.now());
+        this.self.get().upsert(foundTweet.getId(), -1, Instant.now());
       }
 
       return;
@@ -97,7 +97,7 @@ public class TweetResponder {
       final TweetPdo existingResponse = optExistingResponse.orElseThrow();
       LOG.info("Already responded: [{}].", existingResponse);
       final long botResponseId = existingResponse.getBotResponseId();
-      this.self.get().save(foundTweet.getId(), botResponseId, Instant.now());
+      this.self.get().upsert(foundTweet.getId(), botResponseId, Instant.now());
 
       // reply to foundTweet with Link to botResponseId
 
@@ -143,7 +143,7 @@ public class TweetResponder {
       final Status response = this.twitter.updateStatus(statusUpdate);
       LOG.info("Response sent: [{}] => [{}].", response.getId(), response.getText());
       // add to repository so we do not reply again to this.
-      this.self.get().save(
+      this.self.get().upsert(
           statusWithUnits.getId(),
           response.getId(),
           response.getCreatedAt().toInstant()
@@ -162,7 +162,7 @@ public class TweetResponder {
                 .inReplyToStatusId(foundTweet.getId());
         final Status hintToTranslationResponse = this.twitter.updateStatus(hintToTranslation);
         // also add the actual status with units, so we do not get mentioned multiple times.
-        this.self.get().save(
+        this.self.get().upsert(
             foundTweet.getId(),
             hintToTranslationResponse.getId(),
             hintToTranslationResponse.getCreatedAt().toInstant()
@@ -170,8 +170,10 @@ public class TweetResponder {
       }
     } catch (final TwitterException twitterException) {
       LOG.error("Unable to send reply: [{}].", statusUpdate, twitterException);
-      this.self.get().save(foundTweet.getId(), -1, Instant.now());
-      this.self.get().save(statusWithUnits.getId(), -1, Instant.now());
+      this.self.get().upsert(foundTweet.getId(), -1, Instant.now());
+      if (statusWithUnits.getId() != foundTweet.getId()) {
+        this.self.get().upsert(statusWithUnits.getId(), -1, Instant.now());
+      }
     }
   }
 
@@ -189,10 +191,10 @@ public class TweetResponder {
       LOG.info("Sending status response to [{}]: [{}].", statusUpdate.getInReplyToStatusId(), statusUpdate.getStatus());
       final Status response = this.twitter.updateStatus(statusUpdate);
       LOG.info("Response sent: [{}] => [{}].", response.getId(), response.getText());
-      this.self.get().save(foundTweet.getId(), response.getId(), Instant.now());
+      this.self.get().upsert(foundTweet.getId(), response.getId(), Instant.now());
     } catch (final TwitterException twitterException) {
       LOG.error("Unable to send reply: [{}].", statusUpdate, twitterException);
-      this.self.get().save(foundTweet.getId(), -1, Instant.now());
+      this.self.get().upsert(foundTweet.getId(), -1, Instant.now());
     }
   }
 
@@ -274,8 +276,8 @@ public class TweetResponder {
   }
 
   @Transactional
-  public void save(final long foundTweetId, final long responseId, final Instant responseTime) {
-    this.tweetRepository.get().save(foundTweetId, responseId, responseTime);
+  public void upsert(final long foundTweetId, final long responseId, final Instant responseTime) {
+    this.tweetRepository.get().upsert(foundTweetId, responseId, responseTime);
   }
 
   @Transactional

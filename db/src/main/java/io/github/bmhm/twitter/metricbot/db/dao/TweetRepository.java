@@ -42,31 +42,26 @@ public class TweetRepository {
     return Optional.ofNullable(tweetPdo);
   }
 
-  public void update(final Long id, final long botResponseId, final Instant responseTime) {
-    final Optional<TweetPdo> existingTweet = findById(id);
-    if (existingTweet.isPresent()) {
-      final TweetPdo tweet = existingTweet.orElseThrow();
-      tweet.setBotResponseId(botResponseId);
-      tweet.setResponseTime(responseTime);
-      this.entityManager.merge(tweet);
+  public TweetPdo upsert(final Long tweetId, final long botResponseId, final Instant responseTime) {
+    final Optional<TweetPdo> byId = Optional.ofNullable(
+        this.entityManager.find(TweetPdo.class, tweetId));
+    if (byId.isPresent()) {
+      final TweetPdo foundTweet = byId.orElseThrow();
+      foundTweet.setBotResponseId(botResponseId);
+      foundTweet.setResponseTime(Instant.now());
       this.entityManager.flush();
+      this.entityManager.detach(foundTweet);
 
-      return;
+      return foundTweet;
     }
 
-    final TweetPdo tweetPdo = new TweetPdo(id, Instant.now(), botResponseId);
-    tweetPdo.setResponseTime(responseTime);
+    // new
+    final TweetPdo tweetPdo = new TweetPdo(tweetId, responseTime, botResponseId);
 
-    save(tweetPdo);
+    return saveNew(tweetPdo);
   }
 
-  public TweetPdo save(final Long id, final long botResponseId, final Instant responseTime) {
-    final TweetPdo tweetPdo = new TweetPdo(id, responseTime, botResponseId);
-
-    return save(tweetPdo);
-  }
-
-  private TweetPdo save(final TweetPdo tweetPdo) {
+  private TweetPdo saveNew(final TweetPdo tweetPdo) {
     final EntityManager em = this.entityManager;
     em.persist(tweetPdo);
     em.flush();

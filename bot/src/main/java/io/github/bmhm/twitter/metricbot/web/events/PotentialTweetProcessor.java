@@ -51,12 +51,12 @@ public class PotentialTweetProcessor {
     // only reply to mentions in the last 10 minutes
     if (createdAt.isBefore(Instant.now().minusSeconds(60 * 10L))) {
       LOG.info("Skipping tweet [{}] because it is too old: [{}].", foundTweet.getId(), createdAt);
-      this.tweetRepository.save(foundTweet.getId(), -1, Instant.now());
+      this.tweetRepository.upsert(foundTweet.getId(), -1, Instant.now());
     }
 
     if (containsBlockedWord(foundTweet)) {
       LOG.debug("Skipping tweet [{}] because it is from a blocked user.", foundTweet.getId());
-      this.tweetRepository.save(foundTweet.getId(), -1, Instant.now());
+      this.tweetRepository.upsert(foundTweet.getId(), -1, Instant.now());
 
       return;
     }
