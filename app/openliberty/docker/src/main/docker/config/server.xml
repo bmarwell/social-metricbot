@@ -18,7 +18,7 @@
     protocolVersion="http/2"
   >
     <compression
-      serverPreferredAlgorithm="deflate|gzip|x-gzip|zlib|identity|none"
+      serverPreferredAlgorithm="gzip"
     >
       <types>+application/*</types>
     </compression>
