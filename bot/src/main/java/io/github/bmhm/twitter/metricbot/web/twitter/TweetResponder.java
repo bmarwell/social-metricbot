@@ -54,7 +54,7 @@ public class TweetResponder {
         .findById(foundTweet.getId());
     if (alreadyRespondedToMention.isPresent()) {
       final TweetPdo tweetPdo = alreadyRespondedToMention.orElseThrow();
-      LOG.info("Already responded: [{}]", tweetPdo);
+      LOG.debug("Already responded: [{}]", tweetPdo);
 
       return;
     }
@@ -69,21 +69,8 @@ public class TweetResponder {
     // either this tweet, or quoted or retweeted or reply to (in this order).
     final Optional<Status> optStatusWithUnits = getStatusWithUnits(foundTweet);
     if (optStatusWithUnits.isEmpty()) {
-      LOG.info("No units found.");
-
-      // reply with sorry
-      final StatusUpdate statusUpdate =
-          new StatusUpdate("@" + foundTweet.getUser().getScreenName() + "\n"
-              + "Sorry, I did not find any units in either your status nor in a quoted, retweeted or mentioned status.")
-              .inReplyToStatusId(foundTweet.getId());
-
-      try {
-        final Status status = this.twitter.updateStatus(statusUpdate);
-        final long botResponseId = status.getId();
-        this.self.get().upsert(foundTweet.getId(), botResponseId, Instant.now());
-      } catch (final TwitterException twitterException) {
-        this.self.get().upsert(foundTweet.getId(), -1, Instant.now());
-      }
+      LOG.debug("No units found.");
+      this.self.get().upsert(foundTweet.getId(), -1, Instant.now());
 
       return;
     }
@@ -95,7 +82,7 @@ public class TweetResponder {
 
     if (optExistingResponse.isPresent()) {
       final TweetPdo existingResponse = optExistingResponse.orElseThrow();
-      LOG.info("Already responded: [{}].", existingResponse);
+      LOG.debug("Already responded: [{}].", existingResponse);
       final long botResponseId = existingResponse.getBotResponseId();
       this.self.get().upsert(foundTweet.getId(), botResponseId, Instant.now());
 
