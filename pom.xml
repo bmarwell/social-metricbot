@@ -39,7 +39,7 @@
     <dependency.jakarta.persistence-api.version>2.2.3</dependency.jakarta.persistence-api.version>
     <dependency.jakarta.transaction-api.version>2.0.0</dependency.jakarta.transaction-api.version>
     <dependency.microprofile.config-api.version>2.0</dependency.microprofile.config-api.version>
-    <dependency.jakarta.servlet-api.version>4.0.4</dependency.jakarta.servlet-api.version>
+    <dependency.jakarta.servlet-api.version>6.0.0</dependency.jakarta.servlet-api.version>
 
     <!-- 3rd party -->
     <dependency.twitter4j.version>4.0.7</dependency.twitter4j.version>
