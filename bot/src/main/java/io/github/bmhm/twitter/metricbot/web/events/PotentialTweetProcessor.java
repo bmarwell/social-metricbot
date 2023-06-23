@@ -1,18 +1,19 @@
 package io.github.bmhm.twitter.metricbot.web.events;
 
-import static java.util.Arrays.asList;
-
 import io.github.bmhm.twitter.metricbot.db.dao.TweetRepository;
-import java.time.Instant;
-import java.util.List;
-import java.util.Locale;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import twitter4j.Status;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import twitter4j.Status;
+import java.time.Instant;
+import java.util.List;
+import java.util.Locale;
+
+import static java.util.Arrays.asList;
 
 @ApplicationScoped
 public class PotentialTweetProcessor {

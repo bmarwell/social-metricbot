@@ -1,7 +1,8 @@
 package io.github.bmhm.twitter.metricbot.web.events;
 
-import java.util.StringJoiner;
 import twitter4j.Status;
+
+import java.util.StringJoiner;
 
 public class MentionEvent {
 

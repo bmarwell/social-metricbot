@@ -2,23 +2,19 @@ package io.github.bmhm.twitter.metricbot.web.twitter;
 
 import io.github.bmhm.twitter.metricbot.common.TwitterConfig;
 import io.github.bmhm.twitter.metricbot.web.events.MentionEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import twitter4j.*;
+
+import javax.enterprise.context.Dependent;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
-import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import twitter4j.RateLimitStatus;
-import twitter4j.ResponseList;
-import twitter4j.Status;
-import twitter4j.TwitterAdapter;
-import twitter4j.TwitterException;
-import twitter4j.TwitterMethod;
 
 @Dependent
 public class MentionEventHandler extends TwitterAdapter implements Serializable {
