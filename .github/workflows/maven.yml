@@ -24,6 +24,17 @@ jobs:
         java-version: 17
         distribution: semeru
 
+    - name: Check whether you actually executed Maven...
+      shell: bash
+      run: |
+        ./mvnw \
+          --show-version \
+          --errors \
+          --batch-mode \
+          --no-transfer-progress \
+          spotless:check
+          -DtrimStackTrace=false 
+
     - name: Build application with Maven
       shell: bash
       run: |
