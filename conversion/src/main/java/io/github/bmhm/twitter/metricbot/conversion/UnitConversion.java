@@ -22,12 +22,11 @@ import org.immutables.value.Value;
 @Value.Style(stagedBuilder = true, jdkOnly = true, allMandatoryParameters = true)
 public interface UnitConversion {
 
-  String getInputAmount();
+    String getInputAmount();
 
-  String getInputUnit();
+    String getInputUnit();
 
-  String getMetricAmount();
+    String getMetricAmount();
 
-  String getMetricUnit();
-
+    String getMetricUnit();
 }

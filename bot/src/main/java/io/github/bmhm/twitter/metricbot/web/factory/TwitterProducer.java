@@ -39,52 +39,53 @@ import twitter4j.conf.ConfigurationBuilder;
 @ApplicationScoped
 public class TwitterProducer {
 
-  private static final Logger LOG = LoggerFactory.getLogger(TwitterProducer.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TwitterProducer.class);
 
-  @Inject
-  private TwitterConfig twitterAttributes;
+    @Inject
+    private TwitterConfig twitterAttributes;
 
-  @Produces
-  @ApplicationScoped
-  public Twitter getTwitter() {
-    if (this.twitterAttributes == null || this.twitterAttributes.getConsumerKey() == null
-        || this.twitterAttributes.getAccessToken() == null) {
-      throw new IllegalStateException("not configured");
+    @Produces
+    @ApplicationScoped
+    public Twitter getTwitter() {
+        if (this.twitterAttributes == null
+                || this.twitterAttributes.getConsumerKey() == null
+                || this.twitterAttributes.getAccessToken() == null) {
+            throw new IllegalStateException("not configured");
+        }
+
+        final ConfigurationBuilder cb = new ConfigurationBuilder()
+                .setDebugEnabled(this.twitterAttributes.isDebug())
+                .setOAuthConsumerKey(this.twitterAttributes.getConsumerKey())
+                .setOAuthConsumerSecret(this.twitterAttributes.getConsumerSecret())
+                .setOAuthAccessToken(this.twitterAttributes.getAccessToken())
+                .setOAuthAccessTokenSecret(this.twitterAttributes.getAccessTokenSecret());
+        final twitter4j.TwitterFactory tf = new twitter4j.TwitterFactory(cb.build());
+
+        return tf.getInstance();
     }
 
-    final ConfigurationBuilder cb = new ConfigurationBuilder()
-        .setDebugEnabled(this.twitterAttributes.isDebug())
-        .setOAuthConsumerKey(this.twitterAttributes.getConsumerKey())
-        .setOAuthConsumerSecret(this.twitterAttributes.getConsumerSecret())
-        .setOAuthAccessToken(this.twitterAttributes.getAccessToken())
-        .setOAuthAccessTokenSecret(this.twitterAttributes.getAccessTokenSecret());
-    final twitter4j.TwitterFactory tf = new twitter4j.TwitterFactory(cb.build());
+    @Produces
+    @ApplicationScoped
+    public AsyncTwitterFactory getAsyncTwitter() {
+        if (this.twitterAttributes == null
+                || this.twitterAttributes.getConsumerKey() == null
+                || this.twitterAttributes.getAccessToken() == null) {
+            throw new IllegalStateException("not configured");
+        }
 
-    return tf.getInstance();
-  }
+        final ConfigurationBuilder cb = new ConfigurationBuilder()
+                .setDebugEnabled(this.twitterAttributes.isDebug())
+                .setOAuthConsumerKey(this.twitterAttributes.getConsumerKey())
+                .setOAuthConsumerSecret(this.twitterAttributes.getConsumerSecret())
+                .setOAuthAccessToken(this.twitterAttributes.getAccessToken())
+                .setOAuthAccessTokenSecret(this.twitterAttributes.getAccessTokenSecret());
 
-  @Produces
-  @ApplicationScoped
-  public AsyncTwitterFactory getAsyncTwitter() {
-    if (this.twitterAttributes == null || this.twitterAttributes.getConsumerKey() == null
-        || this.twitterAttributes.getAccessToken() == null) {
-      throw new IllegalStateException("not configured");
+        return new AsyncTwitterFactory(cb.build());
     }
 
-    final ConfigurationBuilder cb = new ConfigurationBuilder()
-        .setDebugEnabled(this.twitterAttributes.isDebug())
-        .setOAuthConsumerKey(this.twitterAttributes.getConsumerKey())
-        .setOAuthConsumerSecret(this.twitterAttributes.getConsumerSecret())
-        .setOAuthAccessToken(this.twitterAttributes.getAccessToken())
-        .setOAuthAccessTokenSecret(this.twitterAttributes.getAccessTokenSecret());
-
-    return new AsyncTwitterFactory(cb.build());
-  }
-
-  @ApplicationScoped
-  @Named("recentMatches")
-  public Map<Long, Instant> recentMatches() {
-    return new ConcurrentHashMap<>();
-  }
-
+    @ApplicationScoped
+    @Named("recentMatches")
+    public Map<Long, Instant> recentMatches() {
+        return new ConcurrentHashMap<>();
+    }
 }

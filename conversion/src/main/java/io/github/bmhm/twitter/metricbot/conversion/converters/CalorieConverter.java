@@ -19,62 +19,59 @@ import org.slf4j.LoggerFactory;
 @Dependent
 public class CalorieConverter implements UsUnitConverter {
 
-  private static final long serialVersionUID = 4539101040460638085L;
+    private static final long serialVersionUID = 4539101040460638085L;
 
-  private static final Logger LOG = LoggerFactory.getLogger(CalorieConverter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CalorieConverter.class);
 
-  private static final Pattern PATTERN_CALORIES = Pattern.compile(
-      "\\b((?:[0-9]+,)?[0-9]+)\\s?cal(?:s|orie(?:s)?)?\\b",
-      Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
+    private static final Pattern PATTERN_CALORIES = Pattern.compile(
+            "\\b((?:[0-9]+,)?[0-9]+)\\s?cal(?:s|orie(?:s)?)?\\b", Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
 
-  private static final double KILOJOULE_PER_CALORIE = 4.184d;
+    private static final double KILOJOULE_PER_CALORIE = 4.184d;
 
-  private static final NumberFormat NUMBER_FORMAT_CALS = DecimalFormats.noFractionDigits();
+    private static final NumberFormat NUMBER_FORMAT_CALS = DecimalFormats.noFractionDigits();
 
-
-  @Override
-  public List<String> getSearchTerms() {
-    return emptyList();
-  }
-
-  @Override
-  public boolean matches(final String text) {
-    return PATTERN_CALORIES.matcher(text).find();
-  }
-
-  @Override
-  public Collection<UnitConversion> getConvertedUnits(final String text) {
-    if (text == null) {
-      return emptyList();
+    @Override
+    public List<String> getSearchTerms() {
+        return emptyList();
     }
 
-    if (text.isEmpty()) {
-      return emptyList();
+    @Override
+    public boolean matches(final String text) {
+        return PATTERN_CALORIES.matcher(text).find();
     }
 
-    final List<UnitConversion> convertedUnits = new ArrayList<>();
+    @Override
+    public Collection<UnitConversion> getConvertedUnits(final String text) {
+        if (text == null) {
+            return emptyList();
+        }
 
-    final Matcher matcher = PATTERN_CALORIES.matcher(text);
-    while (matcher.find()) {
-      try {
-        final String cals = matcher.group(1).replaceAll(",", "");
-        final double calsDecimal = Double.parseDouble(cals);
-        final double kj = calsDecimal * KILOJOULE_PER_CALORIE;
+        if (text.isEmpty()) {
+            return emptyList();
+        }
 
-        final ImmutableUnitConversion conversion = ImmutableUnitConversion.builder()
-            .inputAmount(NUMBER_FORMAT_CALS.format(calsDecimal))
-            .inputUnit("cal")
-            .metricAmount(NUMBER_FORMAT_CALS.format(kj))
-            .metricUnit("kJ")
-            .build();
+        final List<UnitConversion> convertedUnits = new ArrayList<>();
 
-        convertedUnits.add(conversion);
-      } catch (final NumberFormatException | ArithmeticException nfe) {
-        LOG.error("Unable to convert text[{}].", text);
-      }
+        final Matcher matcher = PATTERN_CALORIES.matcher(text);
+        while (matcher.find()) {
+            try {
+                final String cals = matcher.group(1).replaceAll(",", "");
+                final double calsDecimal = Double.parseDouble(cals);
+                final double kj = calsDecimal * KILOJOULE_PER_CALORIE;
 
+                final ImmutableUnitConversion conversion = ImmutableUnitConversion.builder()
+                        .inputAmount(NUMBER_FORMAT_CALS.format(calsDecimal))
+                        .inputUnit("cal")
+                        .metricAmount(NUMBER_FORMAT_CALS.format(kj))
+                        .metricUnit("kJ")
+                        .build();
+
+                convertedUnits.add(conversion);
+            } catch (final NumberFormatException | ArithmeticException nfe) {
+                LOG.error("Unable to convert text[{}].", text);
+            }
+        }
+
+        return unmodifiableList(convertedUnits);
     }
-
-    return unmodifiableList(convertedUnits);
-  }
 }

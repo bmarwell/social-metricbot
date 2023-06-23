@@ -34,54 +34,53 @@ import twitter4j.AsyncTwitter;
 @WebListener
 public class TweetMentionListener implements ServletContextListener {
 
-  private static final Logger LOG = LoggerFactory.getLogger(TweetMentionListener.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TweetMentionListener.class);
 
-  @Resource
-  private ManagedScheduledExecutorService scheduler;
+    @Resource
+    private ManagedScheduledExecutorService scheduler;
 
-  @Inject
-  private TwitterProducer twitterProducer;
+    @Inject
+    private TwitterProducer twitterProducer;
 
-  @Inject
-  private TwitterConfig twitterConfig;
+    @Inject
+    private TwitterConfig twitterConfig;
 
-  @Inject
-  private MentionEventHandler mentionEventHandler;
+    @Inject
+    private MentionEventHandler mentionEventHandler;
 
-  private AsyncTwitter asyncTwitter;
+    private AsyncTwitter asyncTwitter;
 
-  public TweetMentionListener() {
-    // injection constructor
-  }
+    public TweetMentionListener() {
+        // injection constructor
+    }
 
-  @Override
-  public void contextInitialized(final ServletContextEvent sce) {
-    ServletContextListener.super.contextInitialized(sce);
-    LOG.info("init: [{}].", this);
-    this.asyncTwitter = this.twitterProducer.getAsyncTwitter().getInstance();
-    this.asyncTwitter.addListener(this.mentionEventHandler);
+    @Override
+    public void contextInitialized(final ServletContextEvent sce) {
+        ServletContextListener.super.contextInitialized(sce);
+        LOG.info("init: [{}].", this);
+        this.asyncTwitter = this.twitterProducer.getAsyncTwitter().getInstance();
+        this.asyncTwitter.addListener(this.mentionEventHandler);
 
-    // set up scheduler
-    this.scheduler.scheduleWithFixedDelay(
-        this::retrieveMentions,
-        this.twitterConfig.getTweetFinderInitialDelay(),
-        this.twitterConfig.getTweetFinderRetrieveRate(),
-        TimeUnit.SECONDS
-    );
-  }
+        // set up scheduler
+        this.scheduler.scheduleWithFixedDelay(
+                this::retrieveMentions,
+                this.twitterConfig.getTweetFinderInitialDelay(),
+                this.twitterConfig.getTweetFinderRetrieveRate(),
+                TimeUnit.SECONDS);
+    }
 
-  protected void retrieveMentions() {
-    this.asyncTwitter.getMentions();
-  }
+    protected void retrieveMentions() {
+        this.asyncTwitter.getMentions();
+    }
 
-  @Override
-  public String toString() {
-    return new StringJoiner(", ", TweetMentionListener.class.getSimpleName() + "[", "]")
-        .add("scheduler=" + this.scheduler)
-        .add("twitterProducer=" + this.twitterProducer)
-        .add("twitterConfig=" + this.twitterConfig)
-        .add("mentionEventHandler=" + this.mentionEventHandler)
-        .add("asyncTwitter=" + this.asyncTwitter)
-        .toString();
-  }
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", TweetMentionListener.class.getSimpleName() + "[", "]")
+                .add("scheduler=" + this.scheduler)
+                .add("twitterProducer=" + this.twitterProducer)
+                .add("twitterConfig=" + this.twitterConfig)
+                .add("mentionEventHandler=" + this.mentionEventHandler)
+                .add("asyncTwitter=" + this.asyncTwitter)
+                .toString();
+    }
 }

@@ -32,71 +32,66 @@ import javax.inject.Inject;
 @Dependent
 public class UsConversion {
 
-  private Instance<UsUnitConverter> converters;
+    private Instance<UsUnitConverter> converters;
 
-  public UsConversion() {
-    // injection
-  }
+    public UsConversion() {
+        // injection
+    }
 
-  @Inject
-  public UsConversion(final @Any Instance<UsUnitConverter> converters) {
-    this.converters = converters;
-  }
+    @Inject
+    public UsConversion(final @Any Instance<UsUnitConverter> converters) {
+        this.converters = converters;
+    }
 
-  public String returnConverted(final String input) {
-    return returnConverted(input, ", ");
-  }
+    public String returnConverted(final String input) {
+        return returnConverted(input, ", ");
+    }
 
-  public String returnConverted(final String input, final String separator) {
-    final LinkedHashSet<UnitConversion> outputUnits = this.converters.stream()
-        .filter(converter -> converter.matches(input))
-        .map(converter -> converter.getConvertedUnits(input))
-        .flatMap(Collection::stream)
-        .collect(Collectors.toCollection(LinkedHashSet::new));
+    public String returnConverted(final String input, final String separator) {
+        final LinkedHashSet<UnitConversion> outputUnits = this.converters.stream()
+                .filter(converter -> converter.matches(input))
+                .map(converter -> converter.getConvertedUnits(input))
+                .flatMap(Collection::stream)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
 
-    final List<String> collect = outputUnits.stream()
-        .map(conv -> String.format("%s%s=%s%s",
-            conv.getInputAmount(), conv.getInputUnit(),
-            conv.getMetricAmount(), conv.getMetricUnit()))
-        .distinct()
-        .collect(Collectors.toList());
+        final List<String> collect = outputUnits.stream()
+                .map(conv -> String.format(
+                        "%s%s=%s%s",
+                        conv.getInputAmount(), conv.getInputUnit(), conv.getMetricAmount(), conv.getMetricUnit()))
+                .distinct()
+                .collect(Collectors.toList());
 
-    return String.join(separator, collect);
-  }
+        return String.join(separator, collect);
+    }
 
+    public boolean containsUsUnits(final String text) {
+        return this.converters.stream().anyMatch(converters -> converters.matches(text));
+    }
 
-  public boolean containsUsUnits(final String text) {
-    return this.converters.stream()
-        .anyMatch(converters -> converters.matches(text));
-  }
+    public String getSerchTerms() {
+        return this.converters.stream().map(this::toOrSeparatedQuotedTerms).collect(joining(" OR "));
+    }
 
-  public String getSerchTerms() {
-    return this.converters.stream()
-        .map(this::toOrSeparatedQuotedTerms)
-        .collect(joining(" OR "));
-  }
+    private String toOrSeparatedQuotedTerms(final UsUnitConverter usUnitConverter) {
+        final String orJoined = usUnitConverter.getSearchTerms().stream()
+                .map(term -> String.format("\"%s\"", term))
+                .collect(joining(" OR "));
 
-  private String toOrSeparatedQuotedTerms(final UsUnitConverter usUnitConverter) {
-    final String orJoined = usUnitConverter.getSearchTerms().stream()
-        .map(term -> String.format("\"%s\"", term))
-        .collect(joining(" OR "));
+        return String.format("(%s)", orJoined);
+    }
 
-    return String.format("(%s)", orJoined);
-  }
+    public Instance<UsUnitConverter> getConverters() {
+        return this.converters;
+    }
 
-  public Instance<UsUnitConverter> getConverters() {
-    return this.converters;
-  }
+    public void setConverters(final Instance<UsUnitConverter> converters) {
+        this.converters = converters;
+    }
 
-  public void setConverters(
-      final Instance<UsUnitConverter> converters) {
-    this.converters = converters;
-  }
-
-  @Override
-  public String toString() {
-    return new StringJoiner(", ", UsConversion.class.getSimpleName() + "[", "]")
-        .add("converters=" + this.converters)
-        .toString();
-  }
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", UsConversion.class.getSimpleName() + "[", "]")
+                .add("converters=" + this.converters)
+                .toString();
+    }
 }

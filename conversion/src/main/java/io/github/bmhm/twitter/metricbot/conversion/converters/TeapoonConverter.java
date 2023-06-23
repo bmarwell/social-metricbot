@@ -21,91 +21,90 @@ import org.slf4j.LoggerFactory;
 @Dependent
 public class TeapoonConverter implements UsUnitConverter {
 
-  private static final long serialVersionUID = -3692749135515082850L;
+    private static final long serialVersionUID = -3692749135515082850L;
 
-  private static final Logger LOG = LoggerFactory.getLogger(TeapoonConverter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TeapoonConverter.class);
 
-  private static final Pattern PATTERN_TSP = Pattern.compile(
-      "\\b((?:[0-9]+,)?(?:[0-9]+\\.)?[0-9/]+)\\s?(?:tsp|teaspoon)(?:s)?\\b",
-      Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
+    private static final Pattern PATTERN_TSP = Pattern.compile(
+            "\\b((?:[0-9]+,)?(?:[0-9]+\\.)?[0-9/]+)\\s?(?:tsp|teaspoon)(?:s)?\\b",
+            Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
 
-  private static final Pattern PATTERN_TSP_FRAC = Pattern.compile(
-      "([0-9\u00BC-\u00BE\u2150-\u215E]+)\\s?(?:tsp|teaspoon)(?:s)?\\b",
-      Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
+    private static final Pattern PATTERN_TSP_FRAC = Pattern.compile(
+            "([0-9\u00BC-\u00BE\u2150-\u215E]+)\\s?(?:tsp|teaspoon)(?:s)?\\b",
+            Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
 
+    private static final double GRAMS_PER_TSP = 4.2;
 
-  private static final double GRAMS_PER_TSP = 4.2;
+    private static final NumberFormat TBSP_NUMBER_FORMAT = DecimalFormats.atMostTwoFractionDigits();
+    private static final NumberFormat GRAM_NUMBER_FORMAT = DecimalFormats.noFractionDigits();
 
-  private static final NumberFormat TBSP_NUMBER_FORMAT = DecimalFormats.atMostTwoFractionDigits();
-  private static final NumberFormat GRAM_NUMBER_FORMAT = DecimalFormats.noFractionDigits();
-
-  @Override
-  public List<String> getSearchTerms() {
-    return singletonList("tsp");
-  }
-
-  @Override
-  public boolean matches(final String text) {
-    if (null == text || text.isEmpty()) {
-      return false;
+    @Override
+    public List<String> getSearchTerms() {
+        return singletonList("tsp");
     }
 
-    return PATTERN_TSP.matcher(text).find()
-        || PATTERN_TSP_FRAC.matcher(text).find();
-  }
+    @Override
+    public boolean matches(final String text) {
+        if (null == text || text.isEmpty()) {
+            return false;
+        }
 
-  @Override
-  public Collection<UnitConversion> getConvertedUnits(final String text) {
-    if (text == null || text.isEmpty()) {
-      return emptyList();
+        return PATTERN_TSP.matcher(text).find()
+                || PATTERN_TSP_FRAC.matcher(text).find();
     }
 
-    final List<UnitConversion> conversions = new ArrayList<>();
+    @Override
+    public Collection<UnitConversion> getConvertedUnits(final String text) {
+        if (text == null || text.isEmpty()) {
+            return emptyList();
+        }
 
-    final Matcher matcher = PATTERN_TSP.matcher(text);
-    while (matcher.find()) {
-      try {
-        final String tbspText = matcher.group(1).replaceAll(",", "");
-        final String tbspTextDecimal = FractionUtil.replaceFractions(tbspText);
-        final double tbspDecimal = Double.parseDouble(tbspTextDecimal);
+        final List<UnitConversion> conversions = new ArrayList<>();
 
-        final double grams = tbspDecimal * GRAMS_PER_TSP;
+        final Matcher matcher = PATTERN_TSP.matcher(text);
+        while (matcher.find()) {
+            try {
+                final String tbspText = matcher.group(1).replaceAll(",", "");
+                final String tbspTextDecimal = FractionUtil.replaceFractions(tbspText);
+                final double tbspDecimal = Double.parseDouble(tbspTextDecimal);
 
-        final ImmutableUnitConversion conversion = ImmutableUnitConversion.builder()
-            .inputAmount(TBSP_NUMBER_FORMAT.format(tbspDecimal))
-            .inputUnit("tsp")
-            .metricAmount(GRAM_NUMBER_FORMAT.format(grams))
-            .metricUnit("g")
-            .build();
+                final double grams = tbspDecimal * GRAMS_PER_TSP;
 
-        conversions.add(conversion);
-      } catch (final NumberFormatException | ArithmeticException nfe) {
-        LOG.error("Unable to parse: [{}].", text, nfe);
-      }
+                final ImmutableUnitConversion conversion = ImmutableUnitConversion.builder()
+                        .inputAmount(TBSP_NUMBER_FORMAT.format(tbspDecimal))
+                        .inputUnit("tsp")
+                        .metricAmount(GRAM_NUMBER_FORMAT.format(grams))
+                        .metricUnit("g")
+                        .build();
+
+                conversions.add(conversion);
+            } catch (final NumberFormatException | ArithmeticException nfe) {
+                LOG.error("Unable to parse: [{}].", text, nfe);
+            }
+        }
+
+        final Matcher matcherFrac = PATTERN_TSP_FRAC.matcher(text);
+        while (matcherFrac.find()) {
+            try {
+                final String tbspText = matcherFrac.group(1).replaceAll(",", "");
+                final String tbspTextDecimal = FractionUtil.replaceFractions(tbspText);
+                final double tbspDecimal = Double.parseDouble(tbspTextDecimal);
+
+                final double grams = tbspDecimal * GRAMS_PER_TSP;
+
+                final ImmutableUnitConversion conversion = ImmutableUnitConversion.builder()
+                        .inputAmount(TBSP_NUMBER_FORMAT.format(tbspDecimal))
+                        .inputUnit("tsp")
+                        .metricAmount(GRAM_NUMBER_FORMAT.format(grams))
+                        .metricUnit("g")
+                        .build();
+
+                conversions.add(conversion);
+            } catch (final NumberFormatException | ArithmeticException nfe) {
+                LOG.error("Unable to parse: [{}].", text, nfe);
+            }
+        }
+
+        return unmodifiableList(conversions);
     }
-
-    final Matcher matcherFrac = PATTERN_TSP_FRAC.matcher(text);
-    while (matcherFrac.find()) {
-      try {
-        final String tbspText = matcherFrac.group(1).replaceAll(",", "");
-        final String tbspTextDecimal = FractionUtil.replaceFractions(tbspText);
-        final double tbspDecimal = Double.parseDouble(tbspTextDecimal);
-
-        final double grams = tbspDecimal * GRAMS_PER_TSP;
-
-        final ImmutableUnitConversion conversion = ImmutableUnitConversion.builder()
-            .inputAmount(TBSP_NUMBER_FORMAT.format(tbspDecimal))
-            .inputUnit("tsp")
-            .metricAmount(GRAM_NUMBER_FORMAT.format(grams))
-            .metricUnit("g")
-            .build();
-
-        conversions.add(conversion);
-      } catch (final NumberFormatException | ArithmeticException nfe) {
-        LOG.error("Unable to parse: [{}].", text, nfe);
-      }
-    }
-
-    return unmodifiableList(conversions);
-  }
 }

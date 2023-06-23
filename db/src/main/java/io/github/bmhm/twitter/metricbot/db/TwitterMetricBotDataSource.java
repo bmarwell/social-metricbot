@@ -12,31 +12,29 @@ import org.slf4j.LoggerFactory;
 @Dependent
 public class TwitterMetricBotDataSource {
 
-  private static final Logger LOG = LoggerFactory.getLogger(TwitterMetricBotDataSource.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TwitterMetricBotDataSource.class);
 
-  private final AtomicBoolean initialized = new AtomicBoolean();
+    private final AtomicBoolean initialized = new AtomicBoolean();
 
-  @Resource(name = "jdbc/metricbotjpadatasource")
-  private DataSource ds1;
+    @Resource(name = "jdbc/metricbotjpadatasource")
+    private DataSource ds1;
 
-  public void initialize() {
-    if (this.initialized.get()) {
-      return;
+    public void initialize() {
+        if (this.initialized.get()) {
+            return;
+        }
+
+        try {
+            final Flyway flyway = Flyway.configure()
+                    .dataSource(this.ds1)
+                    .locations("classpath:/io/github/bmhm/twitter/metricbot/db/databasemigrations")
+                    // .callbacks("io.github.bmhm.twitter.metricbot.db.callbacks")
+                    .load();
+
+            flyway.migrate();
+            this.initialized.compareAndSet(false, true);
+        } catch (final FlywayException flywayException) {
+            LOG.error("Unable to run flyway migration.", flywayException);
+        }
     }
-
-    try {
-      final Flyway flyway = Flyway.configure()
-          .dataSource(this.ds1)
-          .locations("classpath:/io/github/bmhm/twitter/metricbot/db/databasemigrations")
-          // .callbacks("io.github.bmhm.twitter.metricbot.db.callbacks")
-          .load();
-
-      flyway.migrate();
-      this.initialized.compareAndSet(false, true);
-    } catch (final FlywayException flywayException) {
-      LOG.error("Unable to run flyway migration.", flywayException);
-    }
-
-  }
-
 }

@@ -27,25 +27,25 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 public class WeightOuncesConversionTest {
 
-  private final WeightOunceConverter mc = new WeightOunceConverter();
+    private final WeightOunceConverter mc = new WeightOunceConverter();
 
-  static Stream<Arguments> tweetsAndUnits() {
-    return Stream.of(
-        Arguments.of("then 6-7 ounces per day", "7.0", "198.4")
-    );
-  }
+    static Stream<Arguments> tweetsAndUnits() {
+        return Stream.of(Arguments.of("then 6-7 ounces per day", "7.0", "198.4"));
+    }
 
-  @ParameterizedTest
-  @MethodSource("tweetsAndUnits")
-  public void testTweet(final String tweet, final String expectedFinding, final String expectedOutput) {
-    final Collection<UnitConversion> convertedUnits = this.mc.getConvertedUnits(tweet);
+    @ParameterizedTest
+    @MethodSource("tweetsAndUnits")
+    public void testTweet(final String tweet, final String expectedFinding, final String expectedOutput) {
+        final Collection<UnitConversion> convertedUnits = this.mc.getConvertedUnits(tweet);
 
-    final Optional<UnitConversion> first = convertedUnits.stream().findFirst();
-    Assertions.assertAll(
-        () -> Assertions.assertEquals(1, convertedUnits.size()),
-        () -> Assertions.assertEquals(expectedFinding, first.map(UnitConversion::getInputAmount).orElse("")),
-        () -> Assertions.assertEquals(expectedOutput, first.map(UnitConversion::getMetricAmount).orElse(""))
-    );
-  }
-
+        final Optional<UnitConversion> first = convertedUnits.stream().findFirst();
+        Assertions.assertAll(
+                () -> Assertions.assertEquals(1, convertedUnits.size()),
+                () -> Assertions.assertEquals(
+                        expectedFinding,
+                        first.map(UnitConversion::getInputAmount).orElse("")),
+                () -> Assertions.assertEquals(
+                        expectedOutput,
+                        first.map(UnitConversion::getMetricAmount).orElse("")));
+    }
 }

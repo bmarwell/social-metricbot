@@ -19,61 +19,60 @@ import org.slf4j.LoggerFactory;
 @Dependent
 public class HorsePowerConverter implements UsUnitConverter {
 
-  private static final long serialVersionUID = -4122166957202486050L;
+    private static final long serialVersionUID = -4122166957202486050L;
 
-  private static final Logger LOG = LoggerFactory.getLogger(HorsePowerConverter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(HorsePowerConverter.class);
 
-  private static final Pattern PATTERN_HP =
-      Pattern.compile(
-      "\\b((?:[0-9],)*(?:[0-9]*[.]?)?[0-9]+)[^A-Za-z0-9]?(?:\\s|\\b)?hp(?:s)?\\b",
-      Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
+    private static final Pattern PATTERN_HP = Pattern.compile(
+            "\\b((?:[0-9],)*(?:[0-9]*[.]?)?[0-9]+)[^A-Za-z0-9]?(?:\\s|\\b)?hp(?:s)?\\b",
+            Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
 
-  private static final double KW_PER_HP = 0.7457d;
+    private static final double KW_PER_HP = 0.7457d;
 
-  private static final NumberFormat FORMAT_HP = DecimalFormats.noFractionDigits();
-  private static final NumberFormat FORMAT_KW = DecimalFormats.atMostOneFractionDigits();
+    private static final NumberFormat FORMAT_HP = DecimalFormats.noFractionDigits();
+    private static final NumberFormat FORMAT_KW = DecimalFormats.atMostOneFractionDigits();
 
-  @Override
-  public List<String> getSearchTerms() {
-    return emptyList();
-  }
-
-  @Override
-  public boolean matches(final String text) {
-    if (null == text || text.isEmpty()) {
-      return false;
+    @Override
+    public List<String> getSearchTerms() {
+        return emptyList();
     }
 
-    return PATTERN_HP.matcher(text).find();
-  }
+    @Override
+    public boolean matches(final String text) {
+        if (null == text || text.isEmpty()) {
+            return false;
+        }
 
-  @Override
-  public Collection<UnitConversion> getConvertedUnits(final String text) {
-    if (null == text || text.isEmpty()) {
-      return emptyList();
+        return PATTERN_HP.matcher(text).find();
     }
 
-    final List<UnitConversion> conversions = new ArrayList<>();
-    final Matcher matcher = PATTERN_HP.matcher(text);
-    while (matcher.find()) {
-      try {
-        final String hpNum = matcher.group(1).replaceAll(",", "");
-        final double hpDecimal = Double.parseDouble(hpNum);
-        final double kwDecimal = hpDecimal * KW_PER_HP;
+    @Override
+    public Collection<UnitConversion> getConvertedUnits(final String text) {
+        if (null == text || text.isEmpty()) {
+            return emptyList();
+        }
 
-        final UnitConversion unitConversion = ImmutableUnitConversion.builder()
-            .inputAmount(FORMAT_HP.format(hpDecimal))
-            .inputUnit("hp")
-            .metricAmount(FORMAT_KW.format(kwDecimal))
-            .metricUnit("kW")
-            .build();
+        final List<UnitConversion> conversions = new ArrayList<>();
+        final Matcher matcher = PATTERN_HP.matcher(text);
+        while (matcher.find()) {
+            try {
+                final String hpNum = matcher.group(1).replaceAll(",", "");
+                final double hpDecimal = Double.parseDouble(hpNum);
+                final double kwDecimal = hpDecimal * KW_PER_HP;
 
-        conversions.add(unitConversion);
-      } catch (final RuntimeException rtEx) {
-        LOG.error("Unable to convert found text: [{}].", text, rtEx);
-      }
+                final UnitConversion unitConversion = ImmutableUnitConversion.builder()
+                        .inputAmount(FORMAT_HP.format(hpDecimal))
+                        .inputUnit("hp")
+                        .metricAmount(FORMAT_KW.format(kwDecimal))
+                        .metricUnit("kW")
+                        .build();
+
+                conversions.add(unitConversion);
+            } catch (final RuntimeException rtEx) {
+                LOG.error("Unable to convert found text: [{}].", text, rtEx);
+            }
+        }
+
+        return unmodifiableList(conversions);
     }
-
-    return unmodifiableList(conversions);
-  }
 }
