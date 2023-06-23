@@ -47,7 +47,7 @@
     <!-- 3rd party -->
     <dependency.twitter4j.version>4.0.7</dependency.twitter4j.version>
     <dependency.immutables.version>2.9.3</dependency.immutables.version>
-    <dependency.openjpa.version>3.2.0</dependency.openjpa.version>
+    <dependency.openjpa.version>3.2.2</dependency.openjpa.version>
 
     <!-- logging -->
     <dependency.slf4j-api.version>1.7.30</dependency.slf4j-api.version>
