@@ -32,7 +32,7 @@ jobs:
           --errors \
           --batch-mode \
           --no-transfer-progress \
-          spotless:check
+          spotless:check \
           -DtrimStackTrace=false 
 
     - name: Build application with Maven
