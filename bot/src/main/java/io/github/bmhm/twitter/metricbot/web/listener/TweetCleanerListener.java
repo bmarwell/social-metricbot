@@ -32,39 +32,34 @@ import javax.transaction.Transactional;
 @WebListener
 public class TweetCleanerListener implements ServletContextListener {
 
-  @Resource
-  private ManagedScheduledExecutorService scheduler;
+    @Resource
+    private ManagedScheduledExecutorService scheduler;
 
-  /**
-   * recent replies.
-   */
-  @Inject
-  private TweetRepository tweetRepository;
+    /**
+     * recent replies.
+     */
+    @Inject
+    private TweetRepository tweetRepository;
 
-  @Inject
-  private TwitterConfig twitterConfig;
+    @Inject
+    private TwitterConfig twitterConfig;
 
-  public TweetCleanerListener() {
-    // injection
-  }
+    public TweetCleanerListener() {
+        // injection
+    }
 
-  @Override
-  public void contextInitialized(final ServletContextEvent sce) {
-    this.scheduler.scheduleWithFixedDelay(
-        this::removeOldTweets,
-        this.twitterConfig.getTweetFinderInitialDelay(),
-        10 * 60,
-        TimeUnit.SECONDS
-    );
-  }
+    @Override
+    public void contextInitialized(final ServletContextEvent sce) {
+        this.scheduler.scheduleWithFixedDelay(
+                this::removeOldTweets, this.twitterConfig.getTweetFinderInitialDelay(), 10 * 60, TimeUnit.SECONDS);
+    }
 
-  @Transactional
-  public void removeOldTweets() {
-    final ZonedDateTime now = ZonedDateTime.now();
-    final ZonedDateTime oneWeekAgo = now.minusDays(7L);
-    final Instant deleteBefore = oneWeekAgo.toInstant();
+    @Transactional
+    public void removeOldTweets() {
+        final ZonedDateTime now = ZonedDateTime.now();
+        final ZonedDateTime oneWeekAgo = now.minusDays(7L);
+        final Instant deleteBefore = oneWeekAgo.toInstant();
 
-    this.tweetRepository.deleteByTweetTimeBefore(deleteBefore);
-  }
-
+        this.tweetRepository.deleteByTweetTimeBefore(deleteBefore);
+    }
 }

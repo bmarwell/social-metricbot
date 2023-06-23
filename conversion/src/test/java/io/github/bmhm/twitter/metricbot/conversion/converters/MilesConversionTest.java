@@ -16,12 +16,11 @@
 
 package io.github.bmhm.twitter.metricbot.conversion.converters;
 
-import java.util.Collection;
-import java.util.Optional;
-import java.util.stream.Stream;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.bmhm.twitter.metricbot.conversion.UnitConversion;
-import org.junit.jupiter.api.Assertions;
+import java.util.Collection;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
@@ -29,56 +28,55 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 public class MilesConversionTest {
 
-  private final MilesConverter mc = new MilesConverter();
+    private final MilesConverter mc = new MilesConverter();
 
-  static Stream<Arguments> tweetsAndUnits() {
-    return Stream.of(
-        Arguments.of("2. WTF I got an unsolicited e-mail from a wedding planner 2400 miles away.", "2,400", "3,862.4"),
-        Arguments.of("2 distillery's2 projects2 unusual casks10469.70 miles apart", "10,469.7", "16,849.3"),
-        Arguments.of("putting down 250 miles in 5 days", "250", "402.3"),
-        Arguments.of("It's nearing 12,000 miles", "12,000", "19,312.1"),
-        Arguments.of("1-2 mi", "2", "3.2"),
-        Arguments.of("-1 to -2 mi", "-2", "-3.2"),
-        Arguments.of("1k miles", "1,000", "1,609.3")
-    );
-  }
+    static Stream<Arguments> tweetsAndUnits() {
+        return Stream.of(
+                Arguments.of(
+                        "2. WTF I got an unsolicited e-mail from a wedding planner 2400 miles away.",
+                        "2,400",
+                        "3,862.4"),
+                Arguments.of("2 distillery's2 projects2 unusual casks10469.70 miles apart", "10,469.7", "16,849.3"),
+                Arguments.of("putting down 250 miles in 5 days", "250", "402.3"),
+                Arguments.of("It's nearing 12,000 miles", "12,000", "19,312.1"),
+                Arguments.of("1-2 mi", "2", "3.2"),
+                Arguments.of("-1 to -2 mi", "-2", "-3.2"),
+                Arguments.of("1k miles", "1,000", "1,609.3"));
+    }
 
-  @ParameterizedTest
-  @MethodSource("tweetsAndUnits")
-  public void testTweet(final String tweet, final String expectedFinding, final String expectedOutput) {
-    // given:
-    // parameters
+    @ParameterizedTest
+    @MethodSource("tweetsAndUnits")
+    public void testTweet(final String tweet, final String expectedFinding, final String expectedOutput) {
+        // given:
+        // parameters
 
-    // when:
-    final Collection<UnitConversion> convertedUnits = this.mc.getConvertedUnits(tweet);
+        // when:
+        final Collection<UnitConversion> convertedUnits = this.mc.getConvertedUnits(tweet);
 
-    // then
-    assertThat(convertedUnits)
-        .hasSize(1)
-        .first()
-        .hasFieldOrPropertyWithValue("inputAmount", expectedFinding)
-        .hasFieldOrPropertyWithValue("metricAmount", expectedOutput);
-  }
+        // then
+        assertThat(convertedUnits)
+                .hasSize(1)
+                .first()
+                .hasFieldOrPropertyWithValue("inputAmount", expectedFinding)
+                .hasFieldOrPropertyWithValue("metricAmount", expectedOutput);
+    }
 
-  @Test
-  public void specific_tweet_with_2_miles_converions() {
-    // given:
-    String tweet = "I walk 1mi or 2 miles";
+    @Test
+    public void specific_tweet_with_2_miles_converions() {
+        // given:
+        String tweet = "I walk 1mi or 2 miles";
 
-    // when:
-    final Collection<UnitConversion> convertedUnits = this.mc.getConvertedUnits(tweet);
+        // when:
+        final Collection<UnitConversion> convertedUnits = this.mc.getConvertedUnits(tweet);
 
-    // then:
-    assertThat(convertedUnits)
-        .hasSize(2)
-        .first()
-        .hasFieldOrPropertyWithValue("InputAmount", "1")
-        .hasFieldOrPropertyWithValue("MetricAmount", "1.6");
-  }
-
+        // then:
+        assertThat(convertedUnits)
+                .hasSize(2)
+                .first()
+                .hasFieldOrPropertyWithValue("InputAmount", "1")
+                .hasFieldOrPropertyWithValue("MetricAmount", "1.6");
+    }
 }

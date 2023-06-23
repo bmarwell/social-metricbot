@@ -25,250 +25,257 @@ import twitter4j.TwitterException;
 @Dependent
 public class TweetResponder {
 
-  private static final Logger LOG = LoggerFactory.getLogger(TweetResponder.class);
-  private static final String CONVENIENCE_TEXT = "For your convenience, the metric units:\n";
+    private static final Logger LOG = LoggerFactory.getLogger(TweetResponder.class);
+    private static final String CONVENIENCE_TEXT = "For your convenience, the metric units:\n";
 
-  /**
-   * recent replies.
-   */
-  @Inject
-  private Instance<TweetRepository> tweetRepository;
+    /**
+     * recent replies.
+     */
+    @Inject
+    private Instance<TweetRepository> tweetRepository;
 
-  @Inject
-  private Twitter twitter;
+    @Inject
+    private Twitter twitter;
 
-  @Inject
-  private TwitterConfig twitterConfig;
+    @Inject
+    private TwitterConfig twitterConfig;
 
-  @Inject
-  private UsConversion converter;
+    @Inject
+    private UsConversion converter;
 
-  @Inject
-  private Instance<TweetResponder> self;
+    @Inject
+    private Instance<TweetResponder> self;
 
-  public void onTweetFound(final @Observes TweetProcessRequest event) {
-    LOG.info("Checking response to event [{}].", event);
-    final Status foundTweet = event.getFoundTweet();
+    public void onTweetFound(final @Observes TweetProcessRequest event) {
+        LOG.info("Checking response to event [{}].", event);
+        final Status foundTweet = event.getFoundTweet();
 
-    final Optional<TweetPdo> alreadyRespondedToMention = this.self.get()
-        .findById(foundTweet.getId());
-    if (alreadyRespondedToMention.isPresent()) {
-      final TweetPdo tweetPdo = alreadyRespondedToMention.orElseThrow();
-      LOG.debug("Already responded: [{}]", tweetPdo);
+        final Optional<TweetPdo> alreadyRespondedToMention = this.self.get().findById(foundTweet.getId());
+        if (alreadyRespondedToMention.isPresent()) {
+            final TweetPdo tweetPdo = alreadyRespondedToMention.orElseThrow();
+            LOG.debug("Already responded: [{}]", tweetPdo);
 
-      return;
+            return;
+        }
+
+        // check for units
+        tryRespond(foundTweet);
     }
 
-    // check for units
-    tryRespond(foundTweet);
+    protected void tryRespond(final Status foundTweet) {
+        // respond
+        // either this tweet, or quoted or retweeted or reply to (in this order).
+        final Optional<Status> optStatusWithUnits = getStatusWithUnits(foundTweet);
+        if (optStatusWithUnits.isEmpty()) {
+            LOG.debug("No units found.");
+            this.self.get().upsert(foundTweet.getId(), -1, Instant.now());
 
-  }
+            return;
+        }
 
-  protected void tryRespond(final Status foundTweet) {
-    // respond
-    // either this tweet, or quoted or retweeted or reply to (in this order).
-    final Optional<Status> optStatusWithUnits = getStatusWithUnits(foundTweet);
-    if (optStatusWithUnits.isEmpty()) {
-      LOG.debug("No units found.");
-      this.self.get().upsert(foundTweet.getId(), -1, Instant.now());
+        final Status statusWithUnits = optStatusWithUnits.orElseThrow();
 
-      return;
+        final Optional<TweetPdo> optExistingResponse = this.self.get().findById(statusWithUnits.getId());
+
+        if (optExistingResponse.isPresent()) {
+            final TweetPdo existingResponse = optExistingResponse.orElseThrow();
+            LOG.debug("Already responded: [{}].", existingResponse);
+            final long botResponseId = existingResponse.getBotResponseId();
+            this.self.get().upsert(foundTweet.getId(), botResponseId, Instant.now());
+
+            // reply to foundTweet with Link to botResponseId
+
+            return;
+        }
+
+        doRespond(foundTweet, statusWithUnits);
     }
 
-    final Status statusWithUnits = optStatusWithUnits.orElseThrow();
+    protected void doRespond(final Status foundTweet, final Status statusWithUnits) {
+        if (!this.converter.containsUsUnits(statusWithUnits.getText())) {
+            LOG.error("No units found, although they were found earlier?! [{}].", statusWithUnits.getText());
 
-    final Optional<TweetPdo> optExistingResponse = this.self.get()
-        .findById(statusWithUnits.getId());
+            // reply with sorry.
 
-    if (optExistingResponse.isPresent()) {
-      final TweetPdo existingResponse = optExistingResponse.orElseThrow();
-      LOG.debug("Already responded: [{}].", existingResponse);
-      final long botResponseId = existingResponse.getBotResponseId();
-      this.self.get().upsert(foundTweet.getId(), botResponseId, Instant.now());
+            return;
+        }
 
-      // reply to foundTweet with Link to botResponseId
+        final String responseText = this.converter.returnConverted(statusWithUnits.getText(), "\n");
 
-      return;
+        if (foundTweet.getQuotedStatusId() == statusWithUnits.getId()) {
+            // reply to foundTweet only. Do not bother the originals post's author.
+            doRespondToFirst(foundTweet, responseText);
+            return;
+        }
+
+        doRespondTwoPotentallyBoth(foundTweet, statusWithUnits, responseText);
     }
 
-    doRespond(foundTweet, statusWithUnits);
-  }
+    private void doRespondTwoPotentallyBoth(
+            final Status foundTweet, final Status statusWithUnits, final String responseText) {
+        final String mentions = createMentions(foundTweet, statusWithUnits);
+        String tweetText = mentions + responseText;
+        if (mentions.length() + responseText.length() + CONVENIENCE_TEXT.length() < 280) {
+            tweetText = mentions + CONVENIENCE_TEXT + responseText;
+        }
 
-  protected void doRespond(final Status foundTweet, final Status statusWithUnits) {
-    if (!this.converter.containsUsUnits(statusWithUnits.getText())) {
-      LOG.error("No units found, although they were found earlier?! [{}].", statusWithUnits.getText());
+        final StatusUpdate statusUpdate = new StatusUpdate(tweetText).inReplyToStatusId(statusWithUnits.getId());
 
-      // reply with sorry.
+        try {
+            LOG.info(
+                    "Sending status response to [{}]: [{}].",
+                    statusUpdate.getInReplyToStatusId(),
+                    statusUpdate.getStatus());
+            final Status response = this.twitter.updateStatus(statusUpdate);
+            LOG.info("Response sent: [{}] => [{}].", response.getId(), response.getText());
+            // add to repository so we do not reply again to this.
+            this.self
+                    .get()
+                    .upsert(
+                            statusWithUnits.getId(),
+                            response.getId(),
+                            response.getCreatedAt().toInstant());
 
-      return;
+            // if this is a mentioned or qouted tweet, add quote to the reponse we just created.
+            if (foundTweet.getId() != statusWithUnits.getId()) {
+                // show the requester the tweet we created.
+                final String url = String.format(
+                        Locale.ENGLISH,
+                        "https://twitter.com/%s/status/%d",
+                        response.getUser().getScreenName(),
+                        response.getId());
+
+                final StatusUpdate hintToTranslation = new StatusUpdate(String.format(
+                                Locale.ENGLISH,
+                                "@%s\nHere you go:\n\n%s\n",
+                                foundTweet.getUser().getScreenName(),
+                                url))
+                        .inReplyToStatusId(foundTweet.getId());
+                final Status hintToTranslationResponse = this.twitter.updateStatus(hintToTranslation);
+                // also add the actual status with units, so we do not get mentioned multiple times.
+                this.self
+                        .get()
+                        .upsert(
+                                foundTweet.getId(),
+                                hintToTranslationResponse.getId(),
+                                hintToTranslationResponse.getCreatedAt().toInstant());
+            }
+        } catch (final TwitterException twitterException) {
+            LOG.error("Unable to send reply: [{}].", statusUpdate, twitterException);
+            this.self.get().upsert(foundTweet.getId(), -1, Instant.now());
+            if (statusWithUnits.getId() != foundTweet.getId()) {
+                this.self.get().upsert(statusWithUnits.getId(), -1, Instant.now());
+            }
+        }
     }
 
-    final String responseText = this.converter.returnConverted(statusWithUnits.getText(), "\n");
+    protected void doRespondToFirst(final Status foundTweet, final String responseText) {
+        final String mentions = "@" + foundTweet.getUser().getScreenName() + "\n";
+        String tweetText = mentions + responseText;
+        if (mentions.length() + responseText.length() + CONVENIENCE_TEXT.length() < 280) {
+            tweetText = mentions + CONVENIENCE_TEXT + responseText;
+        }
 
-    if (foundTweet.getQuotedStatusId() == statusWithUnits.getId()) {
-      // reply to foundTweet only. Do not bother the originals post's author.
-      doRespondToFirst(foundTweet, responseText);
-      return;
+        final StatusUpdate statusUpdate = new StatusUpdate(tweetText).inReplyToStatusId(foundTweet.getId());
+
+        try {
+            LOG.info(
+                    "Sending status response to [{}]: [{}].",
+                    statusUpdate.getInReplyToStatusId(),
+                    statusUpdate.getStatus());
+            final Status response = this.twitter.updateStatus(statusUpdate);
+            LOG.info("Response sent: [{}] => [{}].", response.getId(), response.getText());
+            this.self.get().upsert(foundTweet.getId(), response.getId(), Instant.now());
+        } catch (final TwitterException twitterException) {
+            LOG.error("Unable to send reply: [{}].", statusUpdate, twitterException);
+            this.self.get().upsert(foundTweet.getId(), -1, Instant.now());
+        }
     }
 
-    doRespondTwoPotentallyBoth(foundTweet, statusWithUnits, responseText);
-  }
-
-  private void doRespondTwoPotentallyBoth(final Status foundTweet, final Status statusWithUnits, final String responseText) {
-    final String mentions = createMentions(foundTweet, statusWithUnits);
-    String tweetText = mentions + responseText;
-    if (mentions.length() + responseText.length() + CONVENIENCE_TEXT.length() < 280) {
-      tweetText = mentions + CONVENIENCE_TEXT + responseText;
+    private String createMentions(final Status foundTweet, final Status statusWithUnits) {
+        return Stream.of(
+                                "@" + foundTweet.getUser().getScreenName(),
+                                "@" + statusWithUnits.getUser().getScreenName())
+                        .distinct()
+                        .collect(Collectors.joining(" "))
+                + "\n";
     }
 
-    final StatusUpdate statusUpdate = new StatusUpdate(tweetText)
-        .inReplyToStatusId(statusWithUnits.getId());
+    protected Optional<Status> getStatusWithUnits(final Status foundTweet) {
+        // tweet itself?
+        if (containsUnits(foundTweet).isPresent() && isByOtherUser(foundTweet)) {
+            LOG.info("Tweet itself contains units.");
+            return Optional.of(foundTweet);
+        }
 
-    try {
-      LOG.info("Sending status response to [{}]: [{}].", statusUpdate.getInReplyToStatusId(),
-          statusUpdate.getStatus());
-      final Status response = this.twitter.updateStatus(statusUpdate);
-      LOG.info("Response sent: [{}] => [{}].", response.getId(), response.getText());
-      // add to repository so we do not reply again to this.
-      this.self.get().upsert(
-          statusWithUnits.getId(),
-          response.getId(),
-          response.getCreatedAt().toInstant()
-      );
+        // quoted?
+        final Optional<Status> quotedStatus = containsUnits(foundTweet.getQuotedStatus());
+        if (quotedStatus.isPresent() && isByOtherUser(quotedStatus.orElseThrow())) {
+            return quotedStatus;
+        }
 
-      // if this is a mentioned or qouted tweet, add quote to the reponse we just created.
-      if (foundTweet.getId() != statusWithUnits.getId()) {
-        // show the requester the tweet we created.
-        final String url =
-            String.format(Locale.ENGLISH, "https://twitter.com/%s/status/%d",
-                response.getUser().getScreenName(), response.getId());
+        // is retweet?
+        final Optional<Status> retweetStatusWithUnits = containsUnits(foundTweet.getRetweetedStatus());
+        if (foundTweet.isRetweet()
+                && retweetStatusWithUnits.isPresent()
+                && isByOtherUser(retweetStatusWithUnits.orElseThrow())) {
+            return Optional.of(foundTweet.getRetweetedStatus());
+        }
 
-        final StatusUpdate hintToTranslation =
-            new StatusUpdate(String.format(Locale.ENGLISH, "@%s\nHere you go:\n\n%s\n",
-                foundTweet.getUser().getScreenName(), url))
-                .inReplyToStatusId(foundTweet.getId());
-        final Status hintToTranslationResponse = this.twitter.updateStatus(hintToTranslation);
-        // also add the actual status with units, so we do not get mentioned multiple times.
-        this.self.get().upsert(
-            foundTweet.getId(),
-            hintToTranslationResponse.getId(),
-            hintToTranslationResponse.getCreatedAt().toInstant()
-        );
-      }
-    } catch (final TwitterException twitterException) {
-      LOG.error("Unable to send reply: [{}].", statusUpdate, twitterException);
-      this.self.get().upsert(foundTweet.getId(), -1, Instant.now());
-      if (statusWithUnits.getId() != foundTweet.getId()) {
-        this.self.get().upsert(statusWithUnits.getId(), -1, Instant.now());
-      }
-    }
-  }
+        // reply to?
+        final long inReplyToStatusId = foundTweet.getInReplyToStatusId();
+        final Optional<Status> replyToStatus = containsUnits(inReplyToStatusId);
+        if (inReplyToStatusId != 0L && replyToStatus.isPresent() && isByOtherUser(replyToStatus.orElseThrow())) {
+            return replyToStatus;
+        }
 
-  protected void doRespondToFirst(final Status foundTweet, final String responseText) {
-    final String mentions = "@" + foundTweet.getUser().getScreenName() + "\n";
-    String tweetText = mentions + responseText;
-    if (mentions.length() + responseText.length() + CONVENIENCE_TEXT.length() < 280) {
-      tweetText = mentions + CONVENIENCE_TEXT + responseText;
-    }
-
-    final StatusUpdate statusUpdate = new StatusUpdate(tweetText)
-        .inReplyToStatusId(foundTweet.getId());
-
-    try {
-      LOG.info("Sending status response to [{}]: [{}].", statusUpdate.getInReplyToStatusId(), statusUpdate.getStatus());
-      final Status response = this.twitter.updateStatus(statusUpdate);
-      LOG.info("Response sent: [{}] => [{}].", response.getId(), response.getText());
-      this.self.get().upsert(foundTweet.getId(), response.getId(), Instant.now());
-    } catch (final TwitterException twitterException) {
-      LOG.error("Unable to send reply: [{}].", statusUpdate, twitterException);
-      this.self.get().upsert(foundTweet.getId(), -1, Instant.now());
-    }
-  }
-
-  private String createMentions(final Status foundTweet, final Status statusWithUnits) {
-    return Stream.of(
-        "@" + foundTweet.getUser().getScreenName(),
-        "@" + statusWithUnits.getUser().getScreenName()
-    )
-        .distinct()
-        .collect(Collectors.joining(" ")) + "\n";
-  }
-
-  protected Optional<Status> getStatusWithUnits(final Status foundTweet) {
-    // tweet itself?
-    if (containsUnits(foundTweet).isPresent() && isByOtherUser(foundTweet)) {
-      LOG.info("Tweet itself contains units.");
-      return Optional.of(foundTweet);
-    }
-
-    // quoted?
-    final Optional<Status> quotedStatus = containsUnits(foundTweet.getQuotedStatus());
-    if (quotedStatus.isPresent() && isByOtherUser(quotedStatus.orElseThrow())) {
-      return quotedStatus;
-    }
-
-    // is retweet?
-    final Optional<Status> retweetStatusWithUnits = containsUnits(foundTweet.getRetweetedStatus());
-    if (foundTweet.isRetweet()
-        && retweetStatusWithUnits.isPresent()
-        && isByOtherUser(retweetStatusWithUnits.orElseThrow())) {
-      return Optional.of(foundTweet.getRetweetedStatus());
-    }
-
-    // reply to?
-    final long inReplyToStatusId = foundTweet.getInReplyToStatusId();
-    final Optional<Status> replyToStatus = containsUnits(inReplyToStatusId);
-    if (inReplyToStatusId != 0L
-        && replyToStatus.isPresent()
-        && isByOtherUser(replyToStatus.orElseThrow())) {
-      return replyToStatus;
-    }
-
-    return Optional.empty();
-  }
-
-  private boolean isByOtherUser(final Status foundTweet) {
-    return !this.twitterConfig.getAccountName().contains(foundTweet.getUser().getName());
-  }
-
-  protected Optional<Status> containsUnits(final long inReplyToStatusId) {
-    if (inReplyToStatusId == 0L || inReplyToStatusId == -1L) {
-      return Optional.empty();
-    }
-
-    try {
-      final Status status = this.twitter.showStatus(inReplyToStatusId);
-      if (containsUnits(status).isEmpty()) {
         return Optional.empty();
-      }
-
-      return Optional.of(status);
-    } catch (final TwitterException twitterEx) {
-      LOG.error("unable to retrieve tweet ID=[" + inReplyToStatusId + "].", twitterEx);
     }
 
-    return Optional.empty();
-  }
-
-  protected Optional<Status> containsUnits(final Status otherStatus) {
-    if (otherStatus == null) {
-      return Optional.empty();
+    private boolean isByOtherUser(final Status foundTweet) {
+        return !this.twitterConfig
+                .getAccountName()
+                .contains(foundTweet.getUser().getName());
     }
 
-    if (this.converter.containsUsUnits(otherStatus.getText())) {
-      return Optional.of(otherStatus);
+    protected Optional<Status> containsUnits(final long inReplyToStatusId) {
+        if (inReplyToStatusId == 0L || inReplyToStatusId == -1L) {
+            return Optional.empty();
+        }
+
+        try {
+            final Status status = this.twitter.showStatus(inReplyToStatusId);
+            if (containsUnits(status).isEmpty()) {
+                return Optional.empty();
+            }
+
+            return Optional.of(status);
+        } catch (final TwitterException twitterEx) {
+            LOG.error("unable to retrieve tweet ID=[" + inReplyToStatusId + "].", twitterEx);
+        }
+
+        return Optional.empty();
     }
 
-    return Optional.empty();
-  }
+    protected Optional<Status> containsUnits(final Status otherStatus) {
+        if (otherStatus == null) {
+            return Optional.empty();
+        }
 
-  @Transactional
-  public void upsert(final long foundTweetId, final long responseId, final Instant responseTime) {
-    this.tweetRepository.get().upsert(foundTweetId, responseId, responseTime);
-  }
+        if (this.converter.containsUsUnits(otherStatus.getText())) {
+            return Optional.of(otherStatus);
+        }
 
-  @Transactional
-  private Optional<TweetPdo> findById(final long id) {
-    return this.tweetRepository.get().findById(id);
-  }
+        return Optional.empty();
+    }
+
+    @Transactional
+    public void upsert(final long foundTweetId, final long responseId, final Instant responseTime) {
+        this.tweetRepository.get().upsert(foundTweetId, responseId, responseTime);
+    }
+
+    @Transactional
+    private Optional<TweetPdo> findById(final long id) {
+        return this.tweetRepository.get().findById(id);
+    }
 }

@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>io.github.bmhm.twitter</groupId>
@@ -32,8 +30,7 @@
     <plugin.maven.war.version>3.4.0</plugin.maven.war.version>
     <plugin.maven.resources.version>3.3.1</plugin.maven.resources.version>
     <plugin.dockerfile-maven.version>1.4.13</plugin.dockerfile-maven.version>
-    <extension.dockerfile-maven.version>${plugin.dockerfile-maven.version}
-    </extension.dockerfile-maven.version>
+    <extension.dockerfile-maven.version>${plugin.dockerfile-maven.version}</extension.dockerfile-maven.version>
 
     <!-- java EE + MP -->
     <dependency.jakarta.cdi-api.version>2.0.2</dependency.jakarta.cdi-api.version>
@@ -184,13 +181,6 @@
   </dependencies>
 
   <build>
-    <extensions>
-      <extension>
-        <groupId>com.spotify</groupId>
-        <artifactId>dockerfile-maven-extension</artifactId>
-        <version>${extension.dockerfile-maven.version}</version>
-      </extension>
-    </extensions>
 
     <pluginManagement>
       <plugins>
@@ -332,6 +322,13 @@
         </executions>
       </plugin>
     </plugins>
+    <extensions>
+      <extension>
+        <groupId>com.spotify</groupId>
+        <artifactId>dockerfile-maven-extension</artifactId>
+        <version>${extension.dockerfile-maven.version}</version>
+      </extension>
+    </extensions>
   </build>
 
   <profiles>

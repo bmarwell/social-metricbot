@@ -33,73 +33,66 @@ import javax.persistence.criteria.Root;
 @Dependent
 public class TweetRepository {
 
-  @PersistenceContext(name = "metricbot-persistence-unit")
-  private EntityManager entityManager;
+    @PersistenceContext(name = "metricbot-persistence-unit")
+    private EntityManager entityManager;
 
-  public Optional<TweetPdo> findById(final long tweetId) {
-    final TweetPdo tweetPdo = this.entityManager.find(TweetPdo.class, tweetId);
+    public Optional<TweetPdo> findById(final long tweetId) {
+        final TweetPdo tweetPdo = this.entityManager.find(TweetPdo.class, tweetId);
 
-    return Optional.ofNullable(tweetPdo);
-  }
-
-  public TweetPdo upsert(final Long tweetId, final long botResponseId, final Instant responseTime) {
-    final Optional<TweetPdo> byId = Optional.ofNullable(
-        this.entityManager.find(TweetPdo.class, tweetId));
-    if (byId.isPresent()) {
-      final TweetPdo foundTweet = byId.orElseThrow();
-      foundTweet.setBotResponseId(botResponseId);
-      foundTweet.setResponseTime(Instant.now());
-      this.entityManager.flush();
-      this.entityManager.detach(foundTweet);
-
-      return foundTweet;
+        return Optional.ofNullable(tweetPdo);
     }
 
-    // new
-    final TweetPdo tweetPdo = new TweetPdo(tweetId, responseTime, botResponseId);
+    public TweetPdo upsert(final Long tweetId, final long botResponseId, final Instant responseTime) {
+        final Optional<TweetPdo> byId = Optional.ofNullable(this.entityManager.find(TweetPdo.class, tweetId));
+        if (byId.isPresent()) {
+            final TweetPdo foundTweet = byId.orElseThrow();
+            foundTweet.setBotResponseId(botResponseId);
+            foundTweet.setResponseTime(Instant.now());
+            this.entityManager.flush();
+            this.entityManager.detach(foundTweet);
 
-    return saveNew(tweetPdo);
-  }
+            return foundTweet;
+        }
 
-  private TweetPdo saveNew(final TweetPdo tweetPdo) {
-    final EntityManager em = this.entityManager;
-    em.persist(tweetPdo);
-    em.flush();
-    em.detach(tweetPdo);
+        // new
+        final TweetPdo tweetPdo = new TweetPdo(tweetId, responseTime, botResponseId);
 
-    return tweetPdo;
-  }
+        return saveNew(tweetPdo);
+    }
 
-  public List<TweetPdo> findByTweetTimeBefore(final Instant createdBefore) {
-    // TODO: implement
-    throw new UnsupportedOperationException(
-        "not yet implemented: [io.github.bmhm.twitter.metricbot.db.dao.TweetRepository::findByTweetTimeBefore].");
-  }
+    private TweetPdo saveNew(final TweetPdo tweetPdo) {
+        final EntityManager em = this.entityManager;
+        em.persist(tweetPdo);
+        em.flush();
+        em.detach(tweetPdo);
 
-  /**
-   * Deletes tweets before given date.
-   *
-   * @param createdBefore delete tweets before this date.
-   */
-  public int deleteByTweetTimeBefore(final Instant createdBefore) {
-    final EntityManager em = this.entityManager;
-    final CriteriaBuilder cb = em.getCriteriaBuilder();
-    final CriteriaDelete<TweetPdo> criteriaDeleteQuery = cb.createCriteriaDelete(TweetPdo.class);
-    final Root<TweetPdo> from = criteriaDeleteQuery.from(TweetPdo.class);
-    final ParameterExpression<Instant> beforeParameter =
-        cb.parameter(Instant.class, "createdBefore");
-    criteriaDeleteQuery.where(
-        cb.lessThan(
-            from.get(TweetPdo_.tweetTime),
-            beforeParameter
-        )
-    );
+        return tweetPdo;
+    }
 
-    final Query deleteQuery = em.createQuery(criteriaDeleteQuery);
-    deleteQuery.setParameter(beforeParameter, createdBefore);
+    public List<TweetPdo> findByTweetTimeBefore(final Instant createdBefore) {
+        // TODO: implement
+        throw new UnsupportedOperationException(
+                "not yet implemented: [io.github.bmhm.twitter.metricbot.db.dao.TweetRepository::findByTweetTimeBefore].");
+    }
 
-    final int executeUpdate = deleteQuery.executeUpdate();
-    em.flush();
-    return executeUpdate;
-  }
+    /**
+     * Deletes tweets before given date.
+     *
+     * @param createdBefore delete tweets before this date.
+     */
+    public int deleteByTweetTimeBefore(final Instant createdBefore) {
+        final EntityManager em = this.entityManager;
+        final CriteriaBuilder cb = em.getCriteriaBuilder();
+        final CriteriaDelete<TweetPdo> criteriaDeleteQuery = cb.createCriteriaDelete(TweetPdo.class);
+        final Root<TweetPdo> from = criteriaDeleteQuery.from(TweetPdo.class);
+        final ParameterExpression<Instant> beforeParameter = cb.parameter(Instant.class, "createdBefore");
+        criteriaDeleteQuery.where(cb.lessThan(from.get(TweetPdo_.tweetTime), beforeParameter));
+
+        final Query deleteQuery = em.createQuery(criteriaDeleteQuery);
+        deleteQuery.setParameter(beforeParameter, createdBefore);
+
+        final int executeUpdate = deleteQuery.executeUpdate();
+        em.flush();
+        return executeUpdate;
+    }
 }

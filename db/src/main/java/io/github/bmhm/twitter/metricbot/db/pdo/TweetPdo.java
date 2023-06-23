@@ -27,79 +27,79 @@ import javax.persistence.Table;
 @Table(name = "Tweet")
 public class TweetPdo {
 
-  public static final long ID_NOT_SET = -1L;
+    public static final long ID_NOT_SET = -1L;
 
-  public static final Instant TIME_NOT_SET = Instant.EPOCH;
+    public static final Instant TIME_NOT_SET = Instant.EPOCH;
 
-  @Id
-  @Column(name = "tweet_id")
-  private long tweetId = ID_NOT_SET;
+    @Id
+    @Column(name = "tweet_id")
+    private long tweetId = ID_NOT_SET;
 
-  @Column(name = "TWEET_TIME")
-  private Instant tweetTime;
+    @Column(name = "TWEET_TIME")
+    private Instant tweetTime;
 
-  @Column(name = "bot_response_id")
-  private long botResponseId = ID_NOT_SET;
+    @Column(name = "bot_response_id")
+    private long botResponseId = ID_NOT_SET;
 
-  @Column(name = "RESPONSE_TIME")
-  private Instant responseTime = TIME_NOT_SET;
+    @Column(name = "RESPONSE_TIME")
+    private Instant responseTime = TIME_NOT_SET;
 
-  public TweetPdo() {
-    // jpa requirement
-  }
-
-  public TweetPdo(final long tweetId, final Instant tweetTime, final long botResponseId) {
-    this.tweetId = tweetId;
-    this.tweetTime = tweetTime;
-    this.botResponseId = botResponseId;
-  }
-
-  public TweetPdo(final long id, final Instant tweetTime) {
-    this.tweetId = id;
-    this.tweetTime = tweetTime;
-  }
-
-  public long getTweetId() {
-    return this.tweetId;
-  }
-
-  public void setTweetId(final long tweetId) {
-    this.tweetId = tweetId;
-  }
-
-  public Instant getTweetTime() {
-    return this.tweetTime;
-  }
-
-  public void setTweetTime(final Instant tweetTime) {
-    this.tweetTime = tweetTime;
-  }
-
-  public long getBotResponseId() {
-    return this.botResponseId;
-  }
-
-  public void setBotResponseId(final long botResponseId) {
-    if (botResponseId <= 0) {
-      this.botResponseId = ID_NOT_SET;
-      return;
+    public TweetPdo() {
+        // jpa requirement
     }
 
-    this.botResponseId = botResponseId;
-  }
+    public TweetPdo(final long tweetId, final Instant tweetTime, final long botResponseId) {
+        this.tweetId = tweetId;
+        this.tweetTime = tweetTime;
+        this.botResponseId = botResponseId;
+    }
 
-  public Instant getResponseTime() {
-    return this.responseTime;
-  }
+    public TweetPdo(final long id, final Instant tweetTime) {
+        this.tweetId = id;
+        this.tweetTime = tweetTime;
+    }
 
-  public void setResponseTime(final Instant responseTime) {
-    this.responseTime = responseTime;
-  }
+    public long getTweetId() {
+        return this.tweetId;
+    }
 
-  @Override
-  public String toString() {
-    return new StringJoiner(", ", TweetPdo.class.getSimpleName() + "[", "]")
-        .add("tweetId=" + getTweetId())
-        .toString();
-  }
+    public void setTweetId(final long tweetId) {
+        this.tweetId = tweetId;
+    }
+
+    public Instant getTweetTime() {
+        return this.tweetTime;
+    }
+
+    public void setTweetTime(final Instant tweetTime) {
+        this.tweetTime = tweetTime;
+    }
+
+    public long getBotResponseId() {
+        return this.botResponseId;
+    }
+
+    public void setBotResponseId(final long botResponseId) {
+        if (botResponseId <= 0) {
+            this.botResponseId = ID_NOT_SET;
+            return;
+        }
+
+        this.botResponseId = botResponseId;
+    }
+
+    public Instant getResponseTime() {
+        return this.responseTime;
+    }
+
+    public void setResponseTime(final Instant responseTime) {
+        this.responseTime = responseTime;
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", TweetPdo.class.getSimpleName() + "[", "]")
+                .add("tweetId=" + getTweetId())
+                .toString();
+    }
 }

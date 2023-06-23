@@ -36,72 +36,71 @@ import org.slf4j.LoggerFactory;
 @Dependent
 public class TemperatureConverter implements UsUnitConverter {
 
-  private static final Logger LOG = LoggerFactory.getLogger(TemperatureConverter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TemperatureConverter.class);
 
-  private static final long serialVersionUID = -1586935341494577390L;
+    private static final long serialVersionUID = -1586935341494577390L;
 
-  /**
-   * Matches &quot;degrees&quot; or just {@code F|°F} or both.
-   */
-  private static final String DEGREES_F_OR_DEGREES_OR_F = "(?:(?:degree(?:s)?(?:\\s)?(?:F(ahrenheit)?|°F)?)|(?:\\s)?(?:F(ahrenheit)?|°F))";
-  /**
-   * group '1': matches {@code -2} or {@code 2} etc.
-   */
-  private static final Pattern degreesFahrenheit =
-      Pattern.compile(
-          "\\b(([^0-9][-])?(?:[0-9]+\\.)?[0-9]+)(?:\\s)?" + DEGREES_F_OR_DEGREES_OR_F + "\\b",
-          Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+    /**
+     * Matches &quot;degrees&quot; or just {@code F|°F} or both.
+     */
+    private static final String DEGREES_F_OR_DEGREES_OR_F =
+            "(?:(?:degree(?:s)?(?:\\s)?(?:F(ahrenheit)?|°F)?)|(?:\\s)?(?:F(ahrenheit)?|°F))";
+    /**
+     * group '1': matches {@code -2} or {@code 2} etc.
+     */
+    private static final Pattern degreesFahrenheit = Pattern.compile(
+            "\\b(([^0-9][-])?(?:[0-9]+\\.)?[0-9]+)(?:\\s)?" + DEGREES_F_OR_DEGREES_OR_F + "\\b",
+            Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 
-  private static final String DEGREE_FAHRENHEIT = "°F";
-  private static final String DEGREE_CELSIUS = "°C";
+    private static final String DEGREE_FAHRENHEIT = "°F";
+    private static final String DEGREE_CELSIUS = "°C";
 
-  private static final NumberFormat FORMAT_NO_FRAC = DecimalFormats.noFractionDigits();
+    private static final NumberFormat FORMAT_NO_FRAC = DecimalFormats.noFractionDigits();
 
-  public TemperatureConverter() {
-    // injection.
-  }
-
-  @Override
-  public List<String> getSearchTerms() {
-    return asList("degrees Fahrenheit", "degree F.");
-  }
-
-  @Override
-  public boolean matches(final String text) {
-    return degreesFahrenheit.matcher(text).find();
-  }
-
-  @Override
-  public Collection<UnitConversion> getConvertedUnits(final String text) {
-    final Matcher matcher = degreesFahrenheit.matcher(text);
-    final LinkedHashSet<UnitConversion> outputUnits = new LinkedHashSet<>();
-
-    while (matcher.find()) {
-      final String group = matcher.group(1);
-      final double tempFahrenheit;
-      if (text.contains("minus " + group)) {
-        tempFahrenheit = Double.parseDouble(group) * -1;
-      } else {
-        tempFahrenheit = Double.parseDouble(group);
-      }
-      final double tempCelsius = (tempFahrenheit - 32) / (9.0 / 5.0);
-
-      final UnitConversion unitConversion = ImmutableUnitConversion.builder()
-          .inputAmount(FORMAT_NO_FRAC.format(tempFahrenheit))
-          .inputUnit(DEGREE_FAHRENHEIT)
-          .metricAmount(FORMAT_NO_FRAC.format(tempCelsius))
-          .metricUnit(DEGREE_CELSIUS)
-          .build();
-      LOG.debug("Adding: [{}].", unitConversion);
-      outputUnits.add(unitConversion);
+    public TemperatureConverter() {
+        // injection.
     }
 
-    return unmodifiableSet(outputUnits);
-  }
+    @Override
+    public List<String> getSearchTerms() {
+        return asList("degrees Fahrenheit", "degree F.");
+    }
 
-  @Override
-  public String toString() {
-    return new StringJoiner(", ", TemperatureConverter.class.getSimpleName() + "[", "]")
-        .toString();
-  }
+    @Override
+    public boolean matches(final String text) {
+        return degreesFahrenheit.matcher(text).find();
+    }
+
+    @Override
+    public Collection<UnitConversion> getConvertedUnits(final String text) {
+        final Matcher matcher = degreesFahrenheit.matcher(text);
+        final LinkedHashSet<UnitConversion> outputUnits = new LinkedHashSet<>();
+
+        while (matcher.find()) {
+            final String group = matcher.group(1);
+            final double tempFahrenheit;
+            if (text.contains("minus " + group)) {
+                tempFahrenheit = Double.parseDouble(group) * -1;
+            } else {
+                tempFahrenheit = Double.parseDouble(group);
+            }
+            final double tempCelsius = (tempFahrenheit - 32) / (9.0 / 5.0);
+
+            final UnitConversion unitConversion = ImmutableUnitConversion.builder()
+                    .inputAmount(FORMAT_NO_FRAC.format(tempFahrenheit))
+                    .inputUnit(DEGREE_FAHRENHEIT)
+                    .metricAmount(FORMAT_NO_FRAC.format(tempCelsius))
+                    .metricUnit(DEGREE_CELSIUS)
+                    .build();
+            LOG.debug("Adding: [{}].", unitConversion);
+            outputUnits.add(unitConversion);
+        }
+
+        return unmodifiableSet(outputUnits);
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", TemperatureConverter.class.getSimpleName() + "[", "]").toString();
+    }
 }
