@@ -33,7 +33,7 @@
     <extension.dockerfile-maven.version>${plugin.dockerfile-maven.version}</extension.dockerfile-maven.version>
 
     <!-- java EE + MP -->
-    <dependency.jakarta.cdi-api.version>2.0.2</dependency.jakarta.cdi-api.version>
+    <dependency.jakarta.cdi-api.version>4.0.1</dependency.jakarta.cdi-api.version>
     <dependency.jaxrs-api.version>2.1.6</dependency.jaxrs-api.version>
     <dependency.jakarta.concurrent-api.version>1.1.2</dependency.jakarta.concurrent-api.version>
     <dependency.jakarta.persistence-api.version>2.2.3</dependency.jakarta.persistence-api.version>
