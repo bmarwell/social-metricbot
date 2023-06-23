@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -37,7 +35,6 @@
     </dependency>
   </dependencies>
 
-
   <build>
     <plugins>
       <plugin>
@@ -45,10 +42,10 @@
         <executions>
           <execution>
             <id>copy-resources</id>
-            <phase>process-resources</phase>
             <goals>
               <goal>copy-resources</goal>
             </goals>
+            <phase>process-resources</phase>
             <configuration>
               <outputDirectory>${docker.context.directory}</outputDirectory>
               <resources>
@@ -67,10 +64,10 @@
         <executions>
           <execution>
             <id>copy-war</id>
-            <phase>process-sources</phase>
             <goals>
               <goal>copy-dependencies</goal>
             </goals>
+            <phase>process-sources</phase>
             <configuration>
               <includeTypes>war</includeTypes>
               <outputDirectory>${docker.context.directory}</outputDirectory>
@@ -78,10 +75,10 @@
           </execution>
           <execution>
             <id>copy-h2</id>
-            <phase>process-sources</phase>
             <goals>
               <goal>copy-dependencies</goal>
             </goals>
+            <phase>process-sources</phase>
             <configuration>
               <includeTypes>jar</includeTypes>
               <outputDirectory>${docker.context.directory}/h2</outputDirectory>
@@ -90,26 +87,40 @@
         </executions>
       </plugin>
 
-
       <plugin>
-        <groupId>com.spotify</groupId>
-        <artifactId>dockerfile-maven-plugin</artifactId>
+        <groupId>org.eclipse.jkube</groupId>
+        <artifactId>kubernetes-maven-plugin</artifactId>
+        <version>1.13.1</version>
+        <configuration>
+          <images>
+            <image>
+              <name>${project.groupId}/${project.artifactId}</name>
+              <build>
+                <dockerFile>${project.basedir}/Dockerfile</dockerFile>
+                <contextDir>${docker.context.directory}</contextDir>
+                <tags>
+                  <tag>latest</tag>
+                  <tag>${project.version}</tag>
+                </tags>
+              </build>
+            </image>
+          </images>
+          <verbose>true</verbose>
+        </configuration>
         <executions>
           <execution>
-            <id>docker-build</id>
+            <id>default-resource</id>
+            <goals>
+              <goal>resource</goal>
+            </goals>
+            <phase>generate-resources</phase>
+          </execution>
+          <execution>
+            <id>default-build</id>
             <goals>
               <goal>build</goal>
-              <goal>tag</goal>
             </goals>
-            <configuration>
-              <contextDirectory>${docker.context.directory}</contextDirectory>
-              <repository>${project.groupId}/${project.artifactId}</repository>
-              <pullNewerImage>false</pullNewerImage>
-              <tag>${project.version}</tag>
-              <buildArgs>
-                <ARTIFACT_NAME>${app.filename}</ARTIFACT_NAME>
-              </buildArgs>
-            </configuration>
+            <phase>package</phase>
           </execution>
         </executions>
       </plugin>
