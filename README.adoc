@@ -1,5 +1,13 @@
 = twitter-metricbot
 :icons: font
+:toc: macro
+:toclevels: 4
+
+https://github.com/bmarwell/twitter-metricbot/actions/workflows/maven.yml[image:https://github.com/bmarwell/twitter-metricbot/actions/workflows/maven.yml/badge.svg[Maven
+CI]]
+https://opensource.org/licenses/Apache-2.0[image:https://img.shields.io/badge/License-Apache_2.0-blue.svg[License]]
+https://renovatebot.com[image:https://img.shields.io/badge/renovate-enabled-brightgreen.svg[Renovate]]
+link:https://openliberty.io/[image:https://img.shields.io/badge/AppServer-Open%20Liberty-blue[AppServer]]
 
 A metric bot for Twitter.
 If mentioned on a tweet containing imperial units, will reply with converted metric units for your convenience.
