@@ -1,9 +1,10 @@
 package io.github.bmhm.twitter.metricbot.web.events;
 
+import twitter4j.Status;
+
+import javax.enterprise.context.ApplicationScoped;
 import java.io.Serializable;
 import java.util.ArrayDeque;
-import javax.enterprise.context.ApplicationScoped;
-import twitter4j.Status;
 
 @ApplicationScoped
 public class UnprocessedTweetQueueHolder implements Serializable {
