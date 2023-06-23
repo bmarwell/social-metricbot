@@ -56,7 +56,7 @@
     <!-- testing -->
     <dependency.assertj.version>3.24.2</dependency.assertj.version>
     <junit5.version>5.9.3</junit5.version>
-    <dependency.javax.annotation-api.version>1.3.5</dependency.javax.annotation-api.version>
+    <dependency.javax.annotation-api.version>2.1.1</dependency.javax.annotation-api.version>
   </properties>
 
   <dependencyManagement>
