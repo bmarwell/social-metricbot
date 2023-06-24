@@ -3,11 +3,11 @@
 :toc: macro
 :toclevels: 4
 
-https://github.com/bmarwell/twitter-metricbot/actions/workflows/maven.yml[image:https://github.com/bmarwell/twitter-metricbot/actions/workflows/maven.yml/badge.svg[Maven
-CI]]
-https://opensource.org/licenses/Apache-2.0[image:https://img.shields.io/badge/License-Apache_2.0-blue.svg[License]]
-https://renovatebot.com[image:https://img.shields.io/badge/renovate-enabled-brightgreen.svg[Renovate]]
-link:https://openliberty.io/[image:https://img.shields.io/badge/AppServer-Open%20Liberty-blue[AppServer]]
+image:https://github.com/bmarwell/twitter-metricbot/actions/workflows/maven.yml/badge.svg[Maven CI,link=https://github.com/bmarwell/twitter-metricbot/actions/workflows/maven.yml]
+image:https://img.shields.io/badge/License-Apache_2.0-blue.svg[License,link=https://opensource.org/licenses/Apache-2.0]
+image:https://codecov.io/gh/bmarwell/twitter-metricbot/branch/main/graph/badge.svg?token=OkJW0qKkJs[codecov.io,link=https://codecov.io/gh/bmarwell/twitter-metricbot]
+image:https://img.shields.io/badge/renovate-enabled-brightgreen.svg[Renovate,link=https://renovatebot.com]
+image:https://img.shields.io/badge/AppServer-Open%20Liberty-blue[AppServer,link=https://openliberty.io/]
 
 A metric bot for Twitter.
 If mentioned with 'please' on a tweet containing imperial units, will reply with converted metric units for your convenience.
