@@ -6,7 +6,6 @@
     {
       "matchPackageNames": [
         "^de\\.bmarwell\\.twitter\\.metricbot.*",
-        "^io\\.github\\.bmhm\\.twitter\\.metricbot.*",
         "^io\\.github\\.bmarwell\\.twitter\\.metricbot.*"
       ],
       "enabled": false

@@ -27,7 +27,7 @@ If you spot a tweet with metric units in it, create a reply and mention `@metric
 
 == Configuration
 
-See https://github.com/bmhm/twitter-metricbot/wiki/Configuration[Wiki:Configuration].
+See https://github.com/bmarwell/twitter-metricbot/wiki/Configuration[Wiki:Configuration].
 
 == How to start
 
