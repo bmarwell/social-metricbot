@@ -10,7 +10,7 @@ https://renovatebot.com[image:https://img.shields.io/badge/renovate-enabled-brig
 link:https://openliberty.io/[image:https://img.shields.io/badge/AppServer-Open%20Liberty-blue[AppServer]]
 
 A metric bot for Twitter.
-If mentioned on a tweet containing imperial units, will reply with converted metric units for your convenience.
+If mentioned with 'please' on a tweet containing imperial units, will reply with converted metric units for your convenience.
 
 == Active bots
 
@@ -23,7 +23,7 @@ If mentioned on a tweet containing imperial units, will reply with converted met
 
 == How to use
 
-If you spot a tweet with metric units in it, create a reply and mention `@metricbot1`.
+If you spot a tweet with metric units in it, create a reply and mention `@metricbot1 please` or `@metricbot1 convert please`.
 
 == Configuration
 

@@ -4,10 +4,7 @@ import io.github.bmhm.twitter.metricbot.common.TwitterConfig;
 import io.github.bmhm.twitter.metricbot.web.events.MentionEvent;
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.Map;
-import java.util.Set;
-import java.util.StringJoiner;
-import java.util.stream.Collectors;
+import java.util.*;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -37,22 +34,45 @@ public class MentionEventHandler extends TwitterAdapter implements Serializable 
 
     @Override
     public void gotMentions(final ResponseList<Status> statuses) {
-        final Set<Status> newMentions = statuses.stream()
-                .filter(status ->
-                        status.getCreatedAt().toInstant().isAfter(Instant.now().minusSeconds(60 * 10L)))
-                // don't consider replies to mentions, tweet must contain the account name EXPLICITELY.
-                .filter(status -> status.getText().contains(this.twitterConfig.getAccountName()))
-                // don't reply to own replies containing the original unit.
-                .filter(status -> !this.twitterConfig
-                        .getAccountName()
-                        .contains(status.getUser().getName()))
-                .collect(Collectors.toSet());
+        // don't consider replies to mentions, tweet must contain the account name EXPLICITELY.
+        // don't reply to own replies containing the original unit.
+        final Set<Status> newMentions = filterStatusToRespondTo(statuses);
 
         if (LOG.isInfoEnabled() && newMentions.size() > 0) {
             LOG.info("Found mention: [{}], new: [{}].", statuses.size(), newMentions.size());
         }
 
         newMentions.forEach(this::publishEvent);
+    }
+
+    protected Set<Status> filterStatusToRespondTo(ResponseList<Status> statuses) {
+        final Set<Status> newMentions = new HashSet<>();
+        for (Status status : statuses) {
+            if (!shouldRespondTo(status)) {
+                continue;
+            }
+
+            newMentions.add(status);
+        }
+
+        return Set.copyOf(newMentions);
+    }
+
+    protected boolean shouldRespondTo(Status status) {
+        if (!status.getCreatedAt().toInstant().isAfter(Instant.now().minusSeconds(60 * 10L))) {
+            // not from within last 600s (10 minutes).
+            return false;
+        }
+
+        if (!status.getText().contains(this.twitterConfig.getAccountName())) {
+            return false;
+        }
+
+        if (this.twitterConfig.getAccountName().contains(status.getUser().getName())) {
+            return false;
+        }
+
+        return status.getText().toLowerCase(Locale.ROOT).contains("please");
     }
 
     @Override
@@ -69,10 +89,15 @@ public class MentionEventHandler extends TwitterAdapter implements Serializable 
         this.mentionEvent.fire(new MentionEvent(status));
     }
 
+    public void setTwitterConfig(TwitterConfig twitterConfig) {
+        this.twitterConfig = twitterConfig;
+    }
+
     @Override
     public String toString() {
-        return new StringJoiner(", ", "MentionEventHandler{", "}")
-                .add("mentionEvent=" + this.mentionEvent)
+        return new StringJoiner(", ", MentionEventHandler.class.getSimpleName() + "[", "]")
+                .add("mentionEvent=" + mentionEvent)
+                .add("twitterConfig=" + twitterConfig)
                 .toString();
     }
 }
