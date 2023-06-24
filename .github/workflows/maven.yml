@@ -44,5 +44,5 @@ jobs:
           --batch-mode \
           --no-transfer-progress \
           verify \
-          -Pdocs \
+          -Pdocs,dockerize \
           -DtrimStackTrace=false
