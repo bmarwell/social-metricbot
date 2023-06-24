@@ -21,17 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import io.github.bmarwell.twitter.metricbot.conversion.converters.CalorieConverter;
-import io.github.bmarwell.twitter.metricbot.conversion.converters.CupConverter;
-import io.github.bmarwell.twitter.metricbot.conversion.converters.FlouidOunceConverter;
-import io.github.bmarwell.twitter.metricbot.conversion.converters.FootInchConverter;
-import io.github.bmarwell.twitter.metricbot.conversion.converters.HorsePowerConverter;
-import io.github.bmarwell.twitter.metricbot.conversion.converters.MilesConverter;
-import io.github.bmarwell.twitter.metricbot.conversion.converters.TablespoonConverter;
-import io.github.bmarwell.twitter.metricbot.conversion.converters.TeapoonConverter;
-import io.github.bmarwell.twitter.metricbot.conversion.converters.TemperatureConverter;
-import io.github.bmarwell.twitter.metricbot.conversion.converters.UsUnitConverter;
-import io.github.bmarwell.twitter.metricbot.conversion.converters.WeightOunceConverter;
+import io.github.bmarwell.twitter.metricbot.conversion.converters.*;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -148,7 +138,14 @@ public class GlobalConversionTest {
                                 + "- 2 large baking potatoes \n"
                                 + "-3.5 cups of flour \n" // 3.5C=828ml
                                 + "- salt, paprika, sour cream, tons of garlic, & cheese",
-                        List.of("2.25tsp=9g", "3.5C=828ml")));
+                        List.of("2.25tsp=9g", "3.5C=828ml")),
+                Arguments.of(
+                        "It pumps 1500 gallons a minute from 240 ft deep",
+                        List.of("1,500gal=5,678.12L" /*, "240ft=123m"*/)),
+                Arguments.of(
+                        "1 gallon cherries and another 2 gallons of strawberries picked today."
+                                + "2 gallons of strawberries picked yesterday.",
+                        List.of("1gal=3.79L", "2gal=7.57L")));
     }
 
     @Inject
@@ -163,6 +160,7 @@ public class GlobalConversionTest {
                 new CupConverter(),
                 new FlouidOunceConverter(),
                 new FootInchConverter(),
+                new GallonConverter(),
                 new HorsePowerConverter(),
                 new MilesConverter(),
                 new TablespoonConverter(),
@@ -190,6 +188,7 @@ public class GlobalConversionTest {
                 expectedOutputs.stream().map(expectedConversion -> makeAssertion(convertedUnits, expectedConversion));
 
         LOG.debug("Checking tweet [{}].", tweet);
+        LOG.debug("Converted units: [{}]", convertedUnits);
 
         assertAll(
                 "Checking that list "
