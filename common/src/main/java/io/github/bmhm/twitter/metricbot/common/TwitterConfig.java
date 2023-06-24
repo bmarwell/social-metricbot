@@ -51,6 +51,10 @@ public class TwitterConfig implements Serializable {
         return this.accountName;
     }
 
+    public void setAccountName(String accountName) {
+        this.accountName = accountName;
+    }
+
     public boolean isDebug() {
         return this.debug;
     }
