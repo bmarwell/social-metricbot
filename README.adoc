@@ -31,9 +31,13 @@ See https://github.com/bmarwell/twitter-metricbot/wiki/Configuration[Wiki:Config
 
 == How to start
 
-You can start this micronaut application via script or command line like this:
+You can start this OpenLiberty docker container like this:
 
-[NOTE]
-====
-(TBD)
-====
+[source,bash]
+----
+docker run \
+  -p 9080:9080 \
+  -e IO_GITHUB_BMARWELL_TWITTER_METRICBOT_H2_DB=jdbc:h2:file:/var/opt/metricbot.db \
+  -name metricbot \
+  io.github.bmarwell.twitter.metricbot/twitter-metricbot-app-ol-docker:latest
+----
