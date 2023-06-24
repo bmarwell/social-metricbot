@@ -93,7 +93,10 @@ public class TweetResponder {
 
     protected void doRespond(final Status foundTweet, final Status statusWithUnits) {
         if (!this.converter.containsUsUnits(statusWithUnits.getText())) {
-            LOG.error("No units found, although they were found earlier?! [{}].", statusWithUnits.getText());
+            LOG.error(
+                    "No units found, although they were found earlier?! [{}:{}].",
+                    statusWithUnits.getId(),
+                    statusWithUnits.getText());
 
             // reply with sorry.
 
@@ -101,6 +104,16 @@ public class TweetResponder {
         }
 
         final String responseText = this.converter.returnConverted(statusWithUnits.getText(), "\n");
+
+        if (responseText.endsWith(":")) {
+            // found units, but did not add any conversions..?
+            LOG.error(
+                    "No units converted, although they were found earlier?! [{}:{}].",
+                    statusWithUnits.getId(),
+                    statusWithUnits.getText());
+
+            return;
+        }
 
         if (foundTweet.getQuotedStatusId() == statusWithUnits.getId()) {
             // reply to foundTweet only. Do not bother the originals post's author.
@@ -111,7 +124,7 @@ public class TweetResponder {
         doRespondTwoPotentallyBoth(foundTweet, statusWithUnits, responseText);
     }
 
-    private void doRespondTwoPotentallyBoth(
+    protected void doRespondTwoPotentallyBoth(
             final Status foundTweet, final Status statusWithUnits, final String responseText) {
         final String mentions = createMentions(foundTweet, statusWithUnits);
         String tweetText = mentions + responseText;
@@ -277,5 +290,9 @@ public class TweetResponder {
     @Transactional
     private Optional<TweetPdo> findById(final long id) {
         return this.tweetRepository.get().findById(id);
+    }
+
+    public void setConverter(UsConversion converter) {
+        this.converter = converter;
     }
 }
