@@ -1,4 +1,4 @@
-name: Maven CI
+name: Codestyle
 
 on:
   workflow_dispatch: { }
@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  codestyle:
     if: github.ref_name == 'main' || github.event_name != 'push' && github.event.pull_request.head.repo.full_name == github.event.pull_request.base.repo.full_name
     runs-on: [ 'ubuntu-latest' ]
     steps:
@@ -24,7 +24,7 @@ jobs:
         java-version: 17
         distribution: semeru
 
-    - name: Build application with Maven
+    - name: Check whether you actually executed Maven...
       shell: bash
       run: |
         ./mvnw \
@@ -32,13 +32,6 @@ jobs:
           --errors \
           --batch-mode \
           --no-transfer-progress \
-          verify \
-          -Pdocs,dockerize \
-          -DtrimStackTrace=false
-
-    - name: Upload coverage reports to Codecov
-      uses: codecov/codecov-action@v3
-      env:
-        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-
+          spotless:check \
+          -DtrimStackTrace=false 
 
