@@ -59,6 +59,10 @@ public class MentionEventHandler extends TwitterAdapter implements Serializable 
     }
 
     protected boolean shouldRespondTo(Status status) {
+        if (status.getUser().getScreenName().equalsIgnoreCase(this.twitterConfig.getAccountName())) {
+            return false;
+        }
+
         if (!status.getCreatedAt().toInstant().isAfter(Instant.now().minusSeconds(60 * 10L))) {
             // not from within last 600s (10 minutes).
             return false;
@@ -68,7 +72,7 @@ public class MentionEventHandler extends TwitterAdapter implements Serializable 
             return false;
         }
 
-        if (this.twitterConfig.getAccountName().contains(status.getUser().getName())) {
+        if (this.twitterConfig.getAccountName().contains(status.getUser().getScreenName())) {
             return false;
         }
 

@@ -191,6 +191,11 @@ public class TweetResponder {
 
         final StatusUpdate statusUpdate = new StatusUpdate(tweetText).inReplyToStatusId(foundTweet.getId());
 
+        if (foundTweet.getUser().getScreenName().equals(this.twitterConfig.getAccountName())) {
+            // don't reply to self.
+            return;
+        }
+
         try {
             LOG.info(
                     "Sending status response to [{}]: [{}].",
@@ -248,7 +253,7 @@ public class TweetResponder {
     private boolean isByOtherUser(final Status foundTweet) {
         return !this.twitterConfig
                 .getAccountName()
-                .contains(foundTweet.getUser().getName());
+                .contains(foundTweet.getUser().getScreenName());
     }
 
     protected Optional<Status> containsUnits(final long inReplyToStatusId) {

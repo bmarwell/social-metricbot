@@ -40,7 +40,7 @@ class MentionEventHandlerTest {
 
     private Status createMockStatus(String statusText) {
         var user = mock(User.class);
-        when(user.getName()).then(args -> "someRandomDude");
+        when(user.getScreenName()).then(args -> "someRandomDude");
 
         var status = mock(Status.class);
         when(status.getText()).then(args -> statusText);
