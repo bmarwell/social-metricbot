@@ -40,14 +40,21 @@ public class FootInchConverter implements UsUnitConverter {
     private static final Pattern INCH_ONLY = Pattern.compile(
             // not starting with foot, feet or '.
             // then an optional space
-            // then numbers, followed by wither ", in, inch or inches.
+            // then numbers, followed by either ", in, inch or inches.
             "(?<!foot)(?<!feet)(?<!')\\s?(([0-9]+,)?[0-9]+(\\.[0-9]+)?)\\s?(\"|in\\b|inch(es)?)",
             Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
+
+    /**
+     * 4th matcher for literal foot/feet only.
+     */
+    private static final Pattern FT_TEXT = Pattern.compile(
+            "\\b(?<num>\\d+(,\\d+)?|\\d{0,2}|a)\\s*(?:foot|feet|ft)", Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
 
     private static final NumberFormat numberFormatCm = DecimalFormats.atMostOneFractionDigits();
     private static final NumberFormat numberFormatFt = DecimalFormats.atMostTwoFractionDigits();
 
     private static final String UNIT_FEET = "'";
+    private static final String UNIT_FEET_FT = "ft";
     private static final String UNIT_INCH = "\"";
     private static final String UNIT_CENTIMETERS = "cm";
     private static final String UNIT_METERS = "m";
@@ -105,7 +112,28 @@ public class FootInchConverter implements UsUnitConverter {
             inchTextToCm(inches).ifPresent(outputUnits::add);
         }
 
+        final Matcher matcherFeet = FT_TEXT.matcher(text);
+        while (matcherFeet.find()) {
+            final String inches = matcherFeet.group("num").replaceAll(",", "");
+
+            if (inches.isEmpty()) {
+                continue;
+            }
+
+            ftTextToCm(inches).ifPresent(outputUnits::add);
+        }
+
         return outputUnits;
+    }
+
+    private Optional<UnitConversion> ftTextToCm(final String feet) {
+        final double feetDecimal = parseFeet(feet);
+
+        final String inputFeetDecimal = numberFormatFt.format(feetDecimal);
+
+        final double centimetres = feetDecimal * CENTIMETERS_PER_FOOT;
+        // usually we use heights up to a man's height in cm, but after that we switch to meters.
+        return getUnitConversion(inputFeetDecimal, UNIT_FEET_FT, centimetres);
     }
 
     private Optional<UnitConversion> inchTextToCm(final String inches) {

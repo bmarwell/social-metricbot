@@ -140,12 +140,15 @@ public class GlobalConversionTest {
                                 + "- salt, paprika, sour cream, tons of garlic, & cheese",
                         List.of("2.25tsp=9g", "3.5C=828ml")),
                 Arguments.of(
-                        "It pumps 1500 gallons a minute from 240 ft deep",
-                        List.of("1,500gal=5.68m³" /*, "240ft=123m"*/)),
+                        "It pumps 1500 gallons a minute from 240 ft deep", List.of("1,500gal=5.68m³", "240ft=73.2m")),
                 Arguments.of(
                         "1 gallon cherries and another 2 gallons of strawberries picked today."
                                 + "2 gallons of strawberries picked yesterday.",
-                        List.of("1gal=3.79L", "2gal=7.57L")));
+                        List.of("1gal=3.79L", "2gal=7.57L")),
+                Arguments.of(
+                        "Based on mpg per passenger seat you used 653.33 gallons that year"
+                                + " or 13,785.26 lbs of CO2 that your travels pumped into the atmosphere.\n",
+                        List.of("2.47m³" /* TODO: add pound converter*/)));
     }
 
     @Inject
