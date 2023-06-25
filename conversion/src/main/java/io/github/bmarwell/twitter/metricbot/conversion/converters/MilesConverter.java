@@ -44,7 +44,7 @@ public class MilesConverter implements UsUnitConverter {
     private static final Logger LOG = LoggerFactory.getLogger(MilesConverter.class);
 
     private static final Pattern MILES = Pattern.compile(
-            "((\\b|[^0-9]-)?([0-9]+,){0,4}([0-9]+\\.)?[0-9]+)(\\s)?(mi(le(s)?)?\\b)",
+            "((\\b|[^0-9]-)?([0-9]+,){0,4}([0-9]+\\.)?[0-9]+|a)(\\s)?(mi(le(s)?)?\\b)",
             Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
 
     private static final Pattern MILES_K = Pattern.compile(
@@ -80,7 +80,7 @@ public class MilesConverter implements UsUnitConverter {
         while (matcherMiles.find()) {
             try {
                 final String group = matcherMiles.group(1).replaceAll(",", "");
-                final double miles = Double.parseDouble(group);
+                final double miles = getMilesFromRegexCapture(group);
                 final double meters = miles * MILES_IN_METERS;
                 final String km = NUMBER_FORMAT_ONE_FRACTION_DIGITS.format(meters / 1000);
 
@@ -105,7 +105,7 @@ public class MilesConverter implements UsUnitConverter {
                         .toLowerCase(Locale.ENGLISH)
                         .replaceAll(",", "")
                         .replaceAll("k", "000");
-                final double miles = Double.parseDouble(group);
+                final double miles = getMilesFromRegexCapture(group);
                 final double meters = miles * MILES_IN_METERS;
                 final String km = NUMBER_FORMAT_ONE_FRACTION_DIGITS.format(meters / 1000);
 
@@ -151,6 +151,14 @@ public class MilesConverter implements UsUnitConverter {
         }
 
         return unmodifiableSet(outputUnits);
+    }
+
+    private static double getMilesFromRegexCapture(String group) {
+        if ("a".equals(group)) {
+            return 1.0;
+        }
+
+        return Double.parseDouble(group);
     }
 
     @Override

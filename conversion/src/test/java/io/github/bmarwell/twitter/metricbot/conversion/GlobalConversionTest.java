@@ -141,7 +141,7 @@ public class GlobalConversionTest {
                         List.of("2.25tsp=9g", "3.5C=828ml")),
                 Arguments.of(
                         "It pumps 1500 gallons a minute from 240 ft deep",
-                        List.of("1,500gal=5,678.12L" /*, "240ft=123m"*/)),
+                        List.of("1,500gal=5.68m³" /*, "240ft=123m"*/)),
                 Arguments.of(
                         "1 gallon cherries and another 2 gallons of strawberries picked today."
                                 + "2 gallons of strawberries picked yesterday.",
