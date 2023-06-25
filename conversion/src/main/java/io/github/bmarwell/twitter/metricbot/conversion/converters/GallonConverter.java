@@ -10,6 +10,8 @@ import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -25,7 +27,7 @@ public class GallonConverter implements UsUnitConverter {
     private static final Logger LOG = LoggerFactory.getLogger(GallonConverter.class);
 
     private static final Pattern PATTERN_SOURCE = Pattern.compile(
-            "\\b((?:\\d+\\.)?([\\d/]+|a))\\s?(mil(lion(s)?)? )?gallon(?:s)?\\b",
+            "\\b((?:\\d+\\.)?([\\d,/]+|a))\\s?(?<exp>(mil|bil)(lion(s)?)? )?gallon(?:s)?\\b",
             Pattern.MULTILINE | Pattern.CASE_INSENSITIVE | Pattern.CANON_EQ);
 
     private static final Pattern PATTERN_SOURCE_FRACTIONS = Pattern.compile(
@@ -33,11 +35,14 @@ public class GallonConverter implements UsUnitConverter {
 
     private static final String SYMBOL_SOURCE = "gal";
     private static final String SYMBOL_TARGET = "L";
+    private static final String SYMBOL_TARGET_HIGH = "m³";
 
     private static final double SOURCE_TO_TARGET_MULTIPLICATOR = 3.785_41d;
+    private static final double SOURCE_TO_TARGET_MULTIPLICATOR_HIGH = 0.003_785_411_795_401_118_5d;
 
     private static final NumberFormat NUMBER_FORMAT_SOURCE = DecimalFormats.atMostTwoFractionDigits();
     private static final NumberFormat NUMBER_FORMAT_TARGET = DecimalFormats.atMostTwoFractionDigits();
+    private static final NumberFormat NUMBER_FORMAT_TARGET_HIGH = DecimalFormats.atMostTwoFractionDigits();
 
     @Override
     public List<String> getSearchTerms() {
@@ -80,35 +85,80 @@ public class GallonConverter implements UsUnitConverter {
     private void parseUnitOccurence(LinkedList<UnitConversion> conversions, Matcher matcher) {
         final String source = matcher.group(1);
         final String gallonsDecimal = FractionUtil.replaceFractions(source);
-        final double gallonsDouble = parseNumberOrWord(gallonsDecimal);
-
-        final double millis = gallonsDouble * SOURCE_TO_TARGET_MULTIPLICATOR;
+        final double gallonsDouble = parseNumberOrWord(gallonsDecimal, matcher);
 
         final String sourceUnitDecimalString = NUMBER_FORMAT_SOURCE.format(gallonsDouble);
-        final String targetUnitDecimalString = NUMBER_FORMAT_TARGET.format(millis);
+
+        final UnitConversion conversion = getUnitConversion(gallonsDouble, sourceUnitDecimalString);
+
         LOG.debug(
                 "Converted [{}]{} to [{}]{}.",
                 sourceUnitDecimalString,
                 SYMBOL_SOURCE,
-                targetUnitDecimalString,
-                SYMBOL_TARGET);
-
-        final ImmutableUnitConversion conversion = ImmutableUnitConversion.builder()
-                .inputAmount(sourceUnitDecimalString)
-                .inputUnit(SYMBOL_SOURCE)
-                .metricAmount(targetUnitDecimalString)
-                .metricUnit(SYMBOL_TARGET)
-                .build();
+                conversion.getMetricAmount(),
+                conversion.getMetricUnit());
 
         conversions.add(conversion);
     }
 
-    private double parseNumberOrWord(String gallonsDecimal) {
+    private static UnitConversion getUnitConversion(double gallonsDouble, String sourceUnitDecimalString) {
+        final UnitConversion conversion;
+        if (gallonsDouble > 265) {
+            final var millis = gallonsDouble * SOURCE_TO_TARGET_MULTIPLICATOR_HIGH;
+            final var targetUnitDecimalString = NUMBER_FORMAT_TARGET_HIGH.format(millis);
+
+            conversion = ImmutableUnitConversion.builder()
+                    .inputAmount(sourceUnitDecimalString)
+                    .inputUnit(SYMBOL_SOURCE)
+                    .metricAmount(targetUnitDecimalString)
+                    .metricUnit(SYMBOL_TARGET_HIGH)
+                    .build();
+        } else {
+            final var millis = gallonsDouble * SOURCE_TO_TARGET_MULTIPLICATOR;
+            final var targetUnitDecimalString = NUMBER_FORMAT_TARGET.format(millis);
+
+            conversion = ImmutableUnitConversion.builder()
+                    .inputAmount(sourceUnitDecimalString)
+                    .inputUnit(SYMBOL_SOURCE)
+                    .metricAmount(targetUnitDecimalString)
+                    .metricUnit(SYMBOL_TARGET)
+                    .build();
+        }
+        return conversion;
+    }
+
+    private double parseNumberOrWord(String gallonsDecimal, Matcher matcherForExp) {
+        final Optional<String> exp = getExponent(matcherForExp);
+
+        final double multiplicator =
+                exp.stream().mapToDouble(this::strToMultiplicator).findFirst().orElse(1.0d);
+
         if ("a".equals(gallonsDecimal)) {
-            return 1.0d;
+            return multiplicator;
         }
 
-        return Double.parseDouble(gallonsDecimal);
+        return multiplicator * Double.parseDouble(gallonsDecimal.replaceAll(",", ""));
+    }
+
+    private double strToMultiplicator(String exp) {
+        if (exp.toLowerCase(Locale.ROOT).startsWith("mil")) {
+            return 1_000_000d;
+        } else if (exp.toLowerCase(Locale.ROOT).startsWith("bil")) {
+            return 1_000_000_000d;
+        } else if (exp.toLowerCase(Locale.ROOT).startsWith("tril")) {
+            return 1_000_000_000_000d;
+        } else {
+            LOG.error("unknown multiplicator: " + exp.toLowerCase(Locale.ROOT));
+            return 1d;
+        }
+    }
+
+    private static Optional<String> getExponent(Matcher matcherForExp) {
+        try {
+            return Optional.ofNullable(matcherForExp.group("exp"));
+        } catch (IllegalArgumentException iae) {
+            return Optional.empty();
+        }
     }
 
     @Override
