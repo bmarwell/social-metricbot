@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package io.github.bmarwell.twitter.metricbot.metricbot.web;
+package io.github.bmarwell.twitter.metricbot.web;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
