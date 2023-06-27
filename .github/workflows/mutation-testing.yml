@@ -1,0 +1,31 @@
+name: Mutation testing
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  mutationtesting:
+    runs-on: [ 'ubuntu-latest' ]
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Set up JDK
+      uses: actions/setup-java@v3
+      with:
+        java-version: 17
+        distribution: semeru
+
+    - name: Run Pitest
+      shell: bash
+      run: |
+        ./mvnw \
+          --show-version \
+          --errors \
+          --batch-mode \
+          --no-transfer-progress \
+          test-compile org.pitest:pitest-maven:mutationCoverage
