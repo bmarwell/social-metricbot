@@ -148,7 +148,8 @@ public class GlobalConversionTest {
                 Arguments.of(
                         "Based on mpg per passenger seat you used 653.33 gallons that year"
                                 + " or 13,785.26 lbs of CO2 that your travels pumped into the atmosphere.\n",
-                        List.of("2.47m³" /* TODO: add pound converter*/)));
+                        List.of("2.47m³", "13,785.3lb=6,252.9kg")),
+                Arguments.of("2 months, 18lbs\n 12 months, 100lbs\n", List.of("18.0lb=8.2kg", "100.0lb=45.4kg")));
     }
 
     @Inject
@@ -166,6 +167,7 @@ public class GlobalConversionTest {
                 new GallonConverter(),
                 new HorsePowerConverter(),
                 new MilesConverter(),
+                new PoundConverter(),
                 new TablespoonConverter(),
                 new TeapoonConverter(),
                 new TemperatureConverter(),
