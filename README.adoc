@@ -66,6 +66,11 @@ If you spot a tweet with metric units in it, create a reply and mention `@metric
 |
 |
 
+|Pounds (lb)
+|Kilograms (kg)
+|
+|
+
 |Tablespoons (tbsp)
 |Grams (g)
 |
