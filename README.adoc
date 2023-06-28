@@ -16,14 +16,78 @@ If mentioned with 'please' on a tweet containing imperial units, will reply with
 
 * link:https://twitter.com/metricbot1/with_replies[🇺🇸 @metricbot1]
 
+== How to use
+
+If you spot a tweet with metric units in it, create a reply and mention `@metricbot1 please` or `@metricbot1 convert please`.
+
 == Features
 
 * find tweets with imperial units.
 * can convert units to metrics and reply.
 
-== How to use
+=== Currently implemented units
 
-If you spot a tweet with metric units in it, create a reply and mention `@metricbot1 please` or `@metricbot1 convert please`.
+.Supported metric conversions in alphabetical order
+|===
+|Input Unit |Output Unit(s) |Example Input |Example output
+
+|Calories (cal)
+|Kilojoule (kJ)
+|
+|
+
+|Cups (cup)
+|Millilitres (ml)
+|
+|
+
+|Fluid Ounce (fl.oz.)
+|Millilitres (ml)
+|
+|
+
+|Foots and Inches ('/"/ft)
+|Centimetres (cm), Metres (m), Kilometres (km)
+|
+|
+
+|Gallons
+|Litres (L), cubic metres (m²)
+|
+|
+
+|Horse Power (hp)
+|Kilowatts (kW)
+|
+|
+
+|Miles
+|Kilometres (km)
+|
+|
+
+|Tablespoons (tbsp)
+|Grams (g)
+|
+|
+
+|Teaspoons (tsp)
+|Grams (g)
+|
+|
+
+|Temperature: Degree Fahrenheit (°F)
+|Temperature: Degree Celsius (°C)
+|
+|
+
+|Weighted Ounce (oz.)
+|Grams(g)
+|
+|
+|===
+
+No idea what makes the Celsius temperature more metric than Fahrenheit, but Fahrenheit is a very convenient unit.
 
 == Configuration
 
