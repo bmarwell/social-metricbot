@@ -18,6 +18,14 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
 
+    - name: Cache local Maven Build Cache
+      uses: actions/cache@v3
+      if: ${{ github.ref_name != 'main' }}
+      with:
+        path: ~/.m2/build-cache
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2-
+
     - name: Set up JDK
       uses: actions/setup-java@v3
       with:
@@ -40,5 +48,3 @@ jobs:
       uses: codecov/codecov-action@v3
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-
-
