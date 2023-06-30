@@ -71,6 +71,9 @@ public class GlobalConversionTest {
                         "2 cups water\n" + "1/4 cup apple cider vinegar\n" + "1/2 tsp rock salt",
                         List.of("2C=473ml", ".25C=59ml")),
                 Arguments.of("40,000 Feet in the sky", List.of("40,000'=12.2km")),
+                Arguments.of("2pt", List.of("2pt=946.35ml")),
+                Arguments.of("3pt", List.of("3pt=1.42L")),
+                Arguments.of("35 pt", List.of("35pt=16.56L")),
                 Arguments.of(
                         "a 21 inch waist and actual abs  (currently 23 inches)", List.of("21\"=53.3cm", "23\"=58.4")),
                 Arguments.of(
@@ -167,6 +170,7 @@ public class GlobalConversionTest {
                 new GallonConverter(),
                 new HorsePowerConverter(),
                 new MilesConverter(),
+                new PintConverter(),
                 new PoundConverter(),
                 new TablespoonConverter(),
                 new TeapoonConverter(),
