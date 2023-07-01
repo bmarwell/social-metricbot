@@ -21,7 +21,6 @@ import static java.util.Collections.emptyList;
 import io.github.bmarwell.twitter.metricbot.conversion.UnitConversion;
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 public interface UsUnitConverter extends Serializable {
