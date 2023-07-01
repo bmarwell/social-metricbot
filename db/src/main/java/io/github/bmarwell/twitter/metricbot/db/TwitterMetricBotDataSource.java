@@ -27,9 +27,7 @@ public class TwitterMetricBotDataSource {
         try {
             final Flyway flyway = Flyway.configure()
                     .dataSource(this.ds1)
-                    .locations(
-                            "classpath:/io/github/bmarwell/twitter/metricbot/db/databasemigrations",
-                            "classpath:databasemigrations")
+                    .locations("classpath:/io/github/bmarwell/twitter/metricbot/db/databasemigrations")
                     // .callbacks("io.github.bmarwell.twitter.metricbot.db.callbacks")
                     .load();
 
