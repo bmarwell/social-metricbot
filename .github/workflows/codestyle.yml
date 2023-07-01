@@ -21,7 +21,7 @@ jobs:
     - name: Set up JDK
       uses: actions/setup-java@v3
       with:
-        java-version: 17
+        java-version: 20
         distribution: semeru
 
     - name: Check whether you actually executed Maven...
@@ -34,4 +34,3 @@ jobs:
           --no-transfer-progress \
           spotless:check \
           -DtrimStackTrace=false 
-
