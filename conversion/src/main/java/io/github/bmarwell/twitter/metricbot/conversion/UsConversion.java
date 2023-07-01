@@ -19,15 +19,15 @@ package io.github.bmarwell.twitter.metricbot.conversion;
 import static java.util.stream.Collectors.joining;
 
 import io.github.bmarwell.twitter.metricbot.conversion.converters.UsUnitConverter;
+import jakarta.enterprise.context.Dependent;
+import jakarta.enterprise.inject.Any;
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
-import javax.enterprise.context.Dependent;
-import javax.enterprise.inject.Any;
-import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
 
 @Dependent
 public class UsConversion {

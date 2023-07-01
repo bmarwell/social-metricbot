@@ -3,13 +3,13 @@ package io.github.bmarwell.twitter.metricbot.web.events;
 import static java.util.Arrays.asList;
 
 import io.github.bmarwell.twitter.metricbot.db.dao.TweetRepository;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Observes;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import java.time.Instant;
 import java.util.List;
 import java.util.Locale;
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
-import javax.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import twitter4j.Status;

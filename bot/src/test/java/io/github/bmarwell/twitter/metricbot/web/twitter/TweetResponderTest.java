@@ -4,8 +4,8 @@ import static org.mockito.Mockito.*;
 
 import io.github.bmarwell.twitter.metricbot.conversion.UsConversion;
 import io.github.bmarwell.twitter.metricbot.conversion.converters.UsUnitConverter;
+import jakarta.enterprise.inject.Instance;
 import java.util.stream.Stream;
-import javax.enterprise.inject.Instance;
 import org.junit.jupiter.api.Test;
 import twitter4j.Status;
 

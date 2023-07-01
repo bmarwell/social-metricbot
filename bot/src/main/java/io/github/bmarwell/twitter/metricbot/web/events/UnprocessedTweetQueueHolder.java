@@ -1,8 +1,8 @@
 package io.github.bmarwell.twitter.metricbot.web.events;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import java.io.Serializable;
 import java.util.ArrayDeque;
-import javax.enterprise.context.ApplicationScoped;
 import twitter4j.Status;
 
 @ApplicationScoped

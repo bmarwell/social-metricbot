@@ -26,7 +26,6 @@
     <dependency>
       <groupId>jakarta.transaction</groupId>
       <artifactId>jakarta.transaction-api</artifactId>
-      <version>${dependency.jakarta.transaction-api.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

@@ -1,8 +1,8 @@
 package io.github.bmarwell.twitter.metricbot.db;
 
+import jakarta.annotation.Resource;
+import jakarta.enterprise.context.Dependent;
 import java.util.concurrent.atomic.AtomicBoolean;
-import javax.annotation.Resource;
-import javax.enterprise.context.Dependent;
 import javax.sql.DataSource;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.FlywayException;

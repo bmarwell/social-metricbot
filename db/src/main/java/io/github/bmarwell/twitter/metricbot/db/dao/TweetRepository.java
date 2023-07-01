@@ -18,17 +18,17 @@ package io.github.bmarwell.twitter.metricbot.db.dao;
 
 import io.github.bmarwell.twitter.metricbot.db.pdo.TweetPdo;
 import io.github.bmarwell.twitter.metricbot.db.pdo.TweetPdo_;
+import jakarta.enterprise.context.Dependent;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaDelete;
+import jakarta.persistence.criteria.ParameterExpression;
+import jakarta.persistence.criteria.Root;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
-import javax.enterprise.context.Dependent;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
-import javax.persistence.criteria.ParameterExpression;
-import javax.persistence.criteria.Root;
 
 @Dependent
 public class TweetRepository {
