@@ -21,13 +21,13 @@ import static java.util.Collections.unmodifiableSet;
 
 import io.github.bmarwell.twitter.metricbot.conversion.ImmutableUnitConversion;
 import io.github.bmarwell.twitter.metricbot.conversion.UnitConversion;
+import jakarta.enterprise.context.Dependent;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.enterprise.context.Dependent;
 
 @Dependent
 public class FlouidOunceConverter implements UsUnitConverter {

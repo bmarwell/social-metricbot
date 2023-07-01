@@ -18,16 +18,16 @@ package io.github.bmarwell.twitter.metricbot.web.listener;
 
 import io.github.bmarwell.twitter.metricbot.common.TwitterConfig;
 import io.github.bmarwell.twitter.metricbot.db.dao.TweetRepository;
+import jakarta.annotation.Resource;
+import jakarta.enterprise.concurrent.ManagedScheduledExecutorService;
+import jakarta.inject.Inject;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
+import jakarta.servlet.annotation.WebListener;
+import jakarta.transaction.Transactional;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.concurrent.TimeUnit;
-import javax.annotation.Resource;
-import javax.enterprise.concurrent.ManagedScheduledExecutorService;
-import javax.inject.Inject;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-import javax.servlet.annotation.WebListener;
-import javax.transaction.Transactional;
 
 @WebListener
 public class TweetCleanerListener implements ServletContextListener {

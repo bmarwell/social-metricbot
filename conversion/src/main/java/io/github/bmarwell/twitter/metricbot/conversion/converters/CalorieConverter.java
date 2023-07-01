@@ -6,13 +6,13 @@ import static java.util.Collections.unmodifiableList;
 import io.github.bmarwell.twitter.metricbot.conversion.DecimalFormats;
 import io.github.bmarwell.twitter.metricbot.conversion.ImmutableUnitConversion;
 import io.github.bmarwell.twitter.metricbot.conversion.UnitConversion;
+import jakarta.enterprise.context.Dependent;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.enterprise.context.Dependent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -22,13 +22,13 @@ import static java.util.Collections.unmodifiableSet;
 import io.github.bmarwell.twitter.metricbot.conversion.DecimalFormats;
 import io.github.bmarwell.twitter.metricbot.conversion.ImmutableUnitConversion;
 import io.github.bmarwell.twitter.metricbot.conversion.UnitConversion;
+import jakarta.enterprise.context.Dependent;
 import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.enterprise.context.Dependent;
 
 @Dependent
 public class WeightOunceConverter implements UsUnitConverter {

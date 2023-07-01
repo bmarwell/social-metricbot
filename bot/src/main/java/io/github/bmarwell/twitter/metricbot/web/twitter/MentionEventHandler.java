@@ -2,12 +2,12 @@ package io.github.bmarwell.twitter.metricbot.web.twitter;
 
 import io.github.bmarwell.twitter.metricbot.common.TwitterConfig;
 import io.github.bmarwell.twitter.metricbot.web.events.MentionEvent;
+import jakarta.enterprise.context.Dependent;
+import jakarta.enterprise.event.Event;
+import jakarta.inject.Inject;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.*;
-import javax.enterprise.context.Dependent;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import twitter4j.*;
