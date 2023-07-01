@@ -1,7 +1,6 @@
 package io.github.bmarwell.twitter.metricbot.conversion.converters;
 
 import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
 import static java.util.Collections.unmodifiableList;
 
 import io.github.bmarwell.twitter.metricbot.conversion.DecimalFormats;
@@ -40,7 +39,7 @@ public class TeapoonConverter implements UsUnitConverter {
 
     @Override
     public List<String> getSearchTerms() {
-        return singletonList("tsp");
+        return List.of("tsp");
     }
 
     @Override
