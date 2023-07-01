@@ -12,21 +12,24 @@ public class FootInchConverterTest {
     @Test
     public void testBogusInputMatches() {
         // given
-        final String tweet = "Here's the recipe:\n"
-                + "\n"
-                + "2 cups of Pancake Mix\n"
-                + "1 1/2 cups of Milk\n"
-                + "2 Tsp Vanilla Extract\n"
-                + "1 tsp Cinnamon\n"
-                + "\n"
-                + "Key lime Icing\n"
-                + "1/2 Cup of confection sugar\n"
-                + "2 tablespoons of sweetened condensed milk\n"
-                + "2 tablespoons of lime Juice\n"
-                + "\n"
-                + "Garnish \n"
-                + "1/2 cup crushed Biscoff cookies \n"
-                + "1 lime for lime zest";
+        final String tweet =
+                """
+                Here's the recipe:
+
+                2 cups of Pancake Mix
+                1 1/2 cups of Milk
+                2 Tsp Vanilla Extract
+                1 tsp Cinnamon
+
+                Key lime Icing
+                1/2 Cup of confection sugar
+                2 tablespoons of sweetened condensed milk
+                2 tablespoons of lime Juice
+
+                Garnish\s
+                1/2 cup crushed Biscoff cookies\s
+                1 lime for lime zest\
+                """;
         final FootInchConverter footInchConverter = new FootInchConverter();
 
         // when
@@ -38,21 +41,24 @@ public class FootInchConverterTest {
     @Test
     public void testBogusInputDoesNotConvert() {
         // given
-        final String tweet = "Here's the recipe:\n"
-                + "\n"
-                + "2 cups of Pancake Mix\n"
-                + "1 1/2 cups of Milk\n"
-                + "2 Tsp Vanilla Extract\n"
-                + "1 tsp Cinnamon\n"
-                + "\n"
-                + "Key lime Icing\n"
-                + "1/2 Cup of confection sugar\n"
-                + "2 tablespoons of sweetened condensed milk\n"
-                + "2 tablespoons of lime Juice\n"
-                + "\n"
-                + "Garnish \n"
-                + "1/2 cup crushed Biscoff cookies \n"
-                + "1 lime for lime zest";
+        final String tweet =
+                """
+                Here's the recipe:
+
+                2 cups of Pancake Mix
+                1 1/2 cups of Milk
+                2 Tsp Vanilla Extract
+                1 tsp Cinnamon
+
+                Key lime Icing
+                1/2 Cup of confection sugar
+                2 tablespoons of sweetened condensed milk
+                2 tablespoons of lime Juice
+
+                Garnish\s
+                1/2 cup crushed Biscoff cookies\s
+                1 lime for lime zest\
+                """;
         final FootInchConverter footInchConverter = new FootInchConverter();
 
         // when

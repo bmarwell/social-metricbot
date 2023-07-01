@@ -26,8 +26,10 @@ public class GallonConverterTest {
                 Arguments.of(
                         "A single beaver pond holds an estimated 1.1 million gallons of water.", List.of("4,163.95m³")),
                 Arguments.of(
-                        "1 gallon cherries and another 2 gallons of strawberries picked today."
-                                + "2 gallons of strawberries picked yesterday. Strawberries going in the freezer.\n",
+                        """
+                        1 gallon cherries and another 2 gallons of strawberries picked today.\
+                        2 gallons of strawberries picked yesterday. Strawberries going in the freezer.
+                        """,
                         List.of("3.79L", "7.57L")),
                 Arguments.of("It pumps 1500 gallons a minute from 240 ft deep", List.of("5.68m³")),
                 Arguments.of(

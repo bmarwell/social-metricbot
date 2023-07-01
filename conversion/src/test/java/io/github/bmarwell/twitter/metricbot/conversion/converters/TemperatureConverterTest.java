@@ -76,10 +76,13 @@ public class TemperatureConverterTest {
     @Test
     public void shouldNotFindTemperatures() {
         // given
-        final String input = "- 2.25 teaspoons active instant yeast \n" // 2.25tsp=9g
-                + "- 2 large baking potatoes \n"
-                + "-3.5 cups of flour \n" // 3.5C=828ml
-                + "- salt, paprika, sour cream, tons of garlic, & cheese";
+        final String input =
+                """
+                - 2.25 teaspoons active instant yeast\s
+                - 2 large baking potatoes\s
+                -3.5 cups of flour\s
+                - salt, paprika, sour cream, tons of garlic, & cheese\
+                """;
 
         // when
         final Collection<UnitConversion> convertedUnits = new TemperatureConverter().getConvertedUnits(input);
