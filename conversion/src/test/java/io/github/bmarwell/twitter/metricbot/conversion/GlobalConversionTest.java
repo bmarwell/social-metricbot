@@ -16,8 +16,6 @@
 
 package io.github.bmarwell.twitter.metricbot.conversion;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -27,10 +25,10 @@ import java.util.Set;
 import java.util.stream.Stream;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -67,6 +65,17 @@ public class GlobalConversionTest {
                 Arguments.of("2 miles or not 2 miles", List.of("2mi=3.2km")),
                 Arguments.of("4 feet or 16 feet", List.of("4'=121.9cm", "16'=4.9m")),
                 Arguments.of("12 inches in a foot", List.of("1'=30.5cm", "12\"=30.5cm")),
+                Arguments.of(
+                        "... done!\n"
+                                + "https://github.com/bmarwell/twitter-metricbot/pull/114\n"
+                                + "\n"
+                                + "Have fun, \n"
+                                + "@gmzabos\n"
+                                + "!\n"
+                                + "\n"
+                                + "@metricbot1\n"
+                                + " please convert 2pt and 4 pt.\n",
+                        List.of("2pt=946.35ml", "4pt=1.89L")),
                 Arguments.of(
                         "2 cups water\n" + "1/4 cup apple cider vinegar\n" + "1/2 tsp rock salt",
                         List.of("2C=473ml", ".25C=59ml")),
@@ -193,23 +202,16 @@ public class GlobalConversionTest {
     public void testTweet(final String tweet, final List<String> expectedOutputs) {
         final String convertedUnits = this.conversion.returnConverted(tweet);
 
-        final Stream<Executable> assertions =
-                expectedOutputs.stream().map(expectedConversion -> makeAssertion(convertedUnits, expectedConversion));
-
         LOG.debug("Checking tweet [{}].", tweet);
         LOG.debug("Converted units: [{}]", convertedUnits);
 
-        assertAll(
-                "Checking that list "
-                        + convertedUnits + " contains each of these: " + expectedOutputs + ".\n"
-                        + "Original Tweet: [" + tweet.replaceAll("\n", "\\\\n") + "].\n",
-                assertions);
-    }
-
-    private org.junit.jupiter.api.function.Executable makeAssertion(
-            final String convertedUnits, final String expectedConversion) {
-        return () -> assertTrue(
-                convertedUnits.contains(expectedConversion),
-                "expected [" + convertedUnits + "] to contain **[" + expectedConversion + "]**.");
+        SoftAssertions softly = new SoftAssertions();
+        for (String expectedConversion : expectedOutputs) {
+            softly.assertThat(expectedConversion)
+                    .as("expected [" + convertedUnits + "] to contain **[" + expectedConversion + "]**.")
+                    .withFailMessage("expected [" + convertedUnits + "] to contain **[" + expectedConversion + "]**.")
+                    .contains(expectedConversion);
+        }
+        softly.assertAll();
     }
 }
