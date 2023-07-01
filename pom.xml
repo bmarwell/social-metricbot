@@ -18,8 +18,8 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <jdk.version>11</jdk.version>
-    <java.version>11</java.version>
+    <jdk.version>17</jdk.version>
+    <java.version>17</java.version>
     <maven.compiler.release>${java.version}</maven.compiler.release>
 
     <!-- plugins -->
@@ -255,6 +255,12 @@
           <artifactId>maven-failsafe-plugin</artifactId>
           <version>3.1.2</version>
         </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-enforcer-plugin</artifactId>
+          <version>3.3.0</version>
+        </plugin>
         <plugin>
           <groupId>org.pitest</groupId>
           <artifactId>pitest-maven</artifactId>
@@ -376,6 +382,27 @@
             <format>HTML2</format>
           </outputFormats>
         </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <inherited>false</inherited>
+        <executions>
+          <execution>
+            <id>enforce-java</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireJavaVersion>
+                  <version>${jdk.version}</version>
+                </requireJavaVersion>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
 
     </plugins>
