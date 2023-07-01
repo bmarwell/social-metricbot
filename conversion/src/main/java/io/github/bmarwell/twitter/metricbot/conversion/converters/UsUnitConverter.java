@@ -16,9 +16,12 @@
 
 package io.github.bmarwell.twitter.metricbot.conversion.converters;
 
+import static java.util.Collections.emptyList;
+
 import io.github.bmarwell.twitter.metricbot.conversion.UnitConversion;
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public interface UsUnitConverter extends Serializable {
@@ -30,7 +33,9 @@ public interface UsUnitConverter extends Serializable {
      *
      * @return the list of search terms.
      */
-    List<String> getSearchTerms();
+    default List<String> getSearchTerms() {
+        return emptyList();
+    }
 
     boolean matches(String text);
 
