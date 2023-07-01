@@ -29,7 +29,6 @@ public class TwitterMetricBotDataSource {
                     .dataSource(this.ds1)
                     .locations(
                             "classpath:/io/github/bmarwell/twitter/metricbot/db/databasemigrations",
-                            "classpath:io/github/bmarwell/twitter/metricbot/db/databasemigrations",
                             "classpath:databasemigrations")
                     // .callbacks("io.github.bmarwell.twitter.metricbot.db.callbacks")
                     .load();
