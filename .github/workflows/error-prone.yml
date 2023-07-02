@@ -1,0 +1,47 @@
+name: Error-Prone Check
+
+on:
+  workflow_dispatch: { }
+  push: { }
+  pull_request: { }
+
+
+permissions:
+  contents: read
+
+jobs:
+  build-with-error-prone:
+    if: github.ref_name == 'main' || github.event_name != 'push' && github.event.pull_request.head.repo.full_name == github.event.pull_request.base.repo.full_name
+    runs-on: [ 'ubuntu-latest' ]
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Cache local Maven Build Cache
+      uses: actions/cache@v3
+      if: ${{ github.ref_name != 'main' }}
+      with:
+        path: ~/.m2/build-cache
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2-
+
+    - name: Set up JDK
+      uses: actions/setup-java@v3
+      with:
+        java-version: 20
+        distribution: semeru
+
+    - name: Build application with Maven
+      shell: bash
+      run: |
+        ./mvnw \
+          --show-version \
+          --errors \
+          --batch-mode \
+          --no-transfer-progress \
+          --quiet \
+          compile \
+          -Pdocs,error-prone \
+          -DtrimStackTrace=false \
+          -Dmaven.build.cache.enabled=false
