@@ -8,8 +8,8 @@ import io.github.bmarwell.twitter.metricbot.conversion.ImmutableUnitConversion;
 import io.github.bmarwell.twitter.metricbot.conversion.UnitConversion;
 import jakarta.enterprise.context.Dependent;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -61,7 +61,7 @@ public class GallonConverter implements UsUnitConverter {
             return emptyList();
         }
 
-        final LinkedList<UnitConversion> conversions = new LinkedList<>();
+        final ArrayList<UnitConversion> conversions = new ArrayList<>();
         final Matcher matcher = PATTERN_SOURCE.matcher(text);
 
         parseUnitOccurences(text, conversions, matcher);
@@ -69,10 +69,10 @@ public class GallonConverter implements UsUnitConverter {
         final Matcher fractionMatcher = PATTERN_SOURCE_FRACTIONS.matcher(text);
         parseUnitOccurences(text, conversions, fractionMatcher);
 
-        return conversions;
+        return List.copyOf(conversions);
     }
 
-    private void parseUnitOccurences(String text, LinkedList<UnitConversion> conversions, Matcher matcher) {
+    private void parseUnitOccurences(String text, List<UnitConversion> conversions, Matcher matcher) {
         while (matcher.find()) {
             try {
                 parseUnitOccurence(conversions, matcher);
@@ -82,7 +82,7 @@ public class GallonConverter implements UsUnitConverter {
         }
     }
 
-    private void parseUnitOccurence(LinkedList<UnitConversion> conversions, Matcher matcher) {
+    private void parseUnitOccurence(List<UnitConversion> conversions, Matcher matcher) {
         final String source = matcher.group(1);
         final String gallonsDecimal = FractionUtil.replaceFractions(source);
         final double gallonsDouble = parseNumberOrWord(gallonsDecimal, matcher);

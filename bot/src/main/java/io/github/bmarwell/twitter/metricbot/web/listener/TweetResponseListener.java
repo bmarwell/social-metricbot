@@ -11,6 +11,7 @@ import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;
 import java.util.StringJoiner;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,12 +42,16 @@ public class TweetResponseListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(final ServletContextEvent sce) {
-        this.scheduler.scheduleAtFixedRate(
+        ScheduledFuture<?> scheduledFuture = this.scheduler.scheduleAtFixedRate(
                 this::emitMention,
                 this.twitterConfig.getTweetFinderInitialDelay(),
                 // delay here may be short b/c response are usually rare
                 2L,
                 TimeUnit.SECONDS);
+
+        if (scheduledFuture.isCancelled()) {
+            throw new IllegalStateException("Scheduler was canceled: " + scheduledFuture);
+        }
     }
 
     /**

@@ -1,6 +1,7 @@
 package io.github.bmarwell.twitter.metricbot.conversion.converters;
 
 import static java.util.Collections.emptyList;
+import static java.util.Collections.unmodifiableList;
 
 import io.github.bmarwell.twitter.metricbot.conversion.DecimalFormats;
 import io.github.bmarwell.twitter.metricbot.conversion.FractionUtil;
@@ -8,8 +9,8 @@ import io.github.bmarwell.twitter.metricbot.conversion.ImmutableUnitConversion;
 import io.github.bmarwell.twitter.metricbot.conversion.UnitConversion;
 import jakarta.enterprise.context.Dependent;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.StringJoiner;
 import java.util.regex.Matcher;
@@ -56,7 +57,7 @@ public class CupConverter implements UsUnitConverter {
             return emptyList();
         }
 
-        final LinkedList<UnitConversion> conversions = new LinkedList<>();
+        final List<UnitConversion> conversions = new ArrayList<>();
         final Matcher matcher = PATTERN_CUPS.matcher(text);
 
         while (matcher.find()) {
@@ -110,7 +111,7 @@ public class CupConverter implements UsUnitConverter {
             }
         }
 
-        return conversions;
+        return unmodifiableList(conversions);
     }
 
     @Override
