@@ -26,7 +26,9 @@ import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;
 import jakarta.transaction.Transactional;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 @WebListener
@@ -50,13 +52,17 @@ public class TweetCleanerListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(final ServletContextEvent sce) {
-        this.scheduler.scheduleWithFixedDelay(
+        ScheduledFuture<?> scheduledFuture = this.scheduler.scheduleWithFixedDelay(
                 this::removeOldTweets, this.twitterConfig.getTweetFinderInitialDelay(), 10 * 60, TimeUnit.SECONDS);
+
+        if (scheduledFuture.isCancelled()) {
+            throw new IllegalStateException("cleaner thread canceled: " + scheduledFuture);
+        }
     }
 
     @Transactional
     public void removeOldTweets() {
-        final ZonedDateTime now = ZonedDateTime.now();
+        final ZonedDateTime now = ZonedDateTime.now(ZoneId.systemDefault());
         final ZonedDateTime oneWeekAgo = now.minusDays(7L);
         final Instant deleteBefore = oneWeekAgo.toInstant();
 

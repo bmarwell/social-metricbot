@@ -34,6 +34,7 @@
     <extension.dockerfile-maven.version>${plugin.dockerfile-maven.version}</extension.dockerfile-maven.version>
 
     <!-- java EE + MP -->
+    <dependency.jakarta.annotation-api.version>2.1.1</dependency.jakarta.annotation-api.version>
     <dependency.jakarta.cdi-api.version>4.0.1</dependency.jakarta.cdi-api.version>
     <dependency.jaxrs-api.version>3.1.0</dependency.jaxrs-api.version>
     <dependency.jakarta.concurrent-api.version>3.0.2</dependency.jakarta.concurrent-api.version>
@@ -47,6 +48,7 @@
     <dependency.twitter4j-async.version>4.0.7</dependency.twitter4j-async.version>
     <dependency.immutables.version>2.9.3</dependency.immutables.version>
     <dependency.eclipselink.version>4.0.2</dependency.eclipselink.version>
+    <dependency.error-prone.version>2.20.0</dependency.error-prone.version>
 
     <!-- logging -->
     <dependency.slf4j-api.version>2.0.7</dependency.slf4j-api.version>
@@ -55,7 +57,6 @@
     <!-- testing -->
     <dependency.assertj.version>3.24.2</dependency.assertj.version>
     <junit5.version>5.9.3</junit5.version>
-    <dependency.javax.annotation-api.version>2.1.1</dependency.javax.annotation-api.version>
   </properties>
 
   <dependencyManagement>
@@ -94,7 +95,7 @@
       <dependency>
         <groupId>jakarta.annotation</groupId>
         <artifactId>jakarta.annotation-api</artifactId>
-        <version>${dependency.javax.annotation-api.version}</version>
+        <version>${dependency.jakarta.annotation-api.version}</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.microprofile.config</groupId>
@@ -206,7 +207,7 @@
           <artifactId>maven-compiler-plugin</artifactId>
           <version>${plugin.maven.compiler.version}</version>
           <configuration>
-            <annotationProcessorPaths>
+            <annotationProcessorPaths combine.children="append">
               <path>
                 <groupId>org.immutables</groupId>
                 <artifactId>value</artifactId>
@@ -220,7 +221,7 @@
               <path>
                 <groupId>jakarta.annotation</groupId>
                 <artifactId>jakarta.annotation-api</artifactId>
-                <version>${dependency.javax.annotation-api.version}</version>
+                <version>${dependency.jakarta.annotation-api.version}</version>
               </path>
             </annotationProcessorPaths>
             <compilerArgs>
@@ -436,6 +437,37 @@
         <module>app/openliberty/docker</module>
       </modules>
     </profile>
+    <profile>
+      <id>error-prone</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+              <compilerArgs>
+                <arg>-XDcompilePolicy=simple</arg>
+                <arg>-Xplugin:ErrorProne
+                  -Xep:MixedMutabilityReturnType:ERROR
+                  -Xep:NonApiType:ERROR
+                  -Xep:JdkObsolete:ERROR
+                  -Xep:UnusedVariable:ERROR
+                  -Xep:FutureReturnValueIgnored:ERROR
+                  -Xep:JavaTimeDefaultTimeZone:ERROR
+                  -XepDisableWarningsInGeneratedCode
+                  -XepExcludedPaths:.*/target/generated-sources/.*</arg>
+              </compilerArgs>
+              <annotationProcessorPaths>
+                <path>
+                  <groupId>com.google.errorprone</groupId>
+                  <artifactId>error_prone_core</artifactId>
+                  <version>${dependency.error-prone.version}</version>
+                </path>
+              </annotationProcessorPaths>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
-
 </project>

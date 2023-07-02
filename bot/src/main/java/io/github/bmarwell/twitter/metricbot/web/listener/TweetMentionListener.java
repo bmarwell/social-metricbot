@@ -26,6 +26,7 @@ import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;
 import java.util.StringJoiner;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,11 +63,15 @@ public class TweetMentionListener implements ServletContextListener {
         this.asyncTwitter.addListener(this.mentionEventHandler);
 
         // set up scheduler
-        this.scheduler.scheduleWithFixedDelay(
+        ScheduledFuture<?> scheduledFuture = this.scheduler.scheduleWithFixedDelay(
                 this::retrieveMentions,
                 this.twitterConfig.getTweetFinderInitialDelay(),
                 this.twitterConfig.getTweetFinderRetrieveRate(),
                 TimeUnit.SECONDS);
+
+        if (scheduledFuture.isCancelled()) {
+            throw new IllegalStateException("MentionListener did not start!" + scheduledFuture);
+        }
     }
 
     protected void retrieveMentions() {

@@ -24,8 +24,6 @@ import jakarta.inject.Named;
 import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import twitter4j.AsyncTwitterFactory;
 import twitter4j.Twitter;
 import twitter4j.conf.ConfigurationBuilder;
@@ -38,8 +36,6 @@ import twitter4j.conf.ConfigurationBuilder;
  */
 @ApplicationScoped
 public class TwitterProducer {
-
-    private static final Logger LOG = LoggerFactory.getLogger(TwitterProducer.class);
 
     @Inject
     private TwitterConfig twitterAttributes;
