@@ -6,6 +6,7 @@ import io.github.bmarwell.twitter.metricbot.conversion.DecimalFormats;
 import io.github.bmarwell.twitter.metricbot.conversion.FractionUtil;
 import io.github.bmarwell.twitter.metricbot.conversion.ImmutableUnitConversion;
 import io.github.bmarwell.twitter.metricbot.conversion.UnitConversion;
+import jakarta.enterprise.context.Dependent;
 import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -15,6 +16,7 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Dependent
 public class PintConverter implements UsUnitConverter {
 
     private static final Logger LOG = LoggerFactory.getLogger(PintConverter.class);
