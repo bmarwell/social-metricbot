@@ -13,6 +13,14 @@
   <packaging>war</packaging>
   <name>Twitter-MetricBot :: war</name>
 
+  <properties>
+    <liberty.env.IO_GITHUB_BMARWELL_TWITTER_METRICBOT_MASTODON_ACCOUNTNAME>${env.IO_GITHUB_BMARWELL_TWITTER_METRICBOT_MASTODON_ACCOUNTNAME}</liberty.env.IO_GITHUB_BMARWELL_TWITTER_METRICBOT_MASTODON_ACCOUNTNAME>
+    <liberty.env.IO_GITHUB_BMARWELL_TWITTER_METRICBOT_MASTODON_INSTANCEHOSTNAME>${env.IO_GITHUB_BMARWELL_TWITTER_METRICBOT_MASTODON_INSTANCEHOSTNAME}</liberty.env.IO_GITHUB_BMARWELL_TWITTER_METRICBOT_MASTODON_INSTANCEHOSTNAME>
+    <liberty.env.IO_GITHUB_BMARWELL_TWITTER_METRICBOT_MASTODON_WEBSITE>${env.IO_GITHUB_BMARWELL_TWITTER_METRICBOT_MASTODON_WEBSITE}</liberty.env.IO_GITHUB_BMARWELL_TWITTER_METRICBOT_MASTODON_WEBSITE>
+    <liberty.env.IO_GITHUB_BMARWELL_TWITTER_METRICBOT_MASTODON_CLIENTID>${env.IO_GITHUB_BMARWELL_TWITTER_METRICBOT_MASTODON_CLIENTID}</liberty.env.IO_GITHUB_BMARWELL_TWITTER_METRICBOT_MASTODON_CLIENTID>
+    <liberty.env.IO_GITHUB_BMARWELL_TWITTER_METRICBOT_MASTODON_CLIENTSECRET>${env.IO_GITHUB_BMARWELL_TWITTER_METRICBOT_MASTODON_CLIENTSECRET}</liberty.env.IO_GITHUB_BMARWELL_TWITTER_METRICBOT_MASTODON_CLIENTSECRET>
+  </properties>
+
   <dependencies>
     <!-- own dependencies -->
     <dependency>
@@ -26,6 +34,11 @@
       <artifactId>twitter-metricbot-conversion</artifactId>
       <version>${project.version}</version>
       <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.github.bmarwell.twitter.metricbot</groupId>
+      <artifactId>twitter-metricbot-mastodon</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>io.github.bmarwell.twitter.metricbot</groupId>
@@ -79,6 +92,18 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>jakarta.json</groupId>
+      <artifactId>jakarta.json-api</artifactId>
+      <version>${dependency.jakarta.json-api.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.json.bind</groupId>
+      <artifactId>jakarta.json.bind-api</artifactId>
+      <version>${dependency.jakarta.json.bind-api.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>jakarta.enterprise.concurrent</groupId>
       <artifactId>jakarta.enterprise.concurrent-api</artifactId>
       <version>${dependency.jakarta.concurrent-api.version}</version>
@@ -121,5 +146,28 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>io.openliberty.tools</groupId>
+        <artifactId>liberty-maven-plugin</artifactId>
+        <configuration>
+          <copyDependencies>
+            <dependencyGroup>
+              <!-- Relative to server config directory -->
+              <location>h2</location>
+              <dependency>
+                <groupId>com.h2database</groupId>
+                <artifactId>h2</artifactId>
+                <version>${dependency.h2.version}</version>
+              </dependency>
+            </dependencyGroup>
+          </copyDependencies>
+        </configuration>
+      </plugin>
+
+    </plugins>
+  </build>
 
 </project>

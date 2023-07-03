@@ -11,6 +11,7 @@
 
   <modules>
     <module>common</module>
+    <module>mastodon</module>
     <module>conversion</module>
     <module>bot</module>
     <module>db</module>
@@ -37,6 +38,8 @@
     <dependency.jakarta.annotation-api.version>2.1.1</dependency.jakarta.annotation-api.version>
     <dependency.jakarta.cdi-api.version>4.0.1</dependency.jakarta.cdi-api.version>
     <dependency.jaxrs-api.version>3.1.0</dependency.jaxrs-api.version>
+    <dependency.jakarta.json-api.version>2.1.2</dependency.jakarta.json-api.version>
+    <dependency.jakarta.json.bind-api.version>3.0.0</dependency.jakarta.json.bind-api.version>
     <dependency.jakarta.concurrent-api.version>3.0.2</dependency.jakarta.concurrent-api.version>
     <dependency.jakarta.persistence-api.version>3.1.0</dependency.jakarta.persistence-api.version>
     <dependency.jakarta.transaction-api.version>2.0.1</dependency.jakarta.transaction-api.version>
@@ -57,6 +60,7 @@
     <!-- testing -->
     <dependency.assertj.version>3.24.2</dependency.assertj.version>
     <junit5.version>5.9.3</junit5.version>
+    <dependency.h2.version>2.1.214</dependency.h2.version>
   </properties>
 
   <dependencyManagement>
@@ -137,7 +141,7 @@
       <dependency>
         <groupId>com.h2database</groupId>
         <artifactId>h2</artifactId>
-        <version>2.1.214</version>
+        <version>${dependency.h2.version}</version>
       </dependency>
 
       <!-- testing -->
@@ -320,6 +324,12 @@
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
           <version>0.8.10</version>
+        </plugin>
+
+        <plugin>
+          <groupId>io.openliberty.tools</groupId>
+          <artifactId>liberty-maven-plugin</artifactId>
+          <version>3.8.1</version>
         </plugin>
       </plugins>
     </pluginManagement>

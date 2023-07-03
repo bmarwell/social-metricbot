@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<server description="twittermetricbot">
+<server>
   <featureManager>
     <feature>persistence-3.1</feature>
     <feature>cdi-4.0</feature>
@@ -10,20 +9,6 @@
     <feature>concurrent-3.0</feature>
     <feature>localConnector-1.0</feature>
   </featureManager>
-
-  <httpEndpoint
-    id="defaultHttpEndpoint"
-    host="*"
-    httpPort="9080"
-    httpsPort="-1"
-    protocolVersion="http/2"
-  >
-    <compression
-      serverPreferredAlgorithm="gzip"
-    >
-      <types>+application/*</types>
-    </compression>
-  </httpEndpoint>
 
   <httpOptions
     removeServerHeader="true"
@@ -86,8 +71,4 @@
       URL="${env.IO_GITHUB_BMARWELL_TWITTER_METRICBOT_H2_DB}"
     />
   </dataSource>
-  <webApplication
-    location="${app.filename}"
-    contextRoot="${app.context.root}"
-  />
 </server>

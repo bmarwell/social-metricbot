@@ -12,3 +12,4 @@
 /app/openliberty/docker/target/
 target/
 target/*
+/.env.local
