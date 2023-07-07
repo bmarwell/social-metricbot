@@ -15,7 +15,7 @@ If mentioned with 'please' on a tweet containing imperial units, will reply with
 == Active bots
 
 * https://twitter.com/metricbot1/with_replies[+🇺🇸 @metricbot1+] on 🐦 Twitter
-* https://botsin.space/@metricbot[+🇺🇸 @metricbot@botsin.space+] on 🐘 Mastodon
+* https://botsin.space/@metricbot[+🇺🇸 @metricbot@botsin.space+,rel="me"] on 🐘 Mastodon
 
 == How to use
 
