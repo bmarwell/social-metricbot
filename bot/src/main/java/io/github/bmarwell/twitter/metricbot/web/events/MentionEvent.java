@@ -24,7 +24,7 @@ public class MentionEvent {
     @Override
     public String toString() {
         return new StringJoiner(", ", MentionEvent.class.getSimpleName() + "[", "]")
-                .add("foundTweet=" + this.foundTweet)
+                .add("foundTweet=" + this.foundTweet.toString().replaceAll("\n", "\\\\n"))
                 .toString();
     }
 }

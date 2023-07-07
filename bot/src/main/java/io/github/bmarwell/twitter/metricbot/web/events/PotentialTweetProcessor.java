@@ -33,16 +33,15 @@ public class PotentialTweetProcessor {
 
     @Transactional
     public void addPotentialTweet(final @Observes MentionEvent mentionEvent) {
-        LOG.debug("Processing potential mention: [{}].", mentionEvent);
         final Status foundTweet = mentionEvent.getFoundTweet();
 
         if (this.tweetRepository.findById(foundTweet.getId()).isPresent()) {
-            LOG.debug("Skipping tweet [{}] because it was already replied to.", foundTweet.getId());
+            LOG.trace("Skipping tweet [{}] because it was already replied to.", foundTweet.getId());
             return;
         }
 
         if (this.unprocessedTweetQueueHolder.contains(foundTweet)) {
-            LOG.info("Skipping tweet [{}] because it will be processed soon.", foundTweet.getId());
+            LOG.debug("Skipping tweet [{}] because it will be processed soon.", foundTweet.getId());
             return;
         }
 

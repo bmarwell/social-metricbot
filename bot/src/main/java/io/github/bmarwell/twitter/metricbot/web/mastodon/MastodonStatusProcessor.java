@@ -33,12 +33,12 @@ public class MastodonStatusProcessor {
         final MastodonStatus status = mentionEvent.mastodonStatus();
 
         if (this.mastodonStatusRepository.findById(status.id().value()).isPresent()) {
-            LOG.debug("Skipping Toot [{}] because it was already replied to.", status.id());
+            LOG.trace("Skipping Toot [{}] because it was already replied to.", status.id());
             return;
         }
 
         if (this.unprocessedTweetQueueHolder.contains(status)) {
-            LOG.info("Skipping Toot [{}] because it will be processed soon.", status.id());
+            LOG.debug("Skipping Toot [{}] because it will be processed soon.", status.id());
             return;
         }
 
