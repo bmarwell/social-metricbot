@@ -4,6 +4,7 @@ import io.github.bmarwell.twitter.metricbot.common.TwitterConfig;
 import io.github.bmarwell.twitter.metricbot.conversion.UsConversion;
 import io.github.bmarwell.twitter.metricbot.db.dao.TweetRepository;
 import io.github.bmarwell.twitter.metricbot.db.pdo.TweetPdo;
+import io.github.bmarwell.twitter.metricbot.web.AbstractResponder;
 import io.github.bmarwell.twitter.metricbot.web.events.TweetProcessRequest;
 import jakarta.enterprise.context.Dependent;
 import jakarta.enterprise.event.Observes;
@@ -23,10 +24,9 @@ import twitter4j.Twitter;
 import twitter4j.TwitterException;
 
 @Dependent
-public class TweetResponder {
+public class TweetResponder extends AbstractResponder {
 
     private static final Logger LOG = LoggerFactory.getLogger(TweetResponder.class);
-    private static final String CONVENIENCE_TEXT = "For your convenience, the metric units:\n";
 
     /**
      * recent replies.
