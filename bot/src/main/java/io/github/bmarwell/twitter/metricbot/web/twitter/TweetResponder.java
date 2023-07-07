@@ -138,7 +138,7 @@ public class TweetResponder extends AbstractResponder {
             LOG.info(
                     "Sending status response to [{}]: [{}].",
                     statusUpdate.getInReplyToStatusId(),
-                    statusUpdate.getStatus());
+                    statusUpdate.getStatus().replaceAll("\n", "\\\\n"));
             final Status response = this.twitter.updateStatus(statusUpdate);
             LOG.info("Response sent: [{}] => [{}].", response.getId(), response.getText());
             // add to repository so we do not reply again to this.
@@ -200,12 +200,16 @@ public class TweetResponder extends AbstractResponder {
             LOG.info(
                     "Sending status response to [{}]: [{}].",
                     statusUpdate.getInReplyToStatusId(),
-                    statusUpdate.getStatus());
+                    statusUpdate.getStatus().replaceAll("\n", "\\\\n"));
             final Status response = this.twitter.updateStatus(statusUpdate);
-            LOG.info("Response sent: [{}] => [{}].", response.getId(), response.getText());
+            LOG.info(
+                    "Response sent: [{}] => [{}].",
+                    response.getId(),
+                    response.getText().replaceAll("\n", "\\\\n"));
             this.self.get().upsert(foundTweet.getId(), response.getId(), Instant.now());
         } catch (final TwitterException twitterException) {
-            LOG.error("Unable to send reply: [{}].", statusUpdate, twitterException);
+            LOG.error(
+                    "Unable to send reply: [{}].", statusUpdate.toString().replaceAll("\n", "\\\\n"), twitterException);
             this.self.get().upsert(foundTweet.getId(), -1, Instant.now());
         }
     }

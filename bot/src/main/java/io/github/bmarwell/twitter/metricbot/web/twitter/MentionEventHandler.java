@@ -47,8 +47,8 @@ public class MentionEventHandler extends TwitterAdapter implements Serializable 
         // don't reply to own replies containing the original unit.
         final Set<Status> newMentions = filterStatusToRespondTo(statuses);
 
-        if (LOG.isInfoEnabled() && newMentions.size() > 0) {
-            LOG.info("Found mention: [{}], new: [{}].", statuses.size(), newMentions.size());
+        if (LOG.isDebugEnabled() && newMentions.size() > 0) {
+            LOG.debug("Found mention: [{}], new: [{}].", statuses.size(), newMentions.size());
         }
 
         newMentions.forEach(this::publishEvent);
