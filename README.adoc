@@ -14,11 +14,14 @@ If mentioned with 'please' on a tweet containing imperial units, will reply with
 
 == Active bots
 
-* link:https://twitter.com/metricbot1/with_replies[🇺🇸 @metricbot1]
+* https://twitter.com/metricbot1/with_replies[+🇺🇸 @metricbot1+] on 🐦 Twitter
+* https://botsin.space/@metricbot[+🇺🇸 @metricbot@botsin.space+] on 🐘 Mastodon
 
 == How to use
 
 If you spot a tweet with metric units in it, create a reply and mention `@metricbot1 please` or `@metricbot1 convert please`.
+
+For Mastodon, use `@metricbot@botsin.space please` or `@metricbot@botsin.space convert please`.
 
 == Features
 
