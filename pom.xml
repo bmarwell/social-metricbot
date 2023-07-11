@@ -60,7 +60,7 @@
     <!-- testing -->
     <dependency.assertj.version>3.24.2</dependency.assertj.version>
     <junit5.version>5.9.3</junit5.version>
-    <dependency.h2.version>2.1.214</dependency.h2.version>
+    <dependency.h2.version>2.2.220</dependency.h2.version>
   </properties>
 
   <dependencyManagement>
