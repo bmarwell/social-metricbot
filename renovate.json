@@ -4,7 +4,7 @@
   ],
   "packageRules": [
     {
-      "matchPackagePatterns": ["^io.github.bmarwell.twitter.metricbot:", ""],
+      "matchPackagePatterns": ["^io.github.bmarwell.twitter.metricbot:"],
       "ignoreLookupWarnings": true
     }
   ]
