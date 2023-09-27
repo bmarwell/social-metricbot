@@ -17,6 +17,8 @@ jobs:
 
     - name: Checkout
       uses: actions/checkout@v4
+      with:
+        show-progress: false
 
     - name: Cache local Maven Build Cache
       uses: actions/cache@v3
