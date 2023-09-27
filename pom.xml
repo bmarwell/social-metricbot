@@ -51,7 +51,7 @@
     <dependency.twitter4j-async.version>4.0.7</dependency.twitter4j-async.version>
     <dependency.immutables.version>2.9.3</dependency.immutables.version>
     <dependency.eclipselink.version>4.0.2</dependency.eclipselink.version>
-    <dependency.error-prone.version>2.20.0</dependency.error-prone.version>
+    <dependency.error-prone.version>2.22.0</dependency.error-prone.version>
 
     <!-- logging -->
     <dependency.slf4j-api.version>2.0.7</dependency.slf4j-api.version>
