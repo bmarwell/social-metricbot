@@ -4,8 +4,12 @@
   ],
   "packageRules": [
     {
-      "matchPackagePatterns": ["^io.github.bmarwell.twitter.metricbot:"],
-      "ignoreLookupWarnings": true
+      "matchPackageNames": [
+        "io.github.bmarwell.twitter.metricbot:common",
+        "io.github.bmarwell.twitter.metricbot:twitter-metricbot-mastodon",
+        "io.github.bmarwell.twitter.metricbot:metricbot-db"
+      ],
+      "enabled": false
     }
   ]
 }
