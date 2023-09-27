@@ -55,7 +55,7 @@
     <dependency.error-prone.version>2.22.0</dependency.error-prone.version>
 
     <!-- logging -->
-    <dependency.slf4j-api.version>2.0.7</dependency.slf4j-api.version>
+    <dependency.slf4j-api.version>2.0.9</dependency.slf4j-api.version>
     <logback-classic.version>1.4.11</logback-classic.version>
 
     <!-- testing -->
