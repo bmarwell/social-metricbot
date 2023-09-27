@@ -4,11 +4,8 @@
   ],
   "packageRules": [
     {
-      "matchPackageNames": [
-        "^de\\.bmarwell\\.twitter\\.metricbot.*",
-        "^io\\.github\\.bmarwell\\.twitter\\.metricbot.*"
-      ],
-      "enabled": false
+      "matchPackagePatterns": ["^io.github.bmarwell.twitter.metricbot:", ""],
+      "ignoreLookupWarnings": true
     }
   ]
 }
