@@ -50,6 +50,7 @@
     <dependency.twitter4j.version>4.0.7</dependency.twitter4j.version>
     <dependency.twitter4j-async.version>4.0.7</dependency.twitter4j-async.version>
     <dependency.immutables.version>2.9.3</dependency.immutables.version>
+    <dependency.jsoup.version>1.16.1</dependency.jsoup.version>
     <dependency.eclipselink.version>4.0.2</dependency.eclipselink.version>
     <dependency.error-prone.version>2.22.0</dependency.error-prone.version>
 
@@ -142,6 +143,11 @@
         <groupId>com.h2database</groupId>
         <artifactId>h2</artifactId>
         <version>${dependency.h2.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jsoup</groupId>
+        <artifactId>jsoup</artifactId>
+        <version>${dependency.jsoup.version}</version>
       </dependency>
 
       <!-- testing -->
