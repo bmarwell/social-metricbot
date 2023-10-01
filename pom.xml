@@ -12,6 +12,7 @@
   <modules>
     <module>common</module>
     <module>mastodon</module>
+    <module>bsky-client</module>
     <module>conversion</module>
     <module>bot</module>
     <module>db</module>
