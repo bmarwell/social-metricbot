@@ -7,7 +7,7 @@
 /*/dependency-reduced-pom.xml
 /*/target
 /*/target/*
-/bot/twitter-metricbot-app.iml
+/bot/social-metricbot-app.iml
 */*.iml
 /app/openliberty/docker/target/
 target/
