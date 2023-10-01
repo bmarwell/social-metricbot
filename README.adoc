@@ -118,7 +118,7 @@ You can start this OpenLiberty docker container like this:
 ----
 docker run \
   -p 9080:9080 \
-  -e IO_GITHUB_BMARWELL_TWITTER_METRICBOT_H2_DB=jdbc:h2:file:/var/opt/metricbot.db \
+  -e IO_GITHUB_BMARWELL_SOCIAL_METRICBOT_H2_DB=jdbc:h2:file:/var/opt/metricbot.db \
   -name metricbot \
   io.github.bmarwell.social.metricbot/social-metricbot-app-ol-docker:latest
 ----
