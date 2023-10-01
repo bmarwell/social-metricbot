@@ -3,15 +3,15 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>io.github.bmarwell.twitter.metricbot</groupId>
-    <artifactId>twitter-metricbot</artifactId>
+    <groupId>io.github.bmarwell.social.metricbot</groupId>
+    <artifactId>social-metricbot</artifactId>
     <version>1.0.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>twitter-metricbot-app</artifactId>
+  <artifactId>social-metricbot-app</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <packaging>war</packaging>
-  <name>Twitter-MetricBot :: war</name>
+  <name>Social-MetricBot :: war</name>
 
   <properties>
     <liberty.env.IO_GITHUB_BMARWELL_TWITTER_METRICBOT_MASTODON_ACCOUNTNAME>${env.IO_GITHUB_BMARWELL_TWITTER_METRICBOT_MASTODON_ACCOUNTNAME}</liberty.env.IO_GITHUB_BMARWELL_TWITTER_METRICBOT_MASTODON_ACCOUNTNAME>
@@ -24,24 +24,24 @@
   <dependencies>
     <!-- own dependencies -->
     <dependency>
-      <groupId>io.github.bmarwell.twitter.metricbot</groupId>
+      <groupId>io.github.bmarwell.social.metricbot</groupId>
       <artifactId>common</artifactId>
       <version>1.0.0-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>io.github.bmarwell.twitter.metricbot</groupId>
-      <artifactId>twitter-metricbot-conversion</artifactId>
+      <groupId>io.github.bmarwell.social.metricbot</groupId>
+      <artifactId>social-metricbot-conversion</artifactId>
       <version>${project.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>io.github.bmarwell.twitter.metricbot</groupId>
-      <artifactId>twitter-metricbot-mastodon</artifactId>
+      <groupId>io.github.bmarwell.social.metricbot</groupId>
+      <artifactId>social-metricbot-mastodon</artifactId>
       <version>1.0.0-SNAPSHOT</version>
     </dependency>
     <dependency>
-      <groupId>io.github.bmarwell.twitter.metricbot</groupId>
+      <groupId>io.github.bmarwell.social.metricbot</groupId>
       <artifactId>metricbot-db</artifactId>
       <version>1.0.0-SNAPSHOT</version>
       <scope>compile</scope>

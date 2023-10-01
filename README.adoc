@@ -1,21 +1,25 @@
-= twitter-metricbot
+= Social Metricbot
 :icons: font
 :toc: macro
 :toclevels: 4
 
-image:https://github.com/bmarwell/twitter-metricbot/actions/workflows/maven.yml/badge.svg[Maven CI,link=https://github.com/bmarwell/twitter-metricbot/actions/workflows/maven.yml]
+image:https://github.com/bmarwell/social-metricbot/actions/workflows/maven.yml/badge.svg[Maven CI,link=https://github.com/bmarwell/social-metricbot/actions/workflows/maven.yml]
 image:https://img.shields.io/badge/License-Apache_2.0-blue.svg[License,link=https://opensource.org/licenses/Apache-2.0]
-image:https://codecov.io/gh/bmarwell/twitter-metricbot/branch/main/graph/badge.svg?token=OkJW0qKkJs[codecov.io,link=https://codecov.io/gh/bmarwell/twitter-metricbot]
+image:https://codecov.io/gh/bmarwell/social-metricbot/branch/main/graph/badge.svg?token=OkJW0qKkJs[codecov.io,link=https://codecov.io/gh/bmarwell/social-metricbot]
 image:https://img.shields.io/badge/renovate-enabled-brightgreen.svg[Renovate,link=https://renovatebot.com]
 image:https://img.shields.io/badge/AppServer-Open%20Liberty-blue[AppServer,link=https://openliberty.io/]
 
-A metric bot for Twitter.
+A metric bot for social networks like Mastodon, Bluesky (bsky), but not 𝕏 (formerly Twitter).
 If mentioned with 'please' on a tweet containing imperial units, will reply with converted metric units for your convenience.
 
 == Active bots
 
-* https://twitter.com/metricbot1/with_replies[+🇺🇸 @metricbot1+] on 🐦 Twitter
 * https://botsin.space/@metricbot[+🇺🇸 @metricbot@botsin.space+] on 🐘 Mastodon
+
+== Inactive bots
+
+* https://twitter.com/metricbot1/with_replies[+🇺🇸 @metricbot1+] on 🐦 Twitter +
+Due to to unusable API (constraints as well as SDK quality).
 
 == How to use
 
@@ -104,7 +108,7 @@ No idea what makes the Celsius temperature more metric than Fahrenheit, but Fahr
 
 == Configuration
 
-See https://github.com/bmarwell/twitter-metricbot/wiki/Configuration[Wiki:Configuration].
+See https://github.com/bmarwell/social-metricbot/wiki/Configuration[Wiki:Configuration].
 
 == How to start
 
@@ -116,5 +120,5 @@ docker run \
   -p 9080:9080 \
   -e IO_GITHUB_BMARWELL_TWITTER_METRICBOT_H2_DB=jdbc:h2:file:/var/opt/metricbot.db \
   -name metricbot \
-  io.github.bmarwell.twitter.metricbot/twitter-metricbot-app-ol-docker:latest
+  io.github.bmarwell.social.metricbot/social-metricbot-app-ol-docker:latest
 ----

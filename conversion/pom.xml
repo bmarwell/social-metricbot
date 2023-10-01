@@ -3,14 +3,14 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>io.github.bmarwell.twitter.metricbot</groupId>
-    <artifactId>twitter-metricbot</artifactId>
+    <groupId>io.github.bmarwell.social.metricbot</groupId>
+    <artifactId>social-metricbot</artifactId>
     <version>1.0.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>twitter-metricbot-conversion</artifactId>
+  <artifactId>social-metricbot-conversion</artifactId>
   <version>1.0.0-SNAPSHOT</version>
-  <name>Twitter-MetricBot :: conversion</name>
+  <name>Social-MetricBot :: conversion</name>
 
   <dependencies>
     <dependency>

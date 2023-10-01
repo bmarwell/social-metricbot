@@ -5,7 +5,7 @@
   version="2.2">
   <persistence-unit name="metricbot-persistence-unit" transaction-type="JTA">
     <description>
-      Data store for Twitter MetricBot.
+      Data store for Social MetricBot.
       Saves tweets which have been seen and replied to.
     </description>
     <jta-data-source>jdbc/metricbotjpadatasource</jta-data-source>

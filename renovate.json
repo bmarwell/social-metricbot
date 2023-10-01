@@ -5,9 +5,9 @@
   "packageRules": [
     {
       "matchPackageNames": [
-        "io.github.bmarwell.twitter.metricbot:common",
-        "io.github.bmarwell.twitter.metricbot:twitter-metricbot-mastodon",
-        "io.github.bmarwell.twitter.metricbot:metricbot-db"
+        "io.github.bmarwell.social.metricbot:common",
+        "io.github.bmarwell.social.metricbot:social-metricbot-mastodon",
+        "io.github.bmarwell.social.metricbot:metricbot-db"
       ],
       "enabled": false
     }
