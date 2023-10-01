@@ -1,5 +1,6 @@
 package io.github.bmarwell.twitter.metricbot.web.twitter;
 
+import com.twitter.clientlib.model.Tweet;
 import io.github.bmarwell.twitter.metricbot.common.TwitterConfig;
 import io.github.bmarwell.twitter.metricbot.web.events.MentionEvent;
 import jakarta.enterprise.context.Dependent;
@@ -9,17 +10,10 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
 import java.util.StringJoiner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import twitter4j.RateLimitStatus;
-import twitter4j.ResponseList;
-import twitter4j.Status;
-import twitter4j.TwitterAdapter;
-import twitter4j.TwitterException;
-import twitter4j.TwitterMethod;
 
 @Dependent
 public class MentionEventHandler extends TwitterAdapter implements Serializable {
@@ -42,10 +36,10 @@ public class MentionEventHandler extends TwitterAdapter implements Serializable 
     }
 
     @Override
-    public void gotMentions(final ResponseList<Status> statuses) {
+    public void gotMentions(final ResponseList<Tweet> statuses) {
         // don't consider replies to mentions, tweet must contain the account name EXPLICITELY.
         // don't reply to own replies containing the original unit.
-        final Set<Status> newMentions = filterStatusToRespondTo(statuses);
+        final Set<Tweet> newMentions = filterStatusToRespondTo(statuses);
 
         if (LOG.isDebugEnabled() && newMentions.size() > 0) {
             LOG.debug("Found mention: [{}], new: [{}].", statuses.size(), newMentions.size());
@@ -54,9 +48,9 @@ public class MentionEventHandler extends TwitterAdapter implements Serializable 
         newMentions.forEach(this::publishEvent);
     }
 
-    protected Set<Status> filterStatusToRespondTo(ResponseList<Status> statuses) {
-        final Set<Status> newMentions = new HashSet<>();
-        for (Status status : statuses) {
+    protected Set<Tweet> filterStatusToRespondTo(ResponseList<Tweet> statuses) {
+        final Set<Tweet> newMentions = new HashSet<>();
+        for (Tweet status : statuses) {
             if (!shouldRespondTo(status)) {
                 continue;
             }
@@ -67,7 +61,7 @@ public class MentionEventHandler extends TwitterAdapter implements Serializable 
         return Set.copyOf(newMentions);
     }
 
-    protected boolean shouldRespondTo(Status status) {
+    protected boolean shouldRespondTo(Tweet status) {
         if (status.getUser().getScreenName().equalsIgnoreCase(this.twitterConfig.getAccountName())) {
             return false;
         }
@@ -98,7 +92,7 @@ public class MentionEventHandler extends TwitterAdapter implements Serializable 
         LOG.error("Problem executing [{}].", method, new IllegalStateException(te));
     }
 
-    private void publishEvent(final Status status) {
+    private void publishEvent(final Tweet status) {
         this.mentionEvent.fire(new MentionEvent(status));
     }
 

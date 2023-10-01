@@ -49,6 +49,7 @@
     <!-- 3rd party -->
     <dependency.twitter4j.version>4.0.7</dependency.twitter4j.version>
     <dependency.twitter4j-async.version>4.0.7</dependency.twitter4j-async.version>
+    <dependency.twitter4j-v2.version>1.4.2</dependency.twitter4j-v2.version>
     <dependency.immutables.version>2.9.3</dependency.immutables.version>
     <dependency.jsoup.version>1.16.1</dependency.jsoup.version>
     <dependency.eclipselink.version>4.0.2</dependency.eclipselink.version>
@@ -125,14 +126,9 @@
 
       <!-- 3rd party -->
       <dependency>
-        <groupId>org.twitter4j</groupId>
-        <artifactId>twitter4j-core</artifactId>
-        <version>${dependency.twitter4j.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.twitter4j</groupId>
-        <artifactId>twitter4j-async</artifactId>
-        <version>${dependency.twitter4j-async.version}</version>
+        <groupId>com.twitter</groupId>
+        <artifactId>twitter-api-java-sdk</artifactId>
+        <version>1.1.4</version>
       </dependency>
       <dependency>
         <groupId>org.flywaydb</groupId>

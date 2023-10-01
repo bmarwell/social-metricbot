@@ -15,7 +15,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import twitter4j.Status;
 
 @WebListener
 public class TweetResponseListener implements ServletContextListener {
@@ -64,7 +63,7 @@ public class TweetResponseListener implements ServletContextListener {
                 return;
             }
 
-            final Status foundTweet = this.unprocessedTweetQueueHolder.poll();
+            final var foundTweet = this.unprocessedTweetQueueHolder.poll();
             LOG.info(
                     "Emitting event for tweet: [{}]/[{}].",
                     foundTweet.getId(),

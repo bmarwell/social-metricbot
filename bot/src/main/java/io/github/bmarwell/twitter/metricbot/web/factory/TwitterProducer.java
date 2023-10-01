@@ -16,6 +16,8 @@
 
 package io.github.bmarwell.twitter.metricbot.web.factory;
 
+import com.twitter.clientlib.TwitterCredentialsBearer;
+import com.twitter.clientlib.api.TwitterApi;
 import io.github.bmarwell.twitter.metricbot.common.TwitterConfig;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
@@ -24,15 +26,10 @@ import jakarta.inject.Named;
 import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import twitter4j.AsyncTwitterFactory;
-import twitter4j.Twitter;
-import twitter4j.conf.ConfigurationBuilder;
 
 /**
  * Produces instances of Twitter clients.
  *
- * <p>Called this factory 'producer', to avoid name clash with {@link twitter4j.TwitterFactory},
- * and because in CDI you'd call this a producer method anyway.</p>
  */
 @ApplicationScoped
 public class TwitterProducer {
@@ -42,13 +39,23 @@ public class TwitterProducer {
 
     @Produces
     @ApplicationScoped
-    public Twitter getTwitter() {
+    public TwitterApi getTwitter() {
+        // Instantiate library client
+        TwitterApi apiInstance = new TwitterApi();
+
         if (this.twitterAttributes == null
                 || this.twitterAttributes.getConsumerKey() == null
                 || this.twitterAttributes.getAccessToken() == null) {
             throw new IllegalStateException("not configured");
         }
 
+        // Instantiate auth credentials (App-only example)
+        TwitterCredentialsBearer credentials = new TwitterCredentialsBearer(this.twitterAttributes.getAccessToken());
+
+        // Pass credentials to library client
+        apiInstance.setTwitterCredentials(credentials);
+
+        /*
         final ConfigurationBuilder cb = new ConfigurationBuilder()
                 .setDebugEnabled(this.twitterAttributes.isDebug())
                 .setOAuthConsumerKey(this.twitterAttributes.getConsumerKey())
@@ -56,27 +63,9 @@ public class TwitterProducer {
                 .setOAuthAccessToken(this.twitterAttributes.getAccessToken())
                 .setOAuthAccessTokenSecret(this.twitterAttributes.getAccessTokenSecret());
         final twitter4j.TwitterFactory tf = new twitter4j.TwitterFactory(cb.build());
+        */
 
-        return tf.getInstance();
-    }
-
-    @Produces
-    @ApplicationScoped
-    public AsyncTwitterFactory getAsyncTwitter() {
-        if (this.twitterAttributes == null
-                || this.twitterAttributes.getConsumerKey() == null
-                || this.twitterAttributes.getAccessToken() == null) {
-            throw new IllegalStateException("not configured");
-        }
-
-        final ConfigurationBuilder cb = new ConfigurationBuilder()
-                .setDebugEnabled(this.twitterAttributes.isDebug())
-                .setOAuthConsumerKey(this.twitterAttributes.getConsumerKey())
-                .setOAuthConsumerSecret(this.twitterAttributes.getConsumerSecret())
-                .setOAuthAccessToken(this.twitterAttributes.getAccessToken())
-                .setOAuthAccessTokenSecret(this.twitterAttributes.getAccessTokenSecret());
-
-        return new AsyncTwitterFactory(cb.build());
+        return apiInstance;
     }
 
     @ApplicationScoped

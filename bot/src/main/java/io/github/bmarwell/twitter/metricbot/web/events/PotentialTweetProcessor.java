@@ -33,7 +33,7 @@ public class PotentialTweetProcessor {
 
     @Transactional
     public void addPotentialTweet(final @Observes MentionEvent mentionEvent) {
-        final Status foundTweet = mentionEvent.getFoundTweet();
+        final var foundTweet = mentionEvent.getFoundTweet();
 
         if (this.tweetRepository.findById(foundTweet.getId()).isPresent()) {
             LOG.trace("Skipping tweet [{}] because it was already replied to.", foundTweet.getId());

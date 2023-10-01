@@ -1,23 +1,26 @@
 package io.github.bmarwell.twitter.metricbot.web.events;
 
+import com.twitter.clientlib.model.Tweet;
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.StringJoiner;
-import twitter4j.Status;
 
-public class MentionEvent {
+public class MentionEvent implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = -293752304434586050L;
-    private final Status foundTweet;
+    private final Tweet foundTweet;
 
     /**
      * Constructs a prototypical Event.
      *
      * @throws IllegalArgumentException if source is null.
      */
-    public MentionEvent(final Status foundTweet) {
+    public MentionEvent(final Tweet foundTweet) {
         this.foundTweet = foundTweet;
     }
 
-    public Status getFoundTweet() {
+    public Tweet getFoundTweet() {
         return this.foundTweet;
     }
 
