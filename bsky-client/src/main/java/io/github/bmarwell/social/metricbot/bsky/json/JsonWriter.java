@@ -5,40 +5,37 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.MultivaluedMap;
-import jakarta.ws.rs.ext.MessageBodyReader;
+import jakarta.ws.rs.ext.MessageBodyWriter;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 @Produces(MediaType.APPLICATION_JSON)
-public class JsonReader<T> implements MessageBodyReader<T> {
+public class JsonWriter<T> implements MessageBodyWriter<T> {
 
     private final Jsonb jsonb;
 
-    public JsonReader(final Jsonb jsonb) {
+    public JsonWriter(final Jsonb jsonb) {
         this.jsonb = jsonb;
     }
 
     @Override
-    public boolean isReadable(
+    public boolean isWriteable(
             final Class<?> type, final Type genericType, final Annotation[] annotations, final MediaType mediaType) {
         return mediaType.isCompatible(MediaType.APPLICATION_JSON_TYPE);
     }
 
     @Override
-    public T readFrom(
-            final Class<T> type,
+    public void writeTo(
+            final T t,
+            final Class<?> type,
             final Type genericType,
             final Annotation[] annotations,
             final MediaType mediaType,
-            final MultivaluedMap<String, String> httpHeaders,
-            final InputStream entityStream)
+            final MultivaluedMap<String, Object> httpHeaders,
+            final OutputStream entityStream)
             throws IOException, WebApplicationException {
-        try {
-            return this.jsonb.fromJson(entityStream, type);
-        } catch (final Exception e) {
-            throw new WebApplicationException(e);
-        }
+        this.jsonb.toJson(t, entityStream);
     }
 }

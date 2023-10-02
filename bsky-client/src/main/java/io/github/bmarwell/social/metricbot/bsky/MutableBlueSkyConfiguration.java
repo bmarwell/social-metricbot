@@ -24,6 +24,16 @@ public class MutableBlueSkyConfiguration implements Cloneable {
         this.appSecret = appSecret;
     }
 
+    public MutableBlueSkyConfiguration withHandle(final String handle) {
+        this.setHandle(handle);
+        return this;
+    }
+
+    public MutableBlueSkyConfiguration withAppSecret(final char[] appSecret) {
+        this.setAppSecret(appSecret);
+        return this;
+    }
+
     @Override
     public MutableBlueSkyConfiguration clone() {
         try {

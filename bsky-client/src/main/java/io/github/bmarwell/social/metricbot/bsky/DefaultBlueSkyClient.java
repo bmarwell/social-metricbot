@@ -3,15 +3,16 @@ package io.github.bmarwell.social.metricbot.bsky;
 import io.github.bmarwell.social.metricbot.bsky.json.AtProtoLoginBody;
 import io.github.bmarwell.social.metricbot.bsky.json.AtProtoLoginResponse;
 import io.github.bmarwell.social.metricbot.bsky.json.JsonReader;
+import io.github.bmarwell.social.metricbot.bsky.json.JsonWriter;
 import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 import java.io.Serial;
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import org.slf4j.Logger;
@@ -39,27 +40,36 @@ public class DefaultBlueSkyClient implements BlueSkyClient {
     public DefaultBlueSkyClient(final MutableBlueSkyConfiguration bsc) {
         this.bskyConfig = bsc.clone();
         this.jsonb = JsonbBuilder.create();
-        this.client = ClientBuilder.newClient().register(new JsonReader<>(this.jsonb));
+        this.client =
+                ClientBuilder.newClient().register(new JsonReader<>(this.jsonb)).register(new JsonWriter<>(this.jsonb))
+        // end
+        ;
     }
 
     private CompletableFuture<Void> ensureLoggedIn() {
         if (isLoggedIn) {
+            LOG.info("[BSKY] Already logged in.");
             return CompletableFuture.completedFuture(null);
         }
 
         if (loginNotSuccessfull) {
+            LOG.warn("[BSKY] Previous login not successful. Don't attempt again.");
             return CompletableFuture.failedFuture(new IllegalStateException("Already tried to log in."));
         }
 
         return CompletableFuture.supplyAsync(this::doLogin)
                 .handle((final Optional<AtProtoLoginResponse> result, final Throwable error) -> {
                     if (error != null) {
+                        LOG.error("[BSKY] Login not successful.", error);
+
                         this.accessToken = "";
                         this.refreshToken = "";
                         this.isLoggedIn = false;
                         this.loginNotSuccessfull = true;
                         return null;
                     }
+
+                    LOG.info("[BSKY] Login was successful.");
 
                     this.accessToken = result.orElseThrow().accessJwt();
                     this.refreshToken = result.orElseThrow().refreshJwt();
@@ -71,19 +81,36 @@ public class DefaultBlueSkyClient implements BlueSkyClient {
 
     private Optional<AtProtoLoginResponse> doLogin() {
         final AtProtoLoginBody atProtoLoginBody =
-                new AtProtoLoginBody(this.bskyConfig.getHandle(), this.bskyConfig.getAppSecret());
-        final Response response = this.client
+                AtProtoLoginBody.from(this.bskyConfig.getHandle(), this.bskyConfig.getAppSecret());
+        try (final var response = this.client
                 .target("https://bsky.social/xrpc/com.atproto.server.createSession")
                 .request(MediaType.APPLICATION_JSON_TYPE)
-                .post(Entity.entity(atProtoLoginBody, MediaType.APPLICATION_JSON_TYPE));
+                .post(Entity.entity(atProtoLoginBody, MediaType.APPLICATION_JSON_TYPE))) {
+            if (response.getStatus() == 200 && response.hasEntity()) {
 
-        if (response.getStatus() == 200 && response.hasEntity()) {
-            final AtProtoLoginResponse atProtoLoginResponse = response.readEntity(AtProtoLoginResponse.class);
+                final AtProtoLoginResponse atProtoLoginResponse = response.readEntity(AtProtoLoginResponse.class);
 
-            return Optional.of(atProtoLoginResponse);
+                return Optional.of(atProtoLoginResponse);
+            } else {
+                final String responseBody;
+                if (response.hasEntity()) {
+                    responseBody = response.readEntity(String.class);
+                } else {
+                    responseBody = "empty";
+                }
+                throw new IllegalStateException(
+                        "Login not successful. RC=" + response.getStatus() + ". Body: >>" + responseBody + "<<.");
+            }
         }
+    }
 
-        return Optional.empty();
+    @Override
+    public CompletableFuture<List<BskyStatus>> getRecentMentions() {
+        return ensureLoggedIn().thenApply((final Void __) -> doGetRecentMentions());
+    }
+
+    private List<BskyStatus> doGetRecentMentions() {
+        return List.of();
     }
 
     @Override
