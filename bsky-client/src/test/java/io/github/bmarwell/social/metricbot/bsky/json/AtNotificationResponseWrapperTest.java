@@ -2,7 +2,7 @@ package io.github.bmarwell.social.metricbot.bsky.json;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import jakarta.json.bind.Jsonb;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.MultivaluedHashMap;
 import java.io.ByteArrayInputStream;
@@ -13,10 +13,9 @@ import org.junit.jupiter.api.Test;
 
 class AtNotificationResponseWrapperTest {
 
-    Jsonb jsonb = BskyJsonbProvider.INSTANCE.getJsonb();
+    ObjectMapper jsonb = BskyJacksonProvider.INSTANCE.getObjectMapper();
 
-    JsonReader<AtNotificationResponseWrapper> jsonReader =
-            new io.github.bmarwell.social.metricbot.bsky.json.JsonReader<>(this.jsonb);
+    JsonReader<AtNotificationResponseWrapper> jsonReader = new JsonReader<>();
 
     @Test
     void can_deserialize() throws IOException {
@@ -90,7 +89,7 @@ class AtNotificationResponseWrapperTest {
                 .asInstanceOf(InstanceOfAssertFactories.list(AtMentionNotification.class))
                 .hasSize(1)
                 .element(0)
-                .hasFieldOrPropertyWithValue("reason", "mention")
+                .hasFieldOrPropertyWithValue("reason", AtNotificationReason.MENTION)
 
         // end
         ;

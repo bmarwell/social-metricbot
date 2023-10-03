@@ -1,15 +1,11 @@
 package io.github.bmarwell.social.metricbot.bsky.json;
 
-import jakarta.json.bind.adapter.JsonbAdapter;
+import com.fasterxml.jackson.databind.util.StdConverter;
 
-public class AtNotificationReasonAdapter implements JsonbAdapter<AtNotificationReason, String> {
-    @Override
-    public String adaptToJson(final AtNotificationReason obj) throws Exception {
-        return obj.getReasonString();
-    }
+public class AtNotificationReasonAdapter extends StdConverter<String, AtNotificationReason> {
 
     @Override
-    public AtNotificationReason adaptFromJson(final String obj) throws Exception {
-        return AtNotificationReason.fromString(obj);
+    public AtNotificationReason convert(final String value) {
+        return AtNotificationReason.fromString(value);
     }
 }

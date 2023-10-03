@@ -3,7 +3,7 @@ package io.github.bmarwell.social.metricbot.bsky.json;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-public record AtFollowNotification(
+public record AtRepostNotification(
         @JsonDeserialize(converter = AtNotificationReasonAdapter.class) @JsonProperty("reason")
                 AtNotificationReason reason)
         implements AtNotification {}

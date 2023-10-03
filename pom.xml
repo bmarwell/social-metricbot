@@ -52,6 +52,7 @@
     <dependency.jsoup.version>1.16.1</dependency.jsoup.version>
     <dependency.eclipselink.version>4.0.2</dependency.eclipselink.version>
     <dependency.error-prone.version>2.22.0</dependency.error-prone.version>
+    <dependency.jackson.version>2.15.2</dependency.jackson.version>
 
     <!-- logging -->
     <dependency.slf4j-api.version>2.0.9</dependency.slf4j-api.version>
@@ -91,6 +92,7 @@
         <groupId>jakarta.inject</groupId>
         <artifactId>jakarta.inject-api</artifactId>
         <version>2.0.1</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>jakarta.enterprise</groupId>
@@ -140,6 +142,26 @@
         <artifactId>jsoup</artifactId>
         <version>${dependency.jsoup.version}</version>
       </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-core</artifactId>
+        <version>${dependency.jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>${dependency.jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.datatype</groupId>
+        <artifactId>jackson-datatype-jdk8</artifactId>
+        <version>${dependency.jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.datatype</groupId>
+        <artifactId>jackson-datatype-jsr310</artifactId>
+        <version>${dependency.jackson.version}</version>
+      </dependency>
 
       <!-- testing -->
       <dependency>
@@ -173,43 +195,6 @@
         <artifactId>cxf-rt-frontend-jaxrs</artifactId>
         <version>${dependency.cxf.version}</version>
         <scope>test</scope>
-      </dependency>
-
-      <!-- jsonb implementation -->
-      <dependency>
-        <groupId>org.apache.johnzon</groupId>
-        <artifactId>johnzon-core</artifactId>
-        <version>${dependency.johnzon.version}</version>
-        <classifier>jakarta</classifier>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.johnzon</groupId>
-        <artifactId>johnzon-jsonb</artifactId>
-        <version>${dependency.johnzon.version}</version>
-        <classifier>jakarta</classifier>
-        <scope>test</scope>
-        <exclusions>
-          <!-- use jakarta mapper -->
-          <exclusion>
-            <groupId>*</groupId>
-            <artifactId>*</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.johnzon</groupId>
-        <artifactId>johnzon-mapper</artifactId>
-        <version>${dependency.johnzon.version}</version>
-        <classifier>jakarta</classifier>
-        <scope>test</scope>
-        <exclusions>
-          <!-- use jakarta core -->
-          <exclusion>
-            <groupId>*</groupId>
-            <artifactId>*</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
     </dependencies>
   </dependencyManagement>

@@ -1,18 +1,20 @@
 package io.github.bmarwell.social.metricbot.bsky.json;
 
-import jakarta.json.bind.annotation.JsonbProperty;
-import jakarta.json.bind.annotation.JsonbSubtype;
-import jakarta.json.bind.annotation.JsonbTypeAdapter;
-import jakarta.json.bind.annotation.JsonbTypeInfo;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-@JsonbTypeInfo(
-        key = "reason",
-        value = {
-            @JsonbSubtype(alias = "mention", type = AtMentionNotification.class),
-            @JsonbSubtype(alias = "follow", type = AtFollowNotification.class)
-        })
-public sealed interface AtNotification permits AtFollowNotification, AtMentionNotification {
-    @JsonbTypeAdapter(AtNotificationReasonAdapter.class)
-    @JsonbProperty("reason")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, visible = true, property = "reason")
+@JsonSubTypes({
+    @JsonSubTypes.Type(value = AtMentionNotification.class, name = "mention"),
+    @JsonSubTypes.Type(value = AtFollowNotification.class, name = "follow"),
+    @JsonSubTypes.Type(value = AtLikeNotification.class, name = "like"),
+    @JsonSubTypes.Type(value = AtRepostNotification.class, name = "repost"),
+})
+public sealed interface AtNotification
+        permits AtFollowNotification, AtLikeNotification, AtMentionNotification, AtRepostNotification {
+    @JsonDeserialize(converter = AtNotificationReasonAdapter.class)
+    @JsonProperty("reason")
     AtNotificationReason reason();
 }

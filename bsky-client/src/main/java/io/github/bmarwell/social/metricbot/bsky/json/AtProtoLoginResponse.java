@@ -1,8 +1,8 @@
 package io.github.bmarwell.social.metricbot.bsky.json;
 
-import jakarta.json.bind.annotation.JsonbProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public record AtProtoLoginResponse(
-        @JsonbProperty("handle") String handle,
-        @JsonbProperty("accessJwt") String accessJwt,
-        @JsonbProperty("refreshJwt") String refreshJwt) {}
+        @JsonProperty("handle") String handle,
+        @JsonProperty("accessJwt") String accessJwt,
+        @JsonProperty("refreshJwt") String refreshJwt) {}

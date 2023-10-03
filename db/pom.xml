@@ -22,6 +22,7 @@
       <groupId>jakarta.persistence</groupId>
       <artifactId>jakarta.persistence-api</artifactId>
       <version>${dependency.jakarta.persistence-api.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>jakarta.transaction</groupId>

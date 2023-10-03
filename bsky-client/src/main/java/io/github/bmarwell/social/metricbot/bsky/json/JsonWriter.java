@@ -1,6 +1,6 @@
 package io.github.bmarwell.social.metricbot.bsky.json;
 
-import jakarta.json.bind.Jsonb;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.MediaType;
@@ -14,11 +14,9 @@ import java.lang.reflect.Type;
 @Produces(MediaType.APPLICATION_JSON)
 public class JsonWriter<T> implements MessageBodyWriter<T> {
 
-    private final Jsonb jsonb;
+    private static final ObjectMapper OM = BskyJacksonProvider.INSTANCE.getObjectMapper();
 
-    public JsonWriter(final Jsonb jsonb) {
-        this.jsonb = jsonb;
-    }
+    public JsonWriter() {}
 
     @Override
     public boolean isWriteable(
@@ -36,6 +34,6 @@ public class JsonWriter<T> implements MessageBodyWriter<T> {
             final MultivaluedMap<String, Object> httpHeaders,
             final OutputStream entityStream)
             throws IOException, WebApplicationException {
-        this.jsonb.toJson(t, entityStream);
+        OM.writeValue(entityStream, t);
     }
 }

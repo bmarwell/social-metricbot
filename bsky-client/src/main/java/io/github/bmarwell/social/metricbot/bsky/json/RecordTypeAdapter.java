@@ -1,16 +1,12 @@
 package io.github.bmarwell.social.metricbot.bsky.json;
 
+import com.fasterxml.jackson.databind.util.StdConverter;
 import io.github.bmarwell.social.metricbot.bsky.RecordType;
-import jakarta.json.bind.adapter.JsonbAdapter;
 
-public class RecordTypeAdapter implements JsonbAdapter<RecordType, String> {
-    @Override
-    public String adaptToJson(final RecordType obj) throws Exception {
-        return obj.getTypeId();
-    }
+public class RecordTypeAdapter extends StdConverter<String, RecordType> {
 
     @Override
-    public RecordType adaptFromJson(final String obj) throws Exception {
-        return RecordType.fromString(obj);
+    public RecordType convert(final String value) {
+        return RecordType.fromString(value);
     }
 }

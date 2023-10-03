@@ -1,6 +1,6 @@
 package io.github.bmarwell.social.metricbot.bsky.json;
 
-import jakarta.json.bind.Jsonb;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.MediaType;
@@ -14,11 +14,9 @@ import java.lang.reflect.Type;
 @Produces(MediaType.APPLICATION_JSON)
 public class JsonReader<T> implements MessageBodyReader<T> {
 
-    private final Jsonb jsonb;
+    private static final ObjectMapper OM = BskyJacksonProvider.INSTANCE.getObjectMapper();
 
-    public JsonReader(final Jsonb jsonb) {
-        this.jsonb = jsonb;
-    }
+    public JsonReader() {}
 
     @Override
     public boolean isReadable(
@@ -36,7 +34,7 @@ public class JsonReader<T> implements MessageBodyReader<T> {
             final InputStream entityStream)
             throws IOException, WebApplicationException {
         try {
-            return this.jsonb.fromJson(entityStream, type);
+            return OM.readValue(entityStream, type);
         } catch (final Exception e) {
             throw new WebApplicationException(e);
         }

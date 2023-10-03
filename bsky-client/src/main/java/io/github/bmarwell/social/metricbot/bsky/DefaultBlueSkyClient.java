@@ -1,18 +1,19 @@
 package io.github.bmarwell.social.metricbot.bsky;
 
 import io.github.bmarwell.social.metricbot.bsky.json.*;
-import jakarta.json.bind.Jsonb;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.MediaType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.Serial;
 import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class DefaultBlueSkyClient implements BlueSkyClient {
 
@@ -20,7 +21,6 @@ public class DefaultBlueSkyClient implements BlueSkyClient {
     private static final long serialVersionUID = -6379484000282531656L;
 
     private static final Logger LOG = LoggerFactory.getLogger(DefaultBlueSkyClient.class);
-    private final Jsonb jsonb;
     private final Client client;
     private final MutableBlueSkyConfiguration bskyConfig;
     /**
@@ -35,9 +35,7 @@ public class DefaultBlueSkyClient implements BlueSkyClient {
 
     public DefaultBlueSkyClient(final MutableBlueSkyConfiguration bsc) {
         this.bskyConfig = bsc.clone();
-        this.jsonb = BskyJsonbProvider.INSTANCE.getJsonb();
-        this.client =
-                ClientBuilder.newClient().register(new JsonReader<>(this.jsonb)).register(new JsonWriter<>(this.jsonb))
+        this.client = ClientBuilder.newClient().register(new JsonReader<>()).register(new JsonWriter<>())
         // end
         ;
     }
@@ -115,9 +113,13 @@ public class DefaultBlueSkyClient implements BlueSkyClient {
             if (response.getStatus() == 200 && response.hasEntity()) {
                 final var atNotificationResponse = response.readEntity(AtNotificationResponseWrapper.class);
 
-                LOG.info("[BSKY] got notifications: >>" + atNotificationResponse + "<<");
+                if (LOG.isTraceEnabled()) {
+                    LOG.trace("[BSKY] got notifications: >>" + atNotificationResponse + "<<");
+                }
 
                 return atNotificationResponse.notifications().stream()
+                    // because of Yasson bug which calls AtNotificationDeserializer once too often.
+                    .filter(Objects::nonNull)
                         .filter(atn -> atn.reason() == AtNotificationReason.MENTION)
                         .filter(atn -> atn instanceof AtMentionNotification)
                         .map(atn -> (AtMentionNotification) atn)
@@ -149,6 +151,5 @@ public class DefaultBlueSkyClient implements BlueSkyClient {
         this.loginNotSuccessfull = true;
         this.isLoggedIn = false;
         this.client.close();
-        this.jsonb.close();
     }
 }
