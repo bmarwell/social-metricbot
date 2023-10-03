@@ -59,7 +59,9 @@
 
     <!-- testing -->
     <dependency.assertj.version>3.24.2</dependency.assertj.version>
+    <dependency.cxf.version>4.0.3</dependency.cxf.version>
     <junit5.version>5.10.0</junit5.version>
+    <dependency.johnzon.version>1.2.21</dependency.johnzon.version>
     <dependency.h2.version>2.2.224</dependency.h2.version>
   </properties>
 
@@ -165,6 +167,50 @@
         <scope>test</scope>
       </dependency>
 
+      <!-- jax-rs / restulWS implementation -->
+      <dependency>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-rt-frontend-jaxrs</artifactId>
+        <version>${dependency.cxf.version}</version>
+        <scope>test</scope>
+      </dependency>
+
+      <!-- jsonb implementation -->
+      <dependency>
+        <groupId>org.apache.johnzon</groupId>
+        <artifactId>johnzon-core</artifactId>
+        <version>${dependency.johnzon.version}</version>
+        <classifier>jakarta</classifier>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.johnzon</groupId>
+        <artifactId>johnzon-jsonb</artifactId>
+        <version>${dependency.johnzon.version}</version>
+        <classifier>jakarta</classifier>
+        <scope>test</scope>
+        <exclusions>
+          <!-- use jakarta mapper -->
+          <exclusion>
+            <groupId>*</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.johnzon</groupId>
+        <artifactId>johnzon-mapper</artifactId>
+        <version>${dependency.johnzon.version}</version>
+        <classifier>jakarta</classifier>
+        <scope>test</scope>
+        <exclusions>
+          <!-- use jakarta core -->
+          <exclusion>
+            <groupId>*</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 

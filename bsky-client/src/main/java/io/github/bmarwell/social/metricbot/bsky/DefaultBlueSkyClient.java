@@ -1,11 +1,7 @@
 package io.github.bmarwell.social.metricbot.bsky;
 
-import io.github.bmarwell.social.metricbot.bsky.json.AtProtoLoginBody;
-import io.github.bmarwell.social.metricbot.bsky.json.AtProtoLoginResponse;
-import io.github.bmarwell.social.metricbot.bsky.json.JsonReader;
-import io.github.bmarwell.social.metricbot.bsky.json.JsonWriter;
+import io.github.bmarwell.social.metricbot.bsky.json.*;
 import jakarta.json.bind.Jsonb;
-import jakarta.json.bind.JsonbBuilder;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
@@ -39,7 +35,7 @@ public class DefaultBlueSkyClient implements BlueSkyClient {
 
     public DefaultBlueSkyClient(final MutableBlueSkyConfiguration bsc) {
         this.bskyConfig = bsc.clone();
-        this.jsonb = JsonbBuilder.create();
+        this.jsonb = BskyJsonbProvider.INSTANCE.getJsonb();
         this.client =
                 ClientBuilder.newClient().register(new JsonReader<>(this.jsonb)).register(new JsonWriter<>(this.jsonb))
         // end
@@ -110,7 +106,39 @@ public class DefaultBlueSkyClient implements BlueSkyClient {
     }
 
     private List<BskyStatus> doGetRecentMentions() {
-        return List.of();
+        try (final var response = this.client
+                .target("https://bsky.social/xrpc/app.bsky.notification.listNotifications")
+                .queryParam("limit", "15")
+                .request(MediaType.APPLICATION_JSON_TYPE)
+                .header("Authorization", "Bearer " + this.accessToken)
+                .get()) {
+            if (response.getStatus() == 200 && response.hasEntity()) {
+                final var atNotificationResponse = response.readEntity(AtNotificationResponseWrapper.class);
+
+                LOG.info("[BSKY] got notifications: >>" + atNotificationResponse + "<<");
+
+                return atNotificationResponse.notifications().stream()
+                        .filter(atn -> atn.reason() == AtNotificationReason.MENTION)
+                        .filter(atn -> atn instanceof AtMentionNotification)
+                        .map(atn -> (AtMentionNotification) atn)
+                        .filter(atn -> atn.record().type() == RecordType.POST)
+                        .map(BskyMapper::toStatus)
+                        .toList();
+            } else {
+                final String responseBody;
+                if (response.hasEntity()) {
+                    responseBody = response.readEntity(String.class);
+                } else {
+                    responseBody = "empty";
+                }
+                throw new IllegalStateException("Getting notifications not successful. RC=" + response.getStatus()
+                        + ". Body: >>" + responseBody + "<<.");
+            }
+        }
+    }
+
+    public Client getClient() {
+        return client;
     }
 
     @Override
