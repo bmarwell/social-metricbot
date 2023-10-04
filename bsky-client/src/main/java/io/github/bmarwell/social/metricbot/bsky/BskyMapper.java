@@ -1,8 +1,6 @@
 package io.github.bmarwell.social.metricbot.bsky;
 
-import io.github.bmarwell.social.metricbot.bsky.json.AtMentionNotification;
-import io.github.bmarwell.social.metricbot.bsky.json.AtPostReply;
-import io.github.bmarwell.social.metricbot.bsky.json.AtPostReplyInformation;
+import io.github.bmarwell.social.metricbot.bsky.json.*;
 
 public final class BskyMapper {
     private BskyMapper() {
@@ -17,10 +15,8 @@ public final class BskyMapper {
                 atMentionNotification.record().text(),
                 atMentionNotification.record().type(),
                 atMentionNotification.record().lang(),
-            atMentionNotification.record().createdAt(),
-            atMentionNotification.record().reply()
-                .map(AtPostReply::parent)
-                .map(AtPostReplyInformation::cid)
-        );
+                atMentionNotification.record().createdAt(),
+                atMentionNotification.record().reply().map(AtPostReply::parent).map(AtPostReplyInformation::uri),
+                atMentionNotification.embed().map(AtEmbed::record).map(AtEmbedRecord::uri));
     }
 }

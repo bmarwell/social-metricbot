@@ -6,9 +6,9 @@ import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.MediaType;
 import java.io.Serial;
+import java.net.URI;
 import java.time.Instant;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import org.slf4j.Logger;
@@ -102,6 +102,45 @@ public class DefaultBlueSkyClient implements BlueSkyClient {
         return ensureLoggedIn().thenApply((final Void __) -> doGetRecentMentions());
     }
 
+    @Override
+    public Optional<BskyStatus> getRepliedToPost(final BskyStatus status) {
+        if (!status.isReply()) {
+            return Optional.empty();
+        }
+
+        final var replyTo = status.inReplyTo().orElseThrow();
+
+        Optional<BskyStatus> replyToStatus = getSinglePost(replyTo);
+
+        // TODO: implement
+        throw new UnsupportedOperationException(
+                "not yet implemented: [io.github.bmarwell.social.metricbot.bsky.DefaultBlueSkyClient::getRepliedToPost].");
+    }
+
+    @Override
+    public Optional<BskyStatus> getSinglePost(final URI replyTo) {
+        try (final var response = this.client
+                .target("https://bsky.social/xrpc/app.bsky.feed.getPosts")
+                .queryParam("uris", replyTo.toString())
+                .request(MediaType.APPLICATION_JSON_TYPE)
+                .header("Authorization", "Bearer " + this.accessToken)
+                .get()) {
+            // TODO: implement
+        }
+
+        return Optional.empty();
+    }
+
+    @Override
+    public boolean isByOtherUser(final BskyStatus status) {
+        return !this.bskyConfig.getHandle().equals(status.author().handle());
+    }
+
+    @Override
+    public Optional<BskyStatus> getRepostedStatus(final BskyStatus status) {
+        return getSinglePost(status.quotedStatus().orElseThrow());
+    }
+
     private List<BskyStatus> doGetRecentMentions() {
         try (final var response = this.client
                 .target("https://bsky.social/xrpc/app.bsky.notification.listNotifications")
@@ -117,8 +156,6 @@ public class DefaultBlueSkyClient implements BlueSkyClient {
                 }
 
                 return atNotificationResponse.notifications().stream()
-                        // because of Yasson bug which calls AtNotificationDeserializer once too often.
-                        .filter(Objects::nonNull)
                         .filter(atn -> atn.reason() == AtNotificationReason.MENTION)
                         .filter(atn -> atn instanceof AtMentionNotification)
                         .map(atn -> (AtMentionNotification) atn)

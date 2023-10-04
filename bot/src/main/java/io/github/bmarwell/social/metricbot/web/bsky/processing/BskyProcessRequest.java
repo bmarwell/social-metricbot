@@ -8,5 +8,4 @@ import io.github.bmarwell.social.metricbot.bsky.BskyStatus;
  *
  * @param status the status which was found which mentions the bot.
  */
-public record BskyProcessRequest(BskyStatus status) {
-}
+public record BskyProcessRequest(BskyStatus status) {}

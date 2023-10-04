@@ -13,6 +13,10 @@ public class MutableBlueSkyConfiguration implements Cloneable {
     }
 
     public void setHandle(final String handle) {
+        if (handle.startsWith("@")) {
+            this.handle = handle.substring(1);
+            return;
+        }
         this.handle = handle;
     }
 

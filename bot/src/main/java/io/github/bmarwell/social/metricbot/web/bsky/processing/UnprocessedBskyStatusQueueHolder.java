@@ -2,7 +2,6 @@ package io.github.bmarwell.social.metricbot.web.bsky.processing;
 
 import io.github.bmarwell.social.metricbot.bsky.BskyStatus;
 import jakarta.enterprise.context.ApplicationScoped;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Deque;

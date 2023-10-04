@@ -36,28 +36,28 @@ public class BskyMentionProcessor implements Serializable {
     public void processMastodonStatus(@Observes final BskyMentionEvent mentionEvent) {
         final var status = mentionEvent.bskyStatus();
 
-        if (this.bskyStatusRepository.findById(status.cid()).isPresent()) {
-            LOG.trace("Skipping BskyStatus [{}] because it was already replied to.", status.cid());
+        if (this.bskyStatusRepository.findByAtUri(status.uri()).isPresent()) {
+            LOG.trace("Skipping BskyStatus [{}] because it was already replied to.", status.uri());
             return;
         }
 
         if (this.unprocessedPostQueueHolder.contains(status)) {
-            LOG.debug("Skipping BskyStatus [{}] because it will be processed soon.", status.cid());
+            LOG.debug("Skipping BskyStatus [{}] because it will be processed soon.", status.uri());
             return;
         }
 
         final Instant createdAt = status.createdAt();
         // only reply to mentions in the last 10 minutes
         if (createdAt.isBefore(Instant.now().minusSeconds(60 * 10L))) {
-            LOG.info("Skipping BskyStatus [{}] because it is too old: [{}].", status.cid(), createdAt);
-            this.bskyStatusRepository.upsert(status.cid(), status.createdAt(), null, Instant.now());
+            LOG.info("Skipping BskyStatus [{}] because it is too old: [{}].", status.uri(), createdAt);
+            this.bskyStatusRepository.upsert(status.uri(), status.createdAt(), null, Instant.now());
 
             return;
         }
 
         if (containsBlockedWord(status)) {
-            LOG.debug("Skipping Toot [{}] because it is from a blocked user.", status.cid());
-            this.bskyStatusRepository.upsert(status.cid(), status.createdAt(), null, Instant.now());
+            LOG.debug("Skipping Toot [{}] because it is from a blocked user.", status.uri());
+            this.bskyStatusRepository.upsert(status.uri(), status.createdAt(), null, Instant.now());
 
             return;
         }

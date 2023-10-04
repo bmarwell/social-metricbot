@@ -3,11 +3,10 @@ package io.github.bmarwell.social.metricbot.common;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Default;
 import jakarta.inject.Inject;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.Duration;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @ApplicationScoped
 @Default

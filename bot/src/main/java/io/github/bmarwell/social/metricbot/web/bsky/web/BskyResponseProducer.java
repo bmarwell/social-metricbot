@@ -12,12 +12,11 @@ import jakarta.inject.Inject;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Will poll from the Queue and fire an event.
@@ -48,11 +47,11 @@ public class BskyResponseProducer implements ServletContextListener, Serializabl
     @Override
     public void contextInitialized(final ServletContextEvent sce) {
         final var scheduledFuture = this.scheduler.scheduleAtFixedRate(
-            this::emitMention,
-            this.bskyConfig.getPostFinderInitialDelay().getSeconds(),
-            // delay here may be short b/c response are usually rare
-            2L,
-            TimeUnit.SECONDS);
+                this::emitMention,
+                this.bskyConfig.getPostFinderInitialDelay().getSeconds(),
+                // delay here may be short b/c response are usually rare
+                2L,
+                TimeUnit.SECONDS);
 
         if (scheduledFuture.isCancelled()) {
             throw new IllegalStateException("Scheduler was canceled: " + scheduledFuture);
@@ -67,12 +66,11 @@ public class BskyResponseProducer implements ServletContextListener, Serializabl
 
         final var bskyStatus = this.unprocessedBskyStatusQueueHolder.poll();
         LOG.info(
-            "Emitting event for BskyStatus: [{}]/[{}].",
-            bskyStatus.cid(),
-            bskyStatus.text().replaceAll("\n", "\\\\n"));
+                "Emitting event for BskyStatus: [{}]/[{}].",
+                bskyStatus.uri(),
+                bskyStatus.text().replaceAll("\n", "\\\\n"));
         this.processEvent.fireAsync(
-            new BskyProcessRequest(bskyStatus),
-            NotificationOptions.builder().setExecutor(executor).build()
-        );
+                new BskyProcessRequest(bskyStatus),
+                NotificationOptions.builder().setExecutor(executor).build());
     }
 }

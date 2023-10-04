@@ -12,13 +12,13 @@ import jakarta.enterprise.event.Observes;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.Serial;
 import java.io.Serializable;
+import java.net.URI;
 import java.time.Instant;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class will actually respond to statuses wrapped in a ReplyRequest.
@@ -48,7 +48,7 @@ public class BskyResponder extends AbstractResponder implements Serializable {
         final BskyStatus status = event.status();
 
         final Optional<BskyStatusPdo> alreadyRespondedToMention =
-            this.self.get().findById(status.cid());
+                this.self.get().findById(status.uri());
         if (alreadyRespondedToMention.isPresent()) {
             final BskyStatusPdo tweetPdo = alreadyRespondedToMention.orElseThrow();
             LOG.debug("Already responded: [{}]", tweetPdo);
@@ -66,27 +66,27 @@ public class BskyResponder extends AbstractResponder implements Serializable {
         final Optional<BskyStatus> optStatusWithUnits = getStatusWithUnits(status);
         if (optStatusWithUnits.isEmpty()) {
             LOG.debug("No units found.");
-            this.self.get().upsert(status.cid(), status.createdAt(), null, Instant.now());
+            this.self.get().upsert(status.uri(), status.createdAt(), null, Instant.now());
 
             return;
         }
 
         final BskyStatus statusWithUnits = optStatusWithUnits.orElseThrow();
 
-        final Optional<BskyStatusPdo> optExistingResponse = this.self.get().findById(statusWithUnits.cid());
+        final Optional<BskyStatusPdo> optExistingResponse = this.self.get().findById(statusWithUnits.uri());
 
         if (optExistingResponse.isPresent()) {
             final BskyStatusPdo existingResponse = optExistingResponse.orElseThrow();
             LOG.debug("Already responded: [{}].", existingResponse);
-            final String botResponseId = existingResponse.getBotResponseCid();
-            this.self.get().upsert(status.cid(), status.createdAt(), botResponseId, Instant.now());
+            // final URI botResponseAtUri = existingResponse.getBotResponseAtUri();
+            // this.self.get().upsert(status.uri(), status.createdAt(), botResponseAtUri, Instant.now());
 
-            // reply to foundTweet with Link to botResponseId
+            // reply to foundTweet with Link to botResponseAtUri
 
             return;
         }
 
-        doRespond(status, statusWithUnits);
+        // TODO: doRespond(status, statusWithUnits);
     }
 
     private Optional<BskyStatus> getStatusWithUnits(final BskyStatus status) {
@@ -97,8 +97,9 @@ public class BskyResponder extends AbstractResponder implements Serializable {
         }
 
         // boosted? Same as quoted and retweeted/reblogged for Mastodon.
-        if (this.bskyClient.isReblogged(status)) {
-            final BskyStatus rebloggedStatus = this.bskyClient.getRebloggedStatus(status);
+        if (status.isQuoting()) {
+            final BskyStatus rebloggedStatus =
+                    this.bskyClient.getRepostedStatus(status).orElseThrow();
 
             if (containsUnits(rebloggedStatus) && this.bskyClient.isByOtherUser(rebloggedStatus)) {
                 return Optional.of(rebloggedStatus);
@@ -107,7 +108,7 @@ public class BskyResponder extends AbstractResponder implements Serializable {
 
         // reply to?
         if (status.isReply()) {
-            Optional<BskyStatus> repliedTo = this.bskyClient.getRepliedToPost(status);
+            final Optional<BskyStatus> repliedTo = this.bskyClient.getRepliedToPost(status);
 
             if (repliedTo.isEmpty()) {
                 return Optional.empty();
@@ -128,16 +129,15 @@ public class BskyResponder extends AbstractResponder implements Serializable {
 
     @Transactional
     public void upsert(
-        final String cid,
-        final Instant postTime,
-        final @Nullable String responseCid,
-        final Instant responseTime) {
-        this.repository.get().upsert(cid, postTime, responseCid, responseTime);
+            final URI postAtUri,
+            final Instant postTime,
+            final @Nullable URI botResponseAtUri,
+            final Instant responseTime) {
+        this.repository.get().upsert(postAtUri, postTime, botResponseAtUri, responseTime);
     }
 
     @Transactional
-    private Optional<BskyStatusPdo> findById(final String id) {
-        return this.repository.get().findById(id);
+    private Optional<BskyStatusPdo> findById(final URI postAtUri) {
+        return this.repository.get().findByAtUri(postAtUri);
     }
-
 }

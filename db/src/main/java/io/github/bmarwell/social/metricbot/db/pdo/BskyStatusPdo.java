@@ -1,10 +1,11 @@
 package io.github.bmarwell.social.metricbot.db.pdo;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import io.github.bmarwell.social.metricbot.db.converter.UriConverter;
+import jakarta.annotation.Nullable;
+import jakarta.persistence.*;
+import java.net.URI;
 import java.time.Instant;
+import java.util.Optional;
 
 @Entity
 @Table(name = "BSKY_STATUS")
@@ -12,37 +13,47 @@ public class BskyStatusPdo {
 
     public static final Instant TIME_NOT_SET = Instant.EPOCH;
 
+    public static final URI EMPTY_URI = URI.create("");
+
     @Id
-    @Column(name = "STATUS_CID")
-    private String cid;
+    @Column(name = "STATUS_ATURI")
+    @Convert(converter = UriConverter.class)
+    private URI atUri;
 
     @Column(name = "POST_TIME", nullable = false)
     private Instant postTime;
 
-    @Column(name = "BOT_RESPONSE_CID", nullable = false)
-    private String botResponseCid;
+    @Column(name = "BOT_RESPONSE_ATURI", nullable = false)
+    private URI botResponseAtUri;
 
     @Column(name = "RESPONSE_TIME", nullable = false)
     private Instant responseTime;
 
     public BskyStatusPdo() {
-        this.botResponseCid = "";
+        this.botResponseAtUri = EMPTY_URI;
         this.responseTime = TIME_NOT_SET;
     }
 
-    public BskyStatusPdo(final String cid, final Instant postTime) {
-        this.cid = cid;
+    public BskyStatusPdo(final URI atUri, final Instant postTime) {
+        this.atUri = atUri;
         this.postTime = postTime;
-        this.botResponseCid = "";
+        this.botResponseAtUri = EMPTY_URI;
         this.responseTime = TIME_NOT_SET;
     }
 
-    public String getCid() {
-        return cid;
+    @PrePersist
+    public void sanitizeUri() {
+        if (this.botResponseAtUri == null) {
+            this.botResponseAtUri = EMPTY_URI;
+        }
     }
 
-    public void setCid(final String cid) {
-        this.cid = cid;
+    public URI getAtUri() {
+        return atUri;
+    }
+
+    public void setAtUri(final URI atUri) {
+        this.atUri = atUri;
     }
 
     public Instant getPostTime() {
@@ -53,12 +64,16 @@ public class BskyStatusPdo {
         this.postTime = postTime;
     }
 
-    public String getBotResponseCid() {
-        return botResponseCid;
+    public Optional<URI> getBotResponseAtUri() {
+        return Optional.ofNullable(this.botResponseAtUri).filter(uri -> uri.equals(EMPTY_URI));
     }
 
-    public void setBotResponseCid(final String botResponseCid) {
-        this.botResponseCid = botResponseCid;
+    public void setBotResponseAtUri(final @Nullable URI botResponseAtUri) {
+        if (botResponseAtUri == null) {
+            this.botResponseAtUri = EMPTY_URI;
+            return;
+        }
+        this.botResponseAtUri = botResponseAtUri;
     }
 
     public Instant getResponseTime() {
@@ -78,11 +93,11 @@ public class BskyStatusPdo {
             return false;
         }
 
-        return getCid().equals(that.getCid());
+        return getAtUri().equals(that.getAtUri());
     }
 
     @Override
     public int hashCode() {
-        return getCid().hashCode();
+        return getAtUri().hashCode();
     }
 }
