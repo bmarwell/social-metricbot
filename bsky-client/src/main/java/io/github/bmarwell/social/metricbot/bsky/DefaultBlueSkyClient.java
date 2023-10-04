@@ -5,15 +5,14 @@ import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.MediaType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.Serial;
 import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DefaultBlueSkyClient implements BlueSkyClient {
 
@@ -118,8 +117,8 @@ public class DefaultBlueSkyClient implements BlueSkyClient {
                 }
 
                 return atNotificationResponse.notifications().stream()
-                    // because of Yasson bug which calls AtNotificationDeserializer once too often.
-                    .filter(Objects::nonNull)
+                        // because of Yasson bug which calls AtNotificationDeserializer once too often.
+                        .filter(Objects::nonNull)
                         .filter(atn -> atn.reason() == AtNotificationReason.MENTION)
                         .filter(atn -> atn instanceof AtMentionNotification)
                         .map(atn -> (AtMentionNotification) atn)

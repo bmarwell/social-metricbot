@@ -9,7 +9,6 @@ import jakarta.enterprise.concurrent.ManagedExecutorService;
 import jakarta.enterprise.concurrent.ManagedScheduledExecutorService;
 import jakarta.enterprise.event.Event;
 import jakarta.inject.Inject;
-import jakarta.json.bind.JsonbBuilder;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;
@@ -68,8 +67,9 @@ public class BskyMentionListener implements ServletContextListener {
                     }
 
                     for (final BskyStatus recentMention : result) {
-                        LOG.info(
-                                "[BSKY] Found mention: " + JsonbBuilder.create().toJson(recentMention));
+                        if (LOG.isTraceEnabled()) {
+                            LOG.trace("[BSKY] Found mention: " + recentMention);
+                        }
                         mentionEvent.fire(new BskyMentionEvent(recentMention));
                     }
 
