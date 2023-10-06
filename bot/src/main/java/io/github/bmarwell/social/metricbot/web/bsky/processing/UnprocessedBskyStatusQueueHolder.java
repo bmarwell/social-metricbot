@@ -24,6 +24,10 @@ public class UnprocessedBskyStatusQueueHolder implements Serializable {
             return;
         }
 
+        if (processItems.stream().anyMatch(pci -> pci.uri().equals(status.uri()))) {
+            return;
+        }
+
         this.processItems.add(status);
     }
 

@@ -29,6 +29,7 @@ public class BskyProducer implements Serializable {
     BlueSkyBotConfig bskyConfig;
 
     @Produces
+    @ApplicationScoped
     public BlueSkyClient produceBlueSky() {
         final var bskyClientConfig = new MutableBlueSkyConfiguration()
                 .withHandle(this.bskyConfig.getHandle())

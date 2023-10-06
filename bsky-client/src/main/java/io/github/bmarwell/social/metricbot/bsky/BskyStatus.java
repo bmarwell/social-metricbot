@@ -1,6 +1,6 @@
 package io.github.bmarwell.social.metricbot.bsky;
 
-import io.github.bmarwell.social.metricbot.bsky.json.AtNotificationAuthor;
+import io.github.bmarwell.social.metricbot.bsky.json.dto.AtNotificationAuthor;
 import java.net.URI;
 import java.time.Instant;
 import java.util.List;

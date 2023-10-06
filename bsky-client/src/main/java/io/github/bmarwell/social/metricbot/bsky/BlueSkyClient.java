@@ -1,5 +1,6 @@
 package io.github.bmarwell.social.metricbot.bsky;
 
+import io.github.bmarwell.social.metricbot.bsky.json.BskyResponseDraft;
 import java.io.Serializable;
 import java.net.URI;
 import java.util.List;
@@ -30,4 +31,8 @@ public interface BlueSkyClient extends Serializable, AutoCloseable {
      * @return an optional status if found.
      */
     Optional<BskyStatus> getRepostedStatus(BskyStatus status);
+
+    Optional<BskyStatus> sendReply(BskyResponseDraft statusDraft);
+
+    String getHandle();
 }

@@ -23,6 +23,10 @@ public class BlueSkyBotConfig implements Serializable {
     @ConfigProperty(name = "io.github.bmarwell.social.metricbot.bsky.appSecret")
     private String appSecret;
 
+    @Inject
+    @ConfigProperty(name = "io.github.bmarwell.social.metricbot.bsky.skipOldPosts", defaultValue = "true")
+    private boolean skipOldPosts;
+
     public BlueSkyBotConfig() {
         // injection only
     }
@@ -45,5 +49,13 @@ public class BlueSkyBotConfig implements Serializable {
 
     public Duration getPostFinderInitialDelay() {
         return Duration.ofSeconds(5L);
+    }
+
+    public boolean isSkipOldPosts() {
+        return skipOldPosts;
+    }
+
+    public void setSkipOldPosts(final boolean skipOldPosts) {
+        this.skipOldPosts = skipOldPosts;
     }
 }

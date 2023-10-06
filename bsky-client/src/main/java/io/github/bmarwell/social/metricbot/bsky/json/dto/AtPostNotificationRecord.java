@@ -1,8 +1,9 @@
-package io.github.bmarwell.social.metricbot.bsky.json;
+package io.github.bmarwell.social.metricbot.bsky.json.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.github.bmarwell.social.metricbot.bsky.RecordType;
+import io.github.bmarwell.social.metricbot.bsky.json.RecordTypeAdapter;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;

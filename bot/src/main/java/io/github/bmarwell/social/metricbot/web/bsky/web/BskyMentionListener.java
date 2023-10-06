@@ -58,7 +58,7 @@ public class BskyMentionListener implements ServletContextListener {
     }
 
     protected void retrieveMentions() {
-        executor.copy(this.bsky.getRecentMentions())
+        final var unused = executor.copy(this.bsky.getRecentMentions())
                 // no method returning void?
                 .handle((final List<BskyStatus> result, final Throwable error) -> {
                     if (error != null) {

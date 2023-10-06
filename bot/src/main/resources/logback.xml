@@ -6,9 +6,12 @@
   </appender>
 
   <logger name="io.github.bmarwell.social.metricbot" level="info"/>
-  <logger name="io.github.bmarwell.social.metricbot.app" level="debug"/>
-  <logger name="io.github.bmarwell.social.metricbot.conversion" level="debug"/>
-  <logger name="io.github.bmarwell.social.metricbot.db" level="debug"/>
+  <logger name="io.github.bmarwell.social.metricbot.app" level="info"/>
+  <logger name="io.github.bmarwell.social.metricbot.conversion" level="info"/>
+  <logger name="io.github.bmarwell.social.metricbot.db" level="info"/>
+
+  <logger name="io.github.bmarwell.social.metricbot.bsky" level="info"/>
+  <logger name="io.github.bmarwell.social.metricbot.web.bsky" level="info"/>
 
   <root level="info">
     <appender-ref ref="STDOUT"/>

@@ -56,7 +56,7 @@ public class MastodonMentionListener implements ServletContextListener {
     }
 
     protected void retrieveMentions() {
-        executor.copy(this.mastodon.getRecentMentions())
+        final var unused = executor.copy(this.mastodon.getRecentMentions())
                 // no method returning void?
                 .handle((List<MastodonStatus> result, Throwable error) -> {
                     if (error != null) {

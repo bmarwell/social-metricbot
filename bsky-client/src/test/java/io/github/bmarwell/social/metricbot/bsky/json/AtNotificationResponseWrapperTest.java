@@ -3,6 +3,7 @@ package io.github.bmarwell.social.metricbot.bsky.json;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.bmarwell.social.metricbot.bsky.json.dto.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.MultivaluedHashMap;
 import java.io.ByteArrayInputStream;

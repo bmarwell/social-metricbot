@@ -1,6 +1,7 @@
 package io.github.bmarwell.social.metricbot.web.bsky.processing;
 
 import io.github.bmarwell.social.metricbot.bsky.BskyStatus;
+import io.github.bmarwell.social.metricbot.common.BlueSkyBotConfig;
 import io.github.bmarwell.social.metricbot.db.dao.BskyStatusRepository;
 import io.github.bmarwell.social.metricbot.web.GlobalStatusUtil;
 import io.github.bmarwell.social.metricbot.web.bsky.event.BskyMentionEvent;
@@ -32,6 +33,9 @@ public class BskyMentionProcessor implements Serializable {
     @Inject
     private UnprocessedBskyStatusQueueHolder unprocessedPostQueueHolder;
 
+    @Inject
+    private BlueSkyBotConfig blueSkyBotConfig;
+
     @Transactional
     public void processMastodonStatus(@Observes final BskyMentionEvent mentionEvent) {
         final var status = mentionEvent.bskyStatus();
@@ -48,7 +52,7 @@ public class BskyMentionProcessor implements Serializable {
 
         final Instant createdAt = status.createdAt();
         // only reply to mentions in the last 10 minutes
-        if (createdAt.isBefore(Instant.now().minusSeconds(60 * 10L))) {
+        if (skipOld() && createdAt.isBefore(Instant.now().minusSeconds(60 * 10L))) {
             LOG.info("Skipping BskyStatus [{}] because it is too old: [{}].", status.uri(), createdAt);
             this.bskyStatusRepository.upsert(status.uri(), status.createdAt(), null, Instant.now());
 
@@ -63,6 +67,10 @@ public class BskyMentionProcessor implements Serializable {
         }
 
         this.unprocessedPostQueueHolder.add(status);
+    }
+
+    private boolean skipOld() {
+        return blueSkyBotConfig.isSkipOldPosts();
     }
 
     private boolean containsBlockedWord(final BskyStatus status) {

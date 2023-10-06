@@ -1,10 +1,11 @@
-package io.github.bmarwell.social.metricbot.bsky.json;
+package io.github.bmarwell.social.metricbot.bsky.json.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.github.bmarwell.social.metricbot.bsky.RecordType;
+import io.github.bmarwell.social.metricbot.bsky.json.RecordTypeAdapter;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "$type", visible = true)
 @JsonSubTypes({

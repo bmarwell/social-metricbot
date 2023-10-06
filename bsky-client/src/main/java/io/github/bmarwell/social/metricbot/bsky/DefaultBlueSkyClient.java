@@ -1,6 +1,10 @@
 package io.github.bmarwell.social.metricbot.bsky;
 
-import io.github.bmarwell.social.metricbot.bsky.json.*;
+import io.github.bmarwell.social.metricbot.bsky.json.BskyResponseDraft;
+import io.github.bmarwell.social.metricbot.bsky.json.JsonReader;
+import io.github.bmarwell.social.metricbot.bsky.json.JsonWriter;
+import io.github.bmarwell.social.metricbot.bsky.json.dto.*;
+import io.github.bmarwell.social.metricbot.bsky.json.getposts.AtGetPostsResponseWrapper;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
@@ -9,8 +13,10 @@ import java.io.Serial;
 import java.net.URI;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,9 +31,8 @@ public class DefaultBlueSkyClient implements BlueSkyClient {
     /**
      * JSON web token returned from successful login.
      */
-    private String accessToken;
+    private final AtomicReference<String> accessToken = new AtomicReference<>();
 
-    private String refreshToken;
     private Instant refreshBefore = Instant.MAX;
     private boolean loginNotSuccessfull;
     private boolean isLoggedIn;
@@ -41,7 +46,12 @@ public class DefaultBlueSkyClient implements BlueSkyClient {
 
     private CompletableFuture<Void> ensureLoggedIn() {
         if (isLoggedIn) {
-            LOG.info("[BSKY] Already logged in.");
+            LOG.debug("[BSKY] Already logged in.");
+
+            if (Instant.now().isAfter(this.refreshBefore.minusSeconds(60))) {
+                return doLoginAndSetVariables();
+            }
+
             return CompletableFuture.completedFuture(null);
         }
 
@@ -50,13 +60,16 @@ public class DefaultBlueSkyClient implements BlueSkyClient {
             return CompletableFuture.failedFuture(new IllegalStateException("Already tried to log in."));
         }
 
+        return doLoginAndSetVariables();
+    }
+
+    private CompletableFuture<Void> doLoginAndSetVariables() {
         return CompletableFuture.supplyAsync(this::doLogin)
                 .handle((final Optional<AtProtoLoginResponse> result, final Throwable error) -> {
                     if (error != null) {
                         LOG.error("[BSKY] Login not successful.", error);
 
-                        this.accessToken = "";
-                        this.refreshToken = "";
+                        this.accessToken.set("");
                         this.isLoggedIn = false;
                         this.loginNotSuccessfull = true;
                         return null;
@@ -64,8 +77,7 @@ public class DefaultBlueSkyClient implements BlueSkyClient {
 
                     LOG.info("[BSKY] Login was successful.");
 
-                    this.accessToken = result.orElseThrow().accessJwt();
-                    this.refreshToken = result.orElseThrow().refreshJwt();
+                    this.accessToken.set(result.orElseThrow().accessJwt());
                     this.isLoggedIn = true;
                     this.loginNotSuccessfull = false;
                     return null;
@@ -110,25 +122,56 @@ public class DefaultBlueSkyClient implements BlueSkyClient {
 
         final var replyTo = status.inReplyTo().orElseThrow();
 
-        Optional<BskyStatus> replyToStatus = getSinglePost(replyTo);
-
-        // TODO: implement
-        throw new UnsupportedOperationException(
-                "not yet implemented: [io.github.bmarwell.social.metricbot.bsky.DefaultBlueSkyClient::getRepliedToPost].");
+        return ensureLoggedIn()
+                .thenApply((final Void __) -> getSinglePost(replyTo))
+                .join();
     }
 
     @Override
     public Optional<BskyStatus> getSinglePost(final URI replyTo) {
         try (final var response = this.client
                 .target("https://bsky.social/xrpc/app.bsky.feed.getPosts")
-                .queryParam("uris", replyTo.toString())
+                .queryParam("uris", replyTo.toASCIIString())
                 .request(MediaType.APPLICATION_JSON_TYPE)
-                .header("Authorization", "Bearer " + this.accessToken)
+                .header("Authorization", "Bearer " + this.accessToken.get())
                 .get()) {
-            // TODO: implement
-        }
 
-        return Optional.empty();
+            if (response.getStatus() != 200) {
+                final String entity;
+                if (response.hasEntity()) {
+                    entity = response.readEntity(String.class);
+                } else {
+                    entity = "<empty>";
+                }
+
+                LOG.error(
+                        "Unable to get post [{}]. Status = [{}]. Response body: [{}].",
+                        replyTo,
+                        response.getStatus(),
+                        entity);
+                return Optional.empty();
+            }
+
+            if (!response.hasEntity()) {
+                LOG.error("Unable to get post [{}] body: no entity. Status = [{}]", replyTo, response.getStatus());
+                return Optional.empty();
+            }
+
+            final var responseEntity = response.readEntity(AtGetPostsResponseWrapper.class);
+            if (responseEntity.posts().isEmpty()) {
+                LOG.error("Empty posts response for URI [{}]: [{}].", replyTo, responseEntity);
+                return Optional.empty();
+            }
+
+            final var atGetPostsPosts = responseEntity.posts().get(0);
+            final var atGetPostsStatus = BskyMapper.toStatus(atGetPostsPosts);
+
+            return Optional.of(atGetPostsStatus);
+        } catch (RuntimeException rtEx) {
+            LOG.error("Problem mapping the entity. Entity.", rtEx);
+
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -138,7 +181,74 @@ public class DefaultBlueSkyClient implements BlueSkyClient {
 
     @Override
     public Optional<BskyStatus> getRepostedStatus(final BskyStatus status) {
-        return getSinglePost(status.quotedStatus().orElseThrow());
+        return ensureLoggedIn()
+                .thenApply(
+                        (final Void __) -> getSinglePost(status.quotedStatus().orElseThrow()))
+                .join();
+    }
+
+    @Override
+    public Optional<BskyStatus> sendReply(final BskyResponseDraft statusDraft) {
+        return ensureLoggedIn()
+                .thenApply((final Void __) -> doSendReply(statusDraft))
+                .join();
+    }
+
+    @Override
+    public String getHandle() {
+        return this.bskyConfig.getHandle();
+    }
+
+    private Optional<BskyStatus> doSendReply(final BskyResponseDraft statusDraft) {
+        final var reply = Map.of(
+                "root",
+                Map.of(
+                        "uri", statusDraft.postToReplyTo().uri().toString(),
+                        "cid", statusDraft.postToReplyTo().cid()
+                        // end of root
+                        ),
+                "parent",
+                Map.of(
+                        "uri", statusDraft.postToReplyTo().uri().toString(),
+                        "cid", statusDraft.postToReplyTo().cid()
+                        // end of parent
+                        )
+                // end of reply
+                );
+        final var record = Map.of(
+                "text", statusDraft.postStatus(),
+                "createdAt", Instant.now().toString(),
+                "$type", "app.bsky.feed.post",
+                "langs", List.of("en"),
+                "reply", reply
+                // end of map
+                );
+        final var postEntity =
+                Map.of("collection", "app.bsky.feed.post", "repo", this.bskyConfig.getHandle(), "record", record);
+        final var content = Entity.json(postEntity);
+        try (final var response = this.client
+                .target("https://bsky.social/xrpc/com.atproto.repo.createRecord")
+                .request(MediaType.APPLICATION_JSON_TYPE)
+                .header("Authorization", "Bearer " + this.accessToken)
+                .post(content)) {
+            if (response.getStatus() != 200) {
+                final String responseEntity;
+                if (response.hasEntity()) {
+                    responseEntity = response.readEntity(String.class);
+                } else {
+                    responseEntity = "";
+                }
+                LOG.error("Response != 200: [{}].", responseEntity);
+            } else {
+                final var atEmbedRecord = response.readEntity(AtEmbedRecord.class);
+                LOG.debug("Response sent successfully! [{}]", atEmbedRecord);
+                return this.getSinglePost(atEmbedRecord.uri());
+            }
+        } catch (final RuntimeException rtEx) {
+            LOG.error("Problem sending data.", rtEx);
+        }
+
+        return Optional.empty();
     }
 
     private List<BskyStatus> doGetRecentMentions() {
@@ -146,7 +256,7 @@ public class DefaultBlueSkyClient implements BlueSkyClient {
                 .target("https://bsky.social/xrpc/app.bsky.notification.listNotifications")
                 .queryParam("limit", "15")
                 .request(MediaType.APPLICATION_JSON_TYPE)
-                .header("Authorization", "Bearer " + this.accessToken)
+                .header("Authorization", "Bearer " + this.accessToken.get())
                 .get()) {
             if (response.getStatus() == 200 && response.hasEntity()) {
                 final var atNotificationResponse = response.readEntity(AtNotificationResponseWrapper.class);
@@ -181,8 +291,7 @@ public class DefaultBlueSkyClient implements BlueSkyClient {
 
     @Override
     public void close() throws Exception {
-        this.accessToken = "";
-        this.refreshToken = "";
+        this.accessToken.set("");
         this.refreshBefore = Instant.MAX;
         this.loginNotSuccessfull = true;
         this.isLoggedIn = false;

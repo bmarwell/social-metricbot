@@ -1,9 +1,9 @@
-package io.github.bmarwell.social.metricbot.bsky.json;
+package io.github.bmarwell.social.metricbot.bsky.json.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-public record AtLikeNotification(
+public record AtRepostNotification(
         @JsonDeserialize(converter = AtNotificationReasonAdapter.class) @JsonProperty("reason")
                 AtNotificationReason reason)
         implements AtNotification {}

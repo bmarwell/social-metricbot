@@ -1,4 +1,4 @@
-package io.github.bmarwell.social.metricbot.bsky.json;
+package io.github.bmarwell.social.metricbot.bsky.json.dto;
 
 import com.fasterxml.jackson.databind.util.StdConverter;
 

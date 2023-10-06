@@ -65,7 +65,7 @@ public class BskyResponseProducer implements ServletContextListener, Serializabl
         }
 
         final var bskyStatus = this.unprocessedBskyStatusQueueHolder.poll();
-        LOG.info(
+        LOG.debug(
                 "Emitting event for BskyStatus: [{}]/[{}].",
                 bskyStatus.uri(),
                 bskyStatus.text().replaceAll("\n", "\\\\n"));
