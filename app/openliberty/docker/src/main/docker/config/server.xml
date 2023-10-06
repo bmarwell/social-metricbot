@@ -83,7 +83,7 @@
     jndiName="jdbc/metricbotjpadatasource"
     jdbcDriverRef="h2driver">
     <properties
-            URL="${env.IO_GITHUB_BMARWELL_SOCIAL_METRICBOT_H2_DB}"
+        URL="${env.IO_GITHUB_BMARWELL_SOCIAL_METRICBOT_H2_DB};DB_CLOSE_ON_EXIT=FALSE"
     />
   </dataSource>
   <webApplication

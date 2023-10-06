@@ -14,11 +14,19 @@
   <name>Social-MetricBot :: war</name>
 
   <properties>
+    <!-- generic -->
+    <liberty.env.IO_GITHUB_BMARWELL_SOCIAL_METRICBOT_H2_DB>${env.IO_GITHUB_BMARWELL_SOCIAL_METRICBOT_H2_DB}</liberty.env.IO_GITHUB_BMARWELL_SOCIAL_METRICBOT_H2_DB>
+    <!-- mastodon -->
     <liberty.env.IO_GITHUB_BMARWELL_SOCIAL_METRICBOT_MASTODON_ACCOUNTNAME>${env.IO_GITHUB_BMARWELL_SOCIAL_METRICBOT_MASTODON_ACCOUNTNAME}</liberty.env.IO_GITHUB_BMARWELL_SOCIAL_METRICBOT_MASTODON_ACCOUNTNAME>
     <liberty.env.IO_GITHUB_BMARWELL_SOCIAL_METRICBOT_MASTODON_INSTANCEHOSTNAME>${env.IO_GITHUB_BMARWELL_SOCIAL_METRICBOT_MASTODON_INSTANCEHOSTNAME}</liberty.env.IO_GITHUB_BMARWELL_SOCIAL_METRICBOT_MASTODON_INSTANCEHOSTNAME>
     <liberty.env.IO_GITHUB_BMARWELL_SOCIAL_METRICBOT_MASTODON_WEBSITE>${env.IO_GITHUB_BMARWELL_SOCIAL_METRICBOT_MASTODON_WEBSITE}</liberty.env.IO_GITHUB_BMARWELL_SOCIAL_METRICBOT_MASTODON_WEBSITE>
     <liberty.env.IO_GITHUB_BMARWELL_SOCIAL_METRICBOT_MASTODON_CLIENTID>${env.IO_GITHUB_BMARWELL_SOCIAL_METRICBOT_MASTODON_CLIENTID}</liberty.env.IO_GITHUB_BMARWELL_SOCIAL_METRICBOT_MASTODON_CLIENTID>
     <liberty.env.IO_GITHUB_BMARWELL_SOCIAL_METRICBOT_MASTODON_CLIENTSECRET>${env.IO_GITHUB_BMARWELL_SOCIAL_METRICBOT_MASTODON_CLIENTSECRET}</liberty.env.IO_GITHUB_BMARWELL_SOCIAL_METRICBOT_MASTODON_CLIENTSECRET>
+    <!-- bsky -->
+    <liberty.env.IO_GITHUB_BMARWELL_SOCIAL_METRICBOT_BSKY_HANDLE>${env.IO_GITHUB_BMARWELL_SOCIAL_METRICBOT_BSKY_HANDLE}</liberty.env.IO_GITHUB_BMARWELL_SOCIAL_METRICBOT_BSKY_HANDLE>
+    <liberty.env.IO_GITHUB_BMARWELL_SOCIAL_METRICBOT_BSKY_APPSECRET>${env.IO_GITHUB_BMARWELL_SOCIAL_METRICBOT_BSKY_APPSECRET}</liberty.env.IO_GITHUB_BMARWELL_SOCIAL_METRICBOT_BSKY_APPSECRET>
+    <liberty.env.IO_GITHUB_BMARWELL_SOCIAL_METRICBOT_BSKY_SKIP_OLD_POSTS>${env.IO_GITHUB_BMARWELL_SOCIAL_METRICBOT_BSKY_SKIP_OLD_POSTS}</liberty.env.IO_GITHUB_BMARWELL_SOCIAL_METRICBOT_BSKY_SKIP_OLD_POSTS>
+    <liberty.env.IO_GITHUB_BMARWELL_SOCIAL_METRICBOT_BSKY_SKIPOLDPOSTS>${env.IO_GITHUB_BMARWELL_SOCIAL_METRICBOT_BSKY_SKIPOLDPOSTS}</liberty.env.IO_GITHUB_BMARWELL_SOCIAL_METRICBOT_BSKY_SKIPOLDPOSTS>
   </properties>
 
   <dependencies>
@@ -38,6 +46,11 @@
     <dependency>
       <groupId>io.github.bmarwell.social.metricbot</groupId>
       <artifactId>social-metricbot-mastodon</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>io.github.bmarwell.social.metricbot</groupId>
+      <artifactId>social-metricbot-bsky-client</artifactId>
       <version>1.0.0-SNAPSHOT</version>
     </dependency>
     <dependency>
@@ -113,27 +126,12 @@
     <dependency>
       <groupId>jakarta.annotation</groupId>
       <artifactId>jakarta.annotation-api</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>jakarta.inject</groupId>
       <artifactId>jakarta.inject-api</artifactId>
-    </dependency>
-
-    <!-- test dependency -->
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-api</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-engine</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-params</artifactId>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 

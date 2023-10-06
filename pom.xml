@@ -12,6 +12,7 @@
   <modules>
     <module>common</module>
     <module>mastodon</module>
+    <module>bsky-client</module>
     <module>conversion</module>
     <module>bot</module>
     <module>db</module>
@@ -51,6 +52,7 @@
     <dependency.jsoup.version>1.16.1</dependency.jsoup.version>
     <dependency.eclipselink.version>4.0.2</dependency.eclipselink.version>
     <dependency.error-prone.version>2.22.0</dependency.error-prone.version>
+    <dependency.jackson.version>2.15.2</dependency.jackson.version>
 
     <!-- logging -->
     <dependency.slf4j-api.version>2.0.9</dependency.slf4j-api.version>
@@ -58,7 +60,9 @@
 
     <!-- testing -->
     <dependency.assertj.version>3.24.2</dependency.assertj.version>
+    <dependency.cxf.version>4.0.3</dependency.cxf.version>
     <junit5.version>5.10.0</junit5.version>
+    <dependency.johnzon.version>1.2.21</dependency.johnzon.version>
     <dependency.h2.version>2.2.224</dependency.h2.version>
   </properties>
 
@@ -88,6 +92,7 @@
         <groupId>jakarta.inject</groupId>
         <artifactId>jakarta.inject-api</artifactId>
         <version>2.0.1</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>jakarta.enterprise</groupId>
@@ -120,6 +125,13 @@
         <version>${dependency.immutables.version}</version>
         <scope>provided</scope>
       </dependency>
+      <dependency>
+        <groupId>com.google.errorprone</groupId>
+        <artifactId>error_prone_annotations</artifactId>
+        <version>${dependency.error-prone.version}</version>
+        <scope>provided</scope>
+        <optional>true</optional>
+      </dependency>
 
       <!-- 3rd party -->
       <dependency>
@@ -136,6 +148,26 @@
         <groupId>org.jsoup</groupId>
         <artifactId>jsoup</artifactId>
         <version>${dependency.jsoup.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-core</artifactId>
+        <version>${dependency.jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>${dependency.jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.datatype</groupId>
+        <artifactId>jackson-datatype-jdk8</artifactId>
+        <version>${dependency.jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.datatype</groupId>
+        <artifactId>jackson-datatype-jsr310</artifactId>
+        <version>${dependency.jackson.version}</version>
       </dependency>
 
       <!-- testing -->
@@ -164,6 +196,13 @@
         <scope>test</scope>
       </dependency>
 
+      <!-- jax-rs / restulWS implementation -->
+      <dependency>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-rt-frontend-jaxrs</artifactId>
+        <version>${dependency.cxf.version}</version>
+        <scope>test</scope>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 

@@ -235,7 +235,11 @@ public class FootInchConverter implements io.github.bmarwell.social.metricbot.co
             return 0.0d;
         }
 
-        return Double.parseDouble(inches);
+        try {
+            return Double.parseDouble(inches);
+        } catch (final NumberFormatException nfe) {
+            return 0.0d;
+        }
     }
 
     private double parseFeet(final String footAndInches) {

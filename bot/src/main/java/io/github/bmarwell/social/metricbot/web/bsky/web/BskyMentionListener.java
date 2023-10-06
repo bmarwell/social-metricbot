@@ -1,8 +1,9 @@
-package io.github.bmarwell.social.metricbot.web.mastodon;
+package io.github.bmarwell.social.metricbot.web.bsky.web;
 
-import io.github.bmarwell.social.metricbot.mastodon.MastodonClient;
-import io.github.bmarwell.social.metricbot.mastodon.MastodonStatus;
-import io.github.bmarwell.social.metricbot.web.factory.MastodonProducer;
+import io.github.bmarwell.social.metricbot.bsky.BlueSkyClient;
+import io.github.bmarwell.social.metricbot.bsky.BskyStatus;
+import io.github.bmarwell.social.metricbot.web.bsky.api.BskyProducer;
+import io.github.bmarwell.social.metricbot.web.bsky.event.BskyMentionEvent;
 import jakarta.annotation.Resource;
 import jakarta.enterprise.concurrent.ManagedExecutorService;
 import jakarta.enterprise.concurrent.ManagedScheduledExecutorService;
@@ -18,9 +19,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @WebListener
-public class MastodonMentionListener implements ServletContextListener {
+public class BskyMentionListener implements ServletContextListener {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MastodonMentionListener.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BskyMentionListener.class);
 
     @Resource
     private ManagedScheduledExecutorService scheduler;
@@ -29,25 +30,26 @@ public class MastodonMentionListener implements ServletContextListener {
     private ManagedExecutorService executor;
 
     @Inject
-    private MastodonProducer mastodonProducer;
+    private BskyProducer bskyProducer;
 
     @Inject
-    private Event<MastodonMentionEvent> mentionEvent;
+    private Event<BskyMentionEvent> mentionEvent;
 
-    private MastodonClient mastodon;
+    private BlueSkyClient bsky;
 
-    public MastodonMentionListener() {
-        // injection constructor
+    public BskyMentionListener() {
+        // for injection
     }
 
     @Override
-    public void contextInitialized(ServletContextEvent sce) {
+    public void contextInitialized(final ServletContextEvent sce) {
         ServletContextListener.super.contextInitialized(sce);
         LOG.info("init: [{}].", this);
-        this.mastodon = this.mastodonProducer.produceMastodon();
+
+        this.bsky = this.bskyProducer.produceBlueSky();
 
         // set up scheduler
-        ScheduledFuture<?> scheduledFuture =
+        final ScheduledFuture<?> scheduledFuture =
                 this.scheduler.scheduleWithFixedDelay(this::retrieveMentions, 10, 10, TimeUnit.SECONDS);
 
         if (scheduledFuture.isCancelled()) {
@@ -56,16 +58,19 @@ public class MastodonMentionListener implements ServletContextListener {
     }
 
     protected void retrieveMentions() {
-        final var unused = executor.copy(this.mastodon.getRecentMentions())
+        final var unused = executor.copy(this.bsky.getRecentMentions())
                 // no method returning void?
-                .handle((List<MastodonStatus> result, Throwable error) -> {
+                .handle((final List<BskyStatus> result, final Throwable error) -> {
                     if (error != null) {
                         LOG.error("could not retrieve mentions: [" + error.getMessage() + "].", error);
                         return null;
                     }
 
-                    for (MastodonStatus recentMention : result) {
-                        mentionEvent.fire(new MastodonMentionEvent(recentMention));
+                    for (final BskyStatus recentMention : result) {
+                        if (LOG.isTraceEnabled()) {
+                            LOG.trace("[BSKY] Found mention: " + recentMention);
+                        }
+                        mentionEvent.fire(new BskyMentionEvent(recentMention));
                     }
 
                     return null;

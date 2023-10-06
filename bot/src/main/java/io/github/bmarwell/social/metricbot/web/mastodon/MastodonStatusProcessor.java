@@ -1,16 +1,13 @@
 package io.github.bmarwell.social.metricbot.web.mastodon;
 
-import static java.util.Arrays.asList;
-
 import io.github.bmarwell.social.metricbot.db.dao.MastodonStatusRepository;
 import io.github.bmarwell.social.metricbot.mastodon.MastodonStatus;
+import io.github.bmarwell.social.metricbot.web.GlobalStatusUtil;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import java.time.Instant;
-import java.util.List;
-import java.util.Locale;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,9 +15,6 @@ import org.slf4j.LoggerFactory;
 public class MastodonStatusProcessor {
 
     private static final Logger LOG = LoggerFactory.getLogger(MastodonStatusProcessor.class);
-
-    private static final List<String> ACCOUNT_NAME_WORD_BLACKLIST =
-            asList("Boutique", "Crazy I Buy", "weather", "Supplements", "DealsSupply");
 
     @Inject
     private MastodonStatusRepository mastodonStatusRepository;
@@ -61,12 +55,10 @@ public class MastodonStatusProcessor {
         this.unprocessedTweetQueueHolder.add(status);
     }
 
-    protected boolean containsBlockedWord(final MastodonStatus tweet) {
-        final String userName = tweet.account().acct();
-
-        return ACCOUNT_NAME_WORD_BLACKLIST.stream()
-                // none of the blacklisted words should be contained in the full account name
-                .anyMatch(blacklisted ->
-                        userName.toLowerCase(Locale.ENGLISH).contains(blacklisted.toLowerCase(Locale.ENGLISH)));
+    protected boolean containsBlockedWord(final MastodonStatus mastodonStatus) {
+        return GlobalStatusUtil.containsBlockedWord(
+                mastodonStatus.rawContent(),
+                mastodonStatus.account().acct(),
+                mastodonStatus.account().username());
     }
 }
