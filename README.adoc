@@ -14,12 +14,13 @@ If mentioned with 'please' on a tweet containing imperial units, will reply with
 
 == Active bots
 
+* https://bsky.app/profile/metricbot.de[+🇺🇸 metricbot.de+] on 🌀 Bluesky
 * https://botsin.space/@metricbot[+🇺🇸 @metricbot@botsin.space+] on 🐘 Mastodon
 
 == Inactive bots
 
 * https://twitter.com/metricbot1/with_replies[+🇺🇸 @metricbot1+] on 🐦 Twitter +
-Due to to unusable API (constraints as well as SDK quality).
+Due to unusable API (constraints as well as SDK quality).
 
 == How to use
 
