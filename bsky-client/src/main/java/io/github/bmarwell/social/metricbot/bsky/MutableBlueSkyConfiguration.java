@@ -42,6 +42,12 @@ public class MutableBlueSkyConfiguration implements Cloneable {
     public MutableBlueSkyConfiguration clone() {
         try {
             final MutableBlueSkyConfiguration clone = (MutableBlueSkyConfiguration) super.clone();
+            if (this.appSecret == null) {
+                clone.appSecret = new char[0];
+
+                return clone;
+            }
+
             clone.appSecret = Arrays.copyOf(this.appSecret, this.appSecret.length);
 
             return clone;

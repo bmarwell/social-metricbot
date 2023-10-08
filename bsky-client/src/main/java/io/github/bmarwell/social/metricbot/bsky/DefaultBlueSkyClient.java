@@ -9,8 +9,10 @@ import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.UriBuilder;
 import java.io.Serial;
 import java.net.URI;
+import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -197,6 +199,19 @@ public class DefaultBlueSkyClient implements BlueSkyClient {
     @Override
     public String getHandle() {
         return this.bskyConfig.getHandle();
+    }
+
+    @Override
+    public URI getStatusUri(final BskyStatus bskyStatus) {
+        final var uri = bskyStatus.uri();
+        final var postId = Paths.get(uri.getPath()).getFileName().toString();
+
+        return UriBuilder.fromUri("https://bsky.app/")
+                .path("profile")
+                .path(bskyStatus.author().handle())
+                .path("post")
+                .path(postId)
+                .build();
     }
 
     private Optional<BskyStatus> doSendReply(final BskyResponseDraft statusDraft) {

@@ -16,7 +16,6 @@ import jakarta.transaction.Transactional;
 import java.io.Serial;
 import java.io.Serializable;
 import java.net.URI;
-import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.Optional;
 import org.slf4j.Logger;
@@ -162,14 +161,7 @@ public class BskyResponder extends AbstractResponder implements Serializable {
             return;
         }
 
-        final BskyStatus reply = sentReply.orElseThrow();
-        final var uri = reply.uri();
-        final var postId = Paths.get(uri.getPath()).getFileName().toString();
-
-        final var conversionPostUri = URI.create("https://bsky.app/profile")
-                .resolve(this.bskyClient.getHandle())
-                .resolve("post")
-                .resolve(postId);
+        final var conversionPostUri = this.bskyClient.getStatusUri(sentReply.orElseThrow());
 
         final String hereYouGoText = String.format("Here you go: \n\n%s\n", conversionPostUri);
         final var hereYouGoDraft = new BskyResponseDraft(hereYouGoText, foundStatus);
@@ -261,5 +253,37 @@ public class BskyResponder extends AbstractResponder implements Serializable {
     @Transactional
     private Optional<BskyStatusPdo> findById(final URI postAtUri) {
         return this.repository.get().findByAtUri(postAtUri);
+    }
+
+    public Instance<BskyResponder> getSelf() {
+        return self;
+    }
+
+    public void setSelf(final Instance<BskyResponder> self) {
+        this.self = self;
+    }
+
+    public Instance<BskyStatusRepository> getRepository() {
+        return repository;
+    }
+
+    public void setRepository(final Instance<BskyStatusRepository> repository) {
+        this.repository = repository;
+    }
+
+    public BlueSkyClient getBskyClient() {
+        return bskyClient;
+    }
+
+    public void setBskyClient(final BlueSkyClient bskyClient) {
+        this.bskyClient = bskyClient;
+    }
+
+    public UsConversion getConverter() {
+        return converter;
+    }
+
+    public void setConverter(final UsConversion converter) {
+        this.converter = converter;
     }
 }
