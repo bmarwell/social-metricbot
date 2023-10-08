@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The social-metricbot contributors
+ * Copyright $YEAR The social-metricbot contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +13,3 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.bmarwell.social.metricbot.mastodon.xml;
-
-import org.jsoup.Jsoup;
-
-public class ParserUtil {
-
-    public String getRawText(String htmlContent) {
-        final var document = Jsoup.parse(htmlContent);
-
-        return document.wholeText();
-    }
-}

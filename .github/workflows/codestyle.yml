@@ -26,13 +26,17 @@ jobs:
         java-version: 21
         distribution: liberica
 
+    - name: fetch main branch for spotless
+      shell: bash
+      run: git fetch origin main
+
     - name: Check whether you actually executed Maven...
       shell: bash
-      run: |
-        ./mvnw \
-          --show-version \
-          --errors \
-          --batch-mode \
-          --no-transfer-progress \
-          spotless:check \
-          -DtrimStackTrace=false 
+      run: >
+        ./mvnw
+        --show-version
+        --errors
+        --batch-mode
+        --no-transfer-progress
+        spotless:check
+        -DtrimStackTrace=false 

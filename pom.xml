@@ -23,6 +23,9 @@
     <jdk.version>17</jdk.version>
     <java.version>17</java.version>
     <maven.compiler.release>${java.version}</maven.compiler.release>
+    <!-- help intellij... -->
+    <maven.multiModuleProjectDirectory>${maven.multiModuleProjectDirectory}</maven.multiModuleProjectDirectory>
+    <spotless.skip>false</spotless.skip>
 
     <!-- plugins -->
     <plugin.maven.compiler.version>3.11.0</plugin.maven.compiler.version>
@@ -422,6 +425,9 @@
         <artifactId>spotless-maven-plugin</artifactId>
         <inherited>true</inherited>
         <configuration>
+          <skip>${spotless.skip}</skip>
+          <ratchetFrom>origin/main</ratchetFrom>
+
           <java>
             <toggleOffOn />
 
@@ -434,6 +440,10 @@
             <trimTrailingWhitespace />
             <endWithNewline />
             <formatAnnotations />
+
+            <licenseHeader>
+              <file>${maven.multiModuleProjectDirectory}/build/license/header-java.txt</file>
+            </licenseHeader>
           </java>
 
           <pom>

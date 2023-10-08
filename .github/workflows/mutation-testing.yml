@@ -32,10 +32,11 @@ jobs:
 
     - name: Run Pitest
       shell: bash
-      run: |
-        ./mvnw \
-          --show-version \
-          --errors \
-          --batch-mode \
-          --no-transfer-progress \
-          test-compile org.pitest:pitest-maven:mutationCoverage
+      run: >
+        ./mvnw
+        --show-version
+        --errors
+        --batch-mode
+        --no-transfer-progress
+        -Dspotless.skip=true
+        test-compile org.pitest:pitest-maven:mutationCoverage
