@@ -37,4 +37,17 @@ class DefaultBlueSkyClientTest {
         // then:
         assertThat(link).hasPath("/profile/metricbot.de/post/3kb4fxhzeed25");
     }
+
+    @Test
+    void token_expired_detected() {
+        // given
+        final var client1 = new DefaultBlueSkyClient(this.bsc);
+        client1.setRefreshBefore(Instant.now().minusSeconds(600));
+
+        // when
+        final var tokenExpired = client1.isTokenExpired();
+
+        // then
+        assertThat(tokenExpired).isTrue();
+    }
 }

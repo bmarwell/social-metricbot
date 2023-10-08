@@ -50,7 +50,7 @@ public class DefaultBlueSkyClient implements BlueSkyClient {
         if (isLoggedIn) {
             LOG.debug("[BSKY] Already logged in.");
 
-            if (Instant.now().isAfter(this.refreshBefore.minusSeconds(60))) {
+            if (isTokenExpired()) {
                 return doLoginAndSetVariables();
             }
 
@@ -65,6 +65,10 @@ public class DefaultBlueSkyClient implements BlueSkyClient {
         return doLoginAndSetVariables();
     }
 
+    protected boolean isTokenExpired() {
+        return Instant.now().isAfter(this.refreshBefore.minusSeconds(60));
+    }
+
     private CompletableFuture<Void> doLoginAndSetVariables() {
         return CompletableFuture.supplyAsync(this::doLogin)
                 .handle((final Optional<AtProtoLoginResponse> result, final Throwable error) -> {
@@ -74,6 +78,7 @@ public class DefaultBlueSkyClient implements BlueSkyClient {
                         this.accessToken.set("");
                         this.isLoggedIn = false;
                         this.loginNotSuccessfull = true;
+                        this.refreshBefore = Instant.now().plusSeconds(360);
                         return null;
                     }
 
@@ -82,6 +87,7 @@ public class DefaultBlueSkyClient implements BlueSkyClient {
                     this.accessToken.set(result.orElseThrow().accessJwt());
                     this.isLoggedIn = true;
                     this.loginNotSuccessfull = false;
+                    this.refreshBefore = Instant.now().plusSeconds(360);
                     return null;
                 });
     }
@@ -302,6 +308,18 @@ public class DefaultBlueSkyClient implements BlueSkyClient {
 
     public Client getClient() {
         return client;
+    }
+
+    protected AtomicReference<String> getAccessToken() {
+        return accessToken;
+    }
+
+    protected Instant getRefreshBefore() {
+        return refreshBefore;
+    }
+
+    protected void setRefreshBefore(final Instant refreshBefore) {
+        this.refreshBefore = refreshBefore;
     }
 
     @Override
