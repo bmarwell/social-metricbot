@@ -35,4 +35,6 @@ public interface BlueSkyClient extends Serializable, AutoCloseable {
     Optional<BskyStatus> sendReply(BskyResponseDraft statusDraft);
 
     String getHandle();
+
+    URI getStatusUri(BskyStatus bskyStatus);
 }
