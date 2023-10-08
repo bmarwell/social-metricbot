@@ -65,6 +65,9 @@
     <dependency.johnzon.version>1.2.21</dependency.johnzon.version>
     <dependency.h2.version>2.2.224</dependency.h2.version>
     <dependency.mockito.version>5.6.0</dependency.mockito.version>
+
+    <!-- build time plugins -->
+    <dependency.palantir-java-format.version>2.38.0</dependency.palantir-java-format.version>
   </properties>
 
   <dependencyManagement>
@@ -210,6 +213,15 @@
         <version>${dependency.cxf.version}</version>
         <scope>test</scope>
       </dependency>
+
+      <!-- build time plugins -->
+      <!-- palantier: only here so it gets picked up by maven and renovate. -->
+      <dependency>
+        <groupId>com.palantir.javaformat</groupId>
+        <artifactId>palantir-java-format</artifactId>
+        <version>${dependency.palantir-java-format.version}</version>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 
@@ -395,7 +407,7 @@
             <toggleOffOn />
 
             <palantirJavaFormat>
-              <version>2.33.0</version>
+              <version>${dependency.palantir-java-format.version}</version>
             </palantirJavaFormat>
 
             <importOrder />

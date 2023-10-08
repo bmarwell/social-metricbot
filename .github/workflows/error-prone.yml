@@ -31,8 +31,8 @@ jobs:
     - name: Set up JDK
       uses: actions/setup-java@v3
       with:
-        java-version: 20
-        distribution: semeru
+        java-version: 21
+        distribution: liberica
 
     - name: Build application with Maven
       shell: bash
