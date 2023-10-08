@@ -65,6 +65,7 @@
     <dependency.johnzon.version>1.2.21</dependency.johnzon.version>
     <dependency.h2.version>2.2.224</dependency.h2.version>
     <dependency.mockito.version>5.6.0</dependency.mockito.version>
+    <dependency.wiremock.version>3.2.0</dependency.wiremock.version>
 
     <!-- build time plugins -->
     <dependency.palantir-java-format.version>2.38.0</dependency.palantir-java-format.version>
@@ -197,6 +198,12 @@
         <groupId>org.assertj</groupId>
         <artifactId>assertj-core</artifactId>
         <version>${dependency.assertj.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.wiremock</groupId>
+        <artifactId>wiremock</artifactId>
+        <version>${dependency.wiremock.version}</version>
         <scope>test</scope>
       </dependency>
 
@@ -399,6 +406,18 @@
 
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>com.diffplug.spotless</groupId>
         <artifactId>spotless-maven-plugin</artifactId>
         <inherited>true</inherited>
@@ -457,7 +476,7 @@
             <goals>
               <goal>report</goal>
             </goals>
-            <phase>prepare-package</phase>
+            <phase>verify</phase>
           </execution>
         </executions>
       </plugin>

@@ -4,6 +4,8 @@ import java.util.Arrays;
 
 public class MutableBlueSkyConfiguration implements Cloneable {
 
+    private String host = "https://bsky.social";
+
     private String handle;
 
     private char[] appSecret;
@@ -28,6 +30,14 @@ public class MutableBlueSkyConfiguration implements Cloneable {
         this.appSecret = appSecret;
     }
 
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(final String host) {
+        this.host = host;
+    }
+
     public MutableBlueSkyConfiguration withHandle(final String handle) {
         this.setHandle(handle);
         return this;
@@ -35,6 +45,11 @@ public class MutableBlueSkyConfiguration implements Cloneable {
 
     public MutableBlueSkyConfiguration withAppSecret(final char[] appSecret) {
         this.setAppSecret(appSecret);
+        return this;
+    }
+
+    public MutableBlueSkyConfiguration withHost(final String host) {
+        this.setHost(host);
         return this;
     }
 

@@ -92,11 +92,11 @@ public class DefaultBlueSkyClient implements BlueSkyClient {
                 });
     }
 
-    private Optional<AtProtoLoginResponse> doLogin() {
+    Optional<AtProtoLoginResponse> doLogin() {
         final AtProtoLoginBody atProtoLoginBody =
                 AtProtoLoginBody.from(this.bskyConfig.getHandle(), this.bskyConfig.getAppSecret());
         try (final var response = this.client
-                .target("https://bsky.social/xrpc/com.atproto.server.createSession")
+                .target(this.bskyConfig.getHost() + "/xrpc/com.atproto.server.createSession")
                 .request(MediaType.APPLICATION_JSON_TYPE)
                 .post(Entity.entity(atProtoLoginBody, MediaType.APPLICATION_JSON_TYPE))) {
             if (response.getStatus() == 200 && response.hasEntity()) {
@@ -138,7 +138,7 @@ public class DefaultBlueSkyClient implements BlueSkyClient {
     @Override
     public Optional<BskyStatus> getSinglePost(final URI replyTo) {
         try (final var response = this.client
-                .target("https://bsky.social/xrpc/app.bsky.feed.getPosts")
+                .target(this.bskyConfig.getHost() + "/xrpc/app.bsky.feed.getPosts")
                 .queryParam("uris", replyTo.toASCIIString())
                 .request(MediaType.APPLICATION_JSON_TYPE)
                 .header("Authorization", "Bearer " + this.accessToken.get())
@@ -212,7 +212,7 @@ public class DefaultBlueSkyClient implements BlueSkyClient {
         final var uri = bskyStatus.uri();
         final var postId = Paths.get(uri.getPath()).getFileName().toString();
 
-        return UriBuilder.fromUri("https://bsky.app/")
+        return UriBuilder.fromUri(this.bskyConfig.getHost())
                 .path("profile")
                 .path(bskyStatus.author().handle())
                 .path("post")
@@ -248,7 +248,7 @@ public class DefaultBlueSkyClient implements BlueSkyClient {
                 Map.of("collection", "app.bsky.feed.post", "repo", this.bskyConfig.getHandle(), "record", record);
         final var content = Entity.json(postEntity);
         try (final var response = this.client
-                .target("https://bsky.social/xrpc/com.atproto.repo.createRecord")
+                .target(this.bskyConfig.getHost() + "/xrpc/com.atproto.repo.createRecord")
                 .request(MediaType.APPLICATION_JSON_TYPE)
                 .header("Authorization", "Bearer " + this.accessToken)
                 .post(content)) {
@@ -274,7 +274,7 @@ public class DefaultBlueSkyClient implements BlueSkyClient {
 
     private List<BskyStatus> doGetRecentMentions() {
         try (final var response = this.client
-                .target("https://bsky.social/xrpc/app.bsky.notification.listNotifications")
+                .target(this.bskyConfig.getHost() + "/xrpc/app.bsky.notification.listNotifications")
                 .queryParam("limit", "15")
                 .request(MediaType.APPLICATION_JSON_TYPE)
                 .header("Authorization", "Bearer " + this.accessToken.get())
