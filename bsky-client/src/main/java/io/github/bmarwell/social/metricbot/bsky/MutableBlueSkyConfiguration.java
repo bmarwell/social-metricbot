@@ -19,7 +19,7 @@ import java.util.Arrays;
 
 public class MutableBlueSkyConfiguration implements Cloneable {
 
-    private String host = "https://bsky.social";
+    private String host = "https://bsky.app";
 
     private String handle;
 
