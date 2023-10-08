@@ -36,14 +36,15 @@ jobs:
 
     - name: Build application with Maven
       shell: bash
-      run: |
-        ./mvnw \
-          --show-version \
-          --errors \
-          --batch-mode \
-          --no-transfer-progress \
-          --quiet \
-          compile \
-          -Pdocs,error-prone \
-          -DtrimStackTrace=false \
-          -Dmaven.build.cache.enabled=false
+      run: >
+        ./mvnw
+        --show-version
+        --errors
+        --batch-mode
+        --no-transfer-progress
+        --quiet
+        compile
+        -Pdocs,error-prone
+        -DtrimStackTrace=false
+        -Dmaven.build.cache.enabled=false
+        -Dspotless.skip=true
