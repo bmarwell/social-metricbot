@@ -46,7 +46,8 @@ public class MilesConverterTest {
                 Arguments.of("1-2 mi", "2", "3.2"),
                 Arguments.of("-1 to -2 mi", "-2", "-3.2"),
                 Arguments.of("1k miles", "1,000", "1,609.3"),
-                Arguments.of("What's a mile please", "1", "1.6"));
+                Arguments.of("What's a mile please", "1", "1.6"),
+                Arguments.of("22 mile loop", "22", "35.4"));
     }
 
     @ParameterizedTest
