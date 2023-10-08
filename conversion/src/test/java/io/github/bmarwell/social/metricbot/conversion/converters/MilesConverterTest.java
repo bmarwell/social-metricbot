@@ -16,17 +16,18 @@
 
 package io.github.bmarwell.social.metricbot.conversion.converters;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import io.github.bmarwell.social.metricbot.conversion.UnitConversion;
-import java.util.Collection;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.Collection;
+import java.util.stream.Stream;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 public class MilesConverterTest {
@@ -46,7 +47,8 @@ public class MilesConverterTest {
                 Arguments.of("1-2 mi", "2", "3.2"),
                 Arguments.of("-1 to -2 mi", "-2", "-3.2"),
                 Arguments.of("1k miles", "1,000", "1,609.3"),
-                Arguments.of("What's a mile please", "1", "1.6"));
+                Arguments.of("What's a mile please", "1", "1.6"),
+                Arguments.of("22 mile loop", "22", "35.4"));
     }
 
     @ParameterizedTest
