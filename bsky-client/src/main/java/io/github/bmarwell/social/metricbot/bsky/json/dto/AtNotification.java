@@ -27,12 +27,14 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
     @JsonSubTypes.Type(value = AtLikeNotification.class, name = "like"),
     @JsonSubTypes.Type(value = AtRepostNotification.class, name = "repost"),
     @JsonSubTypes.Type(value = AtQuoteNotification.class, name = "quote"),
+    @JsonSubTypes.Type(value = AtReplyNotification.class, name = "reply"),
 })
 public sealed interface AtNotification
         permits AtFollowNotification,
                 AtLikeNotification,
                 AtMentionNotification,
                 AtQuoteNotification,
+                AtReplyNotification,
                 AtRepostNotification {
     @JsonDeserialize(converter = AtNotificationReasonAdapter.class)
     @JsonProperty("reason")

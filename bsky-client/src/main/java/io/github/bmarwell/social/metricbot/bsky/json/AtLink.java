@@ -15,25 +15,6 @@
  */
 package io.github.bmarwell.social.metricbot.bsky.json;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import java.net.URI;
 
-public enum BskyJacksonProvider {
-    INSTANCE;
-
-    private final ObjectMapper objectMapper;
-
-    BskyJacksonProvider() {
-        this.objectMapper = new ObjectMapper()
-                .findAndRegisterModules()
-                .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-                .enable(SerializationFeature.INDENT_OUTPUT)
-        // end config
-        ;
-    }
-
-    public ObjectMapper getObjectMapper() {
-        return objectMapper;
-    }
-}
+public record AtLink(URI uri) {}
