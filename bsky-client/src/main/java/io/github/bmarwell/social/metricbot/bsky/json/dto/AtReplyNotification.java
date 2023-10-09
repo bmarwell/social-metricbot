@@ -13,17 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.bmarwell.social.metricbot.bsky.json;
+package io.github.bmarwell.social.metricbot.bsky.json.dto;
 
-import io.github.bmarwell.social.metricbot.bsky.BskyStatus;
-import io.github.bmarwell.social.metricbot.bsky.json.dto.AtEmbedRecord;
-import java.util.List;
-import java.util.Optional;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-public record BskyResponseDraft(
-        String postStatus, BskyStatus postToReplyTo, List<AtLink> links, Optional<AtEmbedRecord> embedRecord) {
-
-    public BskyResponseDraft(final String postStatus, final BskyStatus postToReplyTo) {
-        this(postStatus, postToReplyTo, List.of(), Optional.empty());
-    }
-}
+public record AtReplyNotification(
+        @JsonDeserialize(converter = AtNotificationReasonAdapter.class) @JsonProperty("reason")
+                AtNotificationReason reason)
+        implements AtNotification {}

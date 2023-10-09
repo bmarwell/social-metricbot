@@ -15,6 +15,7 @@
  */
 package io.github.bmarwell.social.metricbot.bsky;
 
+import io.github.bmarwell.social.metricbot.bsky.json.AtLink;
 import io.github.bmarwell.social.metricbot.bsky.json.BskyResponseDraft;
 import io.github.bmarwell.social.metricbot.bsky.json.JsonReader;
 import io.github.bmarwell.social.metricbot.bsky.json.JsonWriter;
@@ -29,10 +30,13 @@ import java.io.Serial;
 import java.net.URI;
 import java.nio.file.Paths;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +47,7 @@ public class DefaultBlueSkyClient implements BlueSkyClient {
     private static final long serialVersionUID = -6379484000282531656L;
 
     private static final Logger LOG = LoggerFactory.getLogger(DefaultBlueSkyClient.class);
+    private static final long SLEEP_MS = 500L;
     private final Client client;
     private final MutableBlueSkyConfiguration bskyConfig;
     /**
@@ -259,8 +264,17 @@ public class DefaultBlueSkyClient implements BlueSkyClient {
                 "reply", reply
                 // end of map
                 );
+        final var recordMap = new ConcurrentHashMap<Object, Object>(record);
+        final Map<String, ?> embed = getEmbed(statusDraft);
+        if (!embed.isEmpty()) {
+            recordMap.put("embed", embed);
+        }
+        final var facets = getFacets(statusDraft);
+        if (!facets.isEmpty()) {
+            recordMap.put("facets", facets);
+        }
         final var postEntity =
-                Map.of("collection", "app.bsky.feed.post", "repo", this.bskyConfig.getHandle(), "record", record);
+                Map.of("collection", "app.bsky.feed.post", "repo", this.bskyConfig.getHandle(), "record", recordMap);
         final var content = Entity.json(postEntity);
         try (final var response = this.client
                 .target(this.bskyConfig.getHost() + "/xrpc/com.atproto.repo.createRecord")
@@ -278,13 +292,67 @@ public class DefaultBlueSkyClient implements BlueSkyClient {
             } else {
                 final var atEmbedRecord = response.readEntity(AtEmbedRecord.class);
                 LOG.debug("Response sent successfully! [{}]", atEmbedRecord);
-                return this.getSinglePost(atEmbedRecord.uri());
+                int tries = 0;
+                while (tries <= 5) {
+                    final var singlePost = this.getSinglePost(atEmbedRecord.uri());
+                    if (singlePost.isPresent()) {
+                        return singlePost;
+                    }
+                    try {
+                        TimeUnit.MILLISECONDS.sleep(SLEEP_MS);
+                        tries++;
+                    } catch (final InterruptedException interruptedException) {
+                        Thread.currentThread().interrupt();
+                    }
+                }
             }
         } catch (final RuntimeException rtEx) {
             LOG.error("Problem sending data.", rtEx);
         }
 
         return Optional.empty();
+    }
+
+    private Map<String, ?> getEmbed(final BskyResponseDraft statusDraft) {
+        if (statusDraft.embedRecord().isEmpty()) {
+            return Map.of();
+        }
+
+        final var atEmbedRecord = statusDraft.embedRecord().orElseThrow();
+
+        return Map.of(
+                "$type",
+                "app.bsky.embed.record",
+                "record",
+                Map.of(
+                        "uri", atEmbedRecord.uri(), "cid", atEmbedRecord.cid()
+                        // end embed record map
+                        )
+                // end embed map
+                );
+    }
+
+    private List<Map<String, ?>> getFacets(final BskyResponseDraft statusDraft) {
+        final var facets = new ArrayList<Map<String, ?>>();
+
+        for (final AtLink link : statusDraft.links()) {
+            facets.add(getFacetlink(link, statusDraft.postStatus()));
+        }
+
+        return List.copyOf(facets);
+    }
+
+    private Map<String, ?> getFacetlink(final AtLink link, final String text) {
+        final var uriString = link.uri().toString();
+        final int byteStart = text.indexOf(uriString);
+        final int byteEnd = byteStart + uriString.length();
+
+        return Map.of(
+                "index",
+                        Map.of(
+                                "byteStart", byteStart,
+                                "byteEnd", byteEnd),
+                "features", List.of(Map.of("$type", "app.bsky.richtext.facet#link", "uri", uriString)));
     }
 
     private List<BskyStatus> doGetRecentMentions() {

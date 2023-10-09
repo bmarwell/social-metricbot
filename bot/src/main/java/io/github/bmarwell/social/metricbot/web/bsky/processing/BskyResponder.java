@@ -17,7 +17,9 @@ package io.github.bmarwell.social.metricbot.web.bsky.processing;
 
 import io.github.bmarwell.social.metricbot.bsky.BlueSkyClient;
 import io.github.bmarwell.social.metricbot.bsky.BskyStatus;
+import io.github.bmarwell.social.metricbot.bsky.json.AtLink;
 import io.github.bmarwell.social.metricbot.bsky.json.BskyResponseDraft;
+import io.github.bmarwell.social.metricbot.bsky.json.dto.AtEmbedRecord;
 import io.github.bmarwell.social.metricbot.conversion.UsConversion;
 import io.github.bmarwell.social.metricbot.db.dao.BskyStatusRepository;
 import io.github.bmarwell.social.metricbot.db.pdo.BskyStatusPdo;
@@ -32,6 +34,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.net.URI;
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -178,8 +181,11 @@ public class BskyResponder extends AbstractResponder implements Serializable {
 
         final var conversionPostUri = this.bskyClient.getStatusUri(sentReply.orElseThrow());
 
-        final String hereYouGoText = String.format("Here you go: \n\n%s\n", conversionPostUri);
-        final var hereYouGoDraft = new BskyResponseDraft(hereYouGoText, foundStatus);
+        final var hereYouGoText = String.format("Here you go: \n\n%s\n", conversionPostUri);
+        final var links = List.of(new AtLink(conversionPostUri));
+        final var embedRecord = Optional.of(
+                new AtEmbedRecord(sentReply.get().uri(), sentReply.get().cid()));
+        final var hereYouGoDraft = new BskyResponseDraft(hereYouGoText, foundStatus, links, embedRecord);
         sendHintOrTimeout(hereYouGoDraft);
     }
 
