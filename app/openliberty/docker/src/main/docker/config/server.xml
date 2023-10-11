@@ -8,7 +8,6 @@
     <feature>jsonb-3.0</feature>
     <feature>mpConfig-3.0</feature>
     <feature>concurrent-3.0</feature>
-    <feature>localConnector-1.0</feature>
   </featureManager>
 
   <httpEndpoint
@@ -79,15 +78,56 @@
     javax.sql.XADataSource="org.h2.jdbcx.JdbcDataSource"
     javax.sql.ConnectionPoolDataSource="org.h2.jdbcx.JdbcDataSource"
   />
+
+  <variable
+      name="datasource_url"
+      defaultValue="jdbc:h2:mem:metricbotdb"
+  />
+
   <dataSource
     jndiName="jdbc/metricbotjpadatasource"
     jdbcDriverRef="h2driver">
     <properties
-        URL="${env.IO_GITHUB_BMARWELL_SOCIAL_METRICBOT_H2_DB};DB_CLOSE_ON_EXIT=FALSE"
+        URL="${datasource_url};DB_CLOSE_ON_EXIT=FALSE"
     />
   </dataSource>
   <webApplication
     location="${app.filename}"
     contextRoot="${app.context.root}"
+  />
+
+  <!-- mpConfig variables, can be overridden using env vars -->
+  <variable
+      name="io.github.bmarwell.social.metricbot.bsky.handle"
+      defaultValue="bot_handle_on_bluesky_without_leading_@"
+  />
+  <variable
+      name="io.github.bmarwell.social.metricbot.bsky.appSecret"
+      defaultValue="looks_like_google_app_password"
+  />
+  <variable
+      name="io.github.bmarwell.social.metricbot.bsky.skipOldPosts"
+      defaultValue="true"
+  />
+  <!-- mastodon -->
+  <variable
+      name="io.github.bmarwell.social.metricbot.mastodon.accountname"
+      defaultValue="handle_without_@s_on_your_instance"
+  />
+  <variable
+      name="io.github.bmarwell.social.metricbot.mastodon.instancehostname"
+      defaultValue="host_hostname_of_your_instance"
+  />
+  <variable
+      name="io.github.bmarwell.social.metricbot.mastodon.website"
+      defaultValue="a_url_to_the_website_of_the_bot"
+  />
+  <variable
+      name="io.github.bmarwell.social.metricbot.mastodon.accesstoken"
+      defaultValue="the_access_token_of_the_bot_account"
+  />
+  <variable
+      name="io.github.bmarwell.social.metricbot.mastodon.initialDelay"
+      defaultValue="10"
   />
 </server>
