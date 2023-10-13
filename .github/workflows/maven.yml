@@ -51,3 +51,18 @@ jobs:
       uses: codecov/codecov-action@v3
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+    - name: Create checkpoint
+      shell: bash
+      run: >
+        docker run 
+        --name social-metricbot-checkpoint
+        --privileged 
+        --env WLP_CHECKPOINT=beforeAppStart 
+        io.github.bmarwell.social.metricbot/social-metricbot-app-ol-docker:latest
+
+    - name: Commit checkpoint
+      shell: bash
+      run: >
+        docker commit social-metricbot-checkpoint social-metricbot-instanton;
+        docker rm social-metricbot-checkpoint
