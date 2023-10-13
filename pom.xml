@@ -55,7 +55,7 @@
     <dependency.jsoup.version>1.16.1</dependency.jsoup.version>
     <dependency.eclipselink.version>4.0.2</dependency.eclipselink.version>
     <dependency.error-prone.version>2.22.0</dependency.error-prone.version>
-    <dependency.jackson.version>2.15.2</dependency.jackson.version>
+    <dependency.jackson.version>2.15.3</dependency.jackson.version>
 
     <!-- logging -->
     <dependency.slf4j-api.version>2.0.9</dependency.slf4j-api.version>
