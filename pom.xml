@@ -47,7 +47,7 @@
     <dependency.jakarta.concurrent-api.version>3.0.3</dependency.jakarta.concurrent-api.version>
     <dependency.jakarta.persistence-api.version>3.1.0</dependency.jakarta.persistence-api.version>
     <dependency.jakarta.transaction-api.version>2.0.1</dependency.jakarta.transaction-api.version>
-    <dependency.microprofile.config-api.version>3.0.3</dependency.microprofile.config-api.version>
+    <dependency.microprofile.config-api.version>3.1</dependency.microprofile.config-api.version>
     <dependency.jakarta.servlet-api.version>6.0.0</dependency.jakarta.servlet-api.version>
 
     <!-- 3rd party -->
@@ -429,17 +429,17 @@
           <ratchetFrom>origin/main</ratchetFrom>
 
           <java>
-            <toggleOffOn />
+            <toggleOffOn/>
 
             <palantirJavaFormat>
               <version>${dependency.palantir-java-format.version}</version>
             </palantirJavaFormat>
 
-            <importOrder />
-            <removeUnusedImports />
-            <trimTrailingWhitespace />
-            <endWithNewline />
-            <formatAnnotations />
+            <importOrder/>
+            <removeUnusedImports/>
+            <trimTrailingWhitespace/>
+            <endWithNewline/>
+            <formatAnnotations/>
 
             <licenseHeader>
               <file>${maven.multiModuleProjectDirectory}/build/license/header-java.txt</file>
