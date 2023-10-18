@@ -8,4 +8,4 @@ RUN features.sh
 COPY --chown=1001:0 maven/*.war /config/apps/
 
 ENV OPENJ9_SCC=true
-RUN configure.sh
+RUN configure.sh && rm -r /output/tranlog
