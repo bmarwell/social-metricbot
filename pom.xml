@@ -59,7 +59,7 @@
 
     <!-- logging -->
     <dependency.slf4j-api.version>2.0.9</dependency.slf4j-api.version>
-    <logback-classic.version>1.4.11</logback-classic.version>
+    <logback-classic.version>1.4.14</logback-classic.version>
 
     <!-- testing -->
     <dependency.assertj.version>3.24.2</dependency.assertj.version>
@@ -429,17 +429,17 @@
           <ratchetFrom>origin/main</ratchetFrom>
 
           <java>
-            <toggleOffOn />
+            <toggleOffOn/>
 
             <palantirJavaFormat>
               <version>${dependency.palantir-java-format.version}</version>
             </palantirJavaFormat>
 
-            <importOrder />
-            <removeUnusedImports />
-            <trimTrailingWhitespace />
-            <endWithNewline />
-            <formatAnnotations />
+            <importOrder/>
+            <removeUnusedImports/>
+            <trimTrailingWhitespace/>
+            <endWithNewline/>
+            <formatAnnotations/>
 
             <licenseHeader>
               <file>${maven.multiModuleProjectDirectory}/build/license/header-java.txt</file>
