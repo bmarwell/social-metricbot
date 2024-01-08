@@ -58,7 +58,7 @@
     <dependency.jackson.version>2.16.1</dependency.jackson.version>
 
     <!-- logging -->
-    <dependency.slf4j-api.version>2.0.10</dependency.slf4j-api.version>
+    <dependency.slf4j-api.version>2.0.11</dependency.slf4j-api.version>
     <logback-classic.version>1.4.14</logback-classic.version>
 
     <!-- testing -->
