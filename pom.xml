@@ -64,7 +64,7 @@
     <!-- testing -->
     <dependency.assertj.version>3.25.1</dependency.assertj.version>
     <dependency.cxf.version>4.0.3</dependency.cxf.version>
-    <junit5.version>5.10.1</junit5.version>
+    <junit5.version>5.10.2</junit5.version>
     <dependency.johnzon.version>1.2.21</dependency.johnzon.version>
     <dependency.h2.version>2.2.224</dependency.h2.version>
     <dependency.mockito.version>5.8.0</dependency.mockito.version>
