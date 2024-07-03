@@ -20,19 +20,12 @@ jobs:
       with:
         show-progress: false
 
-    - name: Cache local Maven Build Cache
-      uses: actions/cache@v4
-      if: ${{ github.ref_name != 'main' }}
-      with:
-        path: ~/.m2/build-cache
-        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-        restore-keys: ${{ runner.os }}-m2-
-
     - name: Set up JDK
       uses: actions/setup-java@v4
       with:
         java-version: 21
-        distribution: liberica
+        distribution: semeru
+        cache: 'maven'
 
     - name: Build application with Maven
       shell: bash
