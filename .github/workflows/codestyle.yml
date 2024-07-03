@@ -24,7 +24,8 @@ jobs:
       uses: actions/setup-java@v4
       with:
         java-version: 21
-        distribution: liberica
+        distribution: semeru
+        cache: 'maven'
 
     - name: fetch main branch for spotless
       shell: bash
