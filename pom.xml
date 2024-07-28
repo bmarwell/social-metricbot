@@ -62,7 +62,7 @@
     <logback-classic.version>1.5.6</logback-classic.version>
 
     <!-- testing -->
-    <dependency.assertj.version>3.25.3</dependency.assertj.version>
+    <dependency.assertj.version>3.26.3</dependency.assertj.version>
     <dependency.cxf.version>4.0.4</dependency.cxf.version>
     <junit5.version>5.10.3</junit5.version>
     <dependency.johnzon.version>1.2.21</dependency.johnzon.version>
