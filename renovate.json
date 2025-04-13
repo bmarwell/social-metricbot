@@ -18,6 +18,15 @@
       "matchPackageNames": [
         "/^org\\.apache\\.maven\\.plugins:.*/"
       ]
+    },
+    {
+      "dependencyTypes": ["dependency"],
+      "versioning": "minor",
+      "automerge": true,
+      "automergeType": "pr"
+      "matchPackagePatterns": [
+        "!^org\\.apache\\.maven\\.plugins:.*"
+      ]
     }
   ]
 }
