@@ -26,6 +26,11 @@
       "matchPackageNames": [
         "!^org\\.apache\\.maven\\.plugins:.*"
       ]
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "automerge": true,
+      "automergeType": "pr"
     }
   ]
 }
