@@ -24,7 +24,7 @@
       "versioning": "minor",
       "automerge": true,
       "automergeType": "pr"
-      "matchPackagePatterns": [
+      "matchPackageNames": [
         "!^org\\.apache\\.maven\\.plugins:.*"
       ]
     }
