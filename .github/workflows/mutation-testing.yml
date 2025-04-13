@@ -20,7 +20,7 @@ jobs:
       uses: actions/setup-java@v4
       with:
         java-version: 21
-        distribution: semeru
+        distribution: temurin
         cache: 'maven'
 
     - name: Run Pitest
