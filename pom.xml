@@ -54,7 +54,7 @@
     <dependency.immutables.version>2.10.1</dependency.immutables.version>
     <dependency.jsoup.version>1.19.1</dependency.jsoup.version>
     <dependency.eclipselink.version>4.0.6</dependency.eclipselink.version>
-    <dependency.error-prone.version>2.30.0</dependency.error-prone.version>
+    <dependency.error-prone.version>2.37.0</dependency.error-prone.version>
     <dependency.jackson.version>2.18.3</dependency.jackson.version>
 
     <!-- logging -->
