@@ -35,7 +35,7 @@
     <plugin.maven.war.version>3.4.0</plugin.maven.war.version>
     <plugin.maven.resources.version>3.3.1</plugin.maven.resources.version>
     <plugin.dockerfile-maven.version>1.4.13</plugin.dockerfile-maven.version>
-    <plugin.pitest.version>1.19.1</plugin.pitest.version>
+    <plugin.pitest.version>1.19.2</plugin.pitest.version>
     <extension.dockerfile-maven.version>${plugin.dockerfile-maven.version}</extension.dockerfile-maven.version>
 
     <!-- java EE + MP -->
