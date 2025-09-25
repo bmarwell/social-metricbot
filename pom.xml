@@ -53,7 +53,7 @@
     <!-- 3rd party -->
     <dependency.immutables.version>2.11.4</dependency.immutables.version>
     <dependency.jsoup.version>1.21.2</dependency.jsoup.version>
-    <dependency.eclipselink.version>4.0.7</dependency.eclipselink.version>
+    <dependency.eclipselink.version>4.0.8</dependency.eclipselink.version>
     <dependency.error-prone.version>2.42.0</dependency.error-prone.version>
     <dependency.jackson.version>2.20.0</dependency.jackson.version>
 
