@@ -71,7 +71,7 @@
     <dependency.wiremock.version>3.13.2</dependency.wiremock.version>
 
     <!-- build time plugins -->
-    <dependency.palantir-java-format.version>2.82.0</dependency.palantir-java-format.version>
+    <dependency.palantir-java-format.version>2.83.0</dependency.palantir-java-format.version>
   </properties>
 
   <dependencyManagement>
