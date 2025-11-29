@@ -33,7 +33,7 @@
     <plugin.maven.shade.version>3.6.1</plugin.maven.shade.version>
     <plugin.maven.assembly.version>3.8.0</plugin.maven.assembly.version>
     <plugin.maven.war.version>3.5.1</plugin.maven.war.version>
-    <plugin.maven.resources.version>3.3.1</plugin.maven.resources.version>
+    <plugin.maven.resources.version>3.4.0</plugin.maven.resources.version>
     <plugin.dockerfile-maven.version>1.4.13</plugin.dockerfile-maven.version>
     <plugin.pitest.version>1.22.0</plugin.pitest.version>
     <extension.dockerfile-maven.version>${plugin.dockerfile-maven.version}</extension.dockerfile-maven.version>
