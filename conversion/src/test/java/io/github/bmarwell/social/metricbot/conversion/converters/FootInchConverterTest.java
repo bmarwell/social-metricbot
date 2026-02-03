@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2023 The social-metricbot contributors
+ * Copyright 2020-2026 The social-metricbot contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +28,7 @@ public class FootInchConverterTest {
     @Test
     public void testBogusInputMatches() {
         // given
-        final String tweet =
-                """
+        final String tweet = """
                 Here's the recipe:
 
                 2 cups of Pancake Mix
@@ -57,8 +56,7 @@ public class FootInchConverterTest {
     @Test
     public void testBogusInputDoesNotConvert() {
         // given
-        final String tweet =
-                """
+        final String tweet = """
                 Here's the recipe:
 
                 2 cups of Pancake Mix
@@ -86,8 +84,7 @@ public class FootInchConverterTest {
     @Test
     void this_produces_nfe() {
         // given
-        final var input =
-                """
+        final var input = """
             1mi but 1,500 hp.
             12 inches in a foot.
             2 cups water.
@@ -101,5 +98,47 @@ public class FootInchConverterTest {
 
         // then
         Assertions.assertThat(matches).hasSize(3);
+    }
+
+    @Test
+    void testAfterShouldNotMatchFeet() {
+        // given - issue #137
+        final var input =
+                "I'll take 100 gallons. After last month's power bill, I need to coat my entire house in this!";
+        final var footInchConverter = new FootInchConverter();
+
+        // when
+        final boolean matches = footInchConverter.matches(input);
+
+        // then
+        assertFalse(matches, "The word 'After' should not match as feet/foot");
+    }
+
+    @Test
+    void testAfterShouldNotConvert() {
+        // given - issue #137
+        final var input =
+                "I'll take 100 gallons. After last month's power bill, I need to coat my entire house in this!";
+        final var footInchConverter = new FootInchConverter();
+
+        // when
+        final Collection<UnitConversion> conversions = footInchConverter.getConvertedUnits(input);
+
+        // then
+        assertTrue(conversions.isEmpty(), "The word 'After' should not produce any conversions");
+    }
+
+    @Test
+    void testValidFeetFormats() {
+        // given - ensure these still work
+        final var footInchConverter = new FootInchConverter();
+
+        // when/then
+        assertTrue(footInchConverter.matches("10ft"), "10ft should match");
+        assertTrue(footInchConverter.matches("10 ft"), "10 ft should match");
+        assertTrue(footInchConverter.matches("10 feet"), "10 feet should match");
+        assertTrue(footInchConverter.matches("10 foot"), "10 foot should match");
+        assertTrue(footInchConverter.matches("5'6\""), "5'6\" should match");
+        assertTrue(footInchConverter.matches("a foot"), "a foot should match");
     }
 }
