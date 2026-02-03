@@ -1,11 +1,61 @@
-<cache xmlns="http://maven.apache.org/BUILD-CACHE-CONFIG/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/BUILD-CACHE-CONFIG/1.0.0 https://maven.apache.org/xsd/build-cache-config-1.0.0.xsd">
+<cache xmlns="http://maven.apache.org/BUILD-CACHE-CONFIG/1.2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://maven.apache.org/BUILD-CACHE-CONFIG/1.2.0 https://maven.apache.org/xsd/build-cache-config-1.2.0.xsd">
   <configuration>
     <enabled>true</enabled>
     <hashAlgorithm>XX</hashAlgorithm>
+    <validateXml>true</validateXml>
+    <!-- Remote cache disabled by default. Developers with global mirrors will use their own cache. -->
     <remote enabled="false" />
     <local>
       <maxBuildsCached>64</maxBuildsCached>
     </local>
-
+    <!-- Adjust META-INF in project versioning for better cache compatibility -->
+    <projectVersioning adjustMetaInf="true"/>
   </configuration>
+
+  <input>
+    <global>
+      <!-- Include common source file types -->
+      <glob>
+        {*.java,*.xml,*.properties,*.yaml,*.yml,*.json,*.adoc,*.md}
+      </glob>
+      <excludes>
+        <!-- Exclude generated files and build artifacts -->
+        <exclude>target/**</exclude>
+        <exclude>**/target/**</exclude>
+        <exclude>.mvn/wrapper/**</exclude>
+      </excludes>
+    </global>
+  </input>
+
+  <executionControl>
+    <runAlways>
+      <goalsLists>
+        <!-- Always run install and deploy goals -->
+        <goalsList artifactId="maven-install-plugin">
+          <goals>
+            <goal>install</goal>
+          </goals>
+        </goalsList>
+        <goalsList artifactId="maven-deploy-plugin">
+          <goals>
+            <goal>deploy</goal>
+          </goals>
+        </goalsList>
+      </goalsLists>
+    </runAlways>
+    <reconcile>
+      <plugins>
+        <!-- Reconcile critical compiler settings -->
+        <plugin artifactId="maven-compiler-plugin" goal="compile">
+          <reconciles>
+            <reconcile propertyName="source"/>
+            <reconcile propertyName="target"/>
+            <reconcile propertyName="release"/>
+            <reconcile propertyName="debug"/>
+          </reconciles>
+        </plugin>
+      </plugins>
+    </reconcile>
+  </executionControl>
 </cache>
