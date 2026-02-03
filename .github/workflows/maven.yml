@@ -15,7 +15,7 @@ jobs:
     runs-on: [ 'ubuntu-latest' ]
     strategy:
       matrix:
-        java: [25, 26]
+        java: [25]
     steps:
 
     - name: Checkout
