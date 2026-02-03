@@ -16,16 +16,14 @@
   <input>
     <global>
       <!-- Include common source file types -->
-      <glob>**/*.java</glob>
-      <glob>**/*.xml</glob>
-      <glob>**/*.properties</glob>
-      <glob>**/*.yaml</glob>
-      <glob>**/*.yml</glob>
-      <glob>**/*.json</glob>
+      <glob>
+        {*.java,*.xml,*.properties,*.yaml,*.yml,*.json}
+      </glob>
       <excludes>
         <!-- Exclude generated files and build artifacts -->
         <exclude>**/target/**</exclude>
-        <exclude>.mvn/wrapper/**</exclude>
+        <!-- Exclude wrapper JAR but keep maven-wrapper.properties (Maven version affects build) -->
+        <exclude>.mvn/wrapper/*.jar</exclude>
       </excludes>
     </global>
   </input>
