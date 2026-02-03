@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2023 The social-metricbot contributors
+ * Copyright 2020-2026 The social-metricbot contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 
 public class RegexTest {
 
-    private static final Logger LOG = LoggerFactory.getLogger(RegexTest.class);
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     @Test
     public void testRegexMatchesSlash() {
@@ -45,7 +45,7 @@ public class RegexTest {
         final Matcher matcher = pattern.matcher("▪️4 cups cold water\n▪1/4 cup salt\n▪️1/3 cup maple syrup\n");
 
         while (matcher.find()) {
-            LOG.info("Find: [{}] g1[{}]", matcher.group(0), matcher.group(1));
+            log.info("Find: [{}] g1[{}]", matcher.group(0), matcher.group(1));
             assertThat(matcher.group(1)).isIn("4", "1/4", "1/3");
         }
     }
