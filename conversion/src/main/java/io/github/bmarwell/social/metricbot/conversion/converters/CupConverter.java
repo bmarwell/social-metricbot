@@ -38,7 +38,7 @@ public class CupConverter implements io.github.bmarwell.social.metricbot.convers
 
     private static final long serialVersionUID = 3577857810056970727L;
 
-    private static final Logger LOG = LoggerFactory.getLogger(CupConverter.class);
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     private static final Pattern PATTERN_CUPS = Pattern.compile(
             "\\b((?:[0-9]+\\.)?[0-9/]+)\\s?cup(?:s)?\\b",
@@ -85,7 +85,7 @@ public class CupConverter implements io.github.bmarwell.social.metricbot.convers
 
                 final String cupsDecimalString = NUMBER_FORMAT_CUPS.format(cupsDouble);
                 final String millisDecimalString = NUMBER_FORMAT_MILLIS.format(millis);
-                LOG.debug("Converted [{}]C to [{}]ml.", cupsDecimalString, millisDecimalString);
+                log.debug("Converted [{}]C to [{}]ml.", cupsDecimalString, millisDecimalString);
 
                 final ImmutableUnitConversion conversion = ImmutableUnitConversion.builder()
                         .inputAmount(cupsDecimalString)
@@ -96,7 +96,7 @@ public class CupConverter implements io.github.bmarwell.social.metricbot.convers
 
                 conversions.add(conversion);
             } catch (final NumberFormatException | ArithmeticException nfe) {
-                LOG.error("Unable to convert [{}].", text, nfe);
+                log.error("Unable to convert [{}].", text, nfe);
             }
         }
 
@@ -111,7 +111,7 @@ public class CupConverter implements io.github.bmarwell.social.metricbot.convers
 
                 final String cupsDecimalString = NUMBER_FORMAT_CUPS.format(cupsDouble);
                 final String millisDecimalString = NUMBER_FORMAT_MILLIS.format(millis);
-                LOG.debug("Converted [{}]C to [{}]ml.", cupsDecimalString, millisDecimalString);
+                log.debug("Converted [{}]C to [{}]ml.", cupsDecimalString, millisDecimalString);
 
                 final ImmutableUnitConversion conversion = ImmutableUnitConversion.builder()
                         .inputAmount(cupsDecimalString)
@@ -122,7 +122,7 @@ public class CupConverter implements io.github.bmarwell.social.metricbot.convers
 
                 conversions.add(conversion);
             } catch (final NumberFormatException | ArithmeticException nfe) {
-                LOG.error("Unable to convert [{}].", text, nfe);
+                log.error("Unable to convert [{}].", text, nfe);
             }
         }
 

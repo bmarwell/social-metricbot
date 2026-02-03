@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 
 public class TemperatureConverterTest {
 
-    private static final Logger LOG = LoggerFactory.getLogger(TemperatureConverterTest.class);
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     @Test
     public void findTemps() {

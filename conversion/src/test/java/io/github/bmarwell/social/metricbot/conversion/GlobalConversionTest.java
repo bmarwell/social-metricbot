@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 
 public class GlobalConversionTest {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GlobalConversionTest.class);
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     static Stream<Arguments> tweetsAndUnits() {
         return Stream.of(
@@ -227,8 +227,8 @@ public class GlobalConversionTest {
     public void testTweet(final String tweet, final List<String> expectedOutputs) {
         final String convertedUnits = this.conversion.returnConverted(tweet);
 
-        LOG.debug("Checking tweet [{}].", tweet);
-        LOG.debug("Converted units: [{}]", convertedUnits);
+        log.debug("Checking tweet [{}].", tweet);
+        log.debug("Converted units: [{}]", convertedUnits);
 
         SoftAssertions softly = new SoftAssertions();
         for (String expectedConversion : expectedOutputs) {

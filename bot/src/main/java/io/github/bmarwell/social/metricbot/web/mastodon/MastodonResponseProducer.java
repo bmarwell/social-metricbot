@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 @WebListener
 public class MastodonResponseProducer implements ServletContextListener {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MastodonResponseProducer.class);
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     @Resource
     private ManagedScheduledExecutorService scheduler;
@@ -65,12 +65,12 @@ public class MastodonResponseProducer implements ServletContextListener {
     protected void emitMention() {
         synchronized (this.emitterLock) {
             if (this.unprocessedMastodonStatusQueueHolder.isEmpty()) {
-                LOG.trace("No tweet to reply to.");
+                log.trace("No tweet to reply to.");
                 return;
             }
 
             final MastodonStatus foundStatus = this.unprocessedMastodonStatusQueueHolder.poll();
-            LOG.info(
+            log.info(
                     "Emitting event for toot: [{}]/[{}].",
                     foundStatus.id(),
                     foundStatus.rawContent().replaceAll("\n", "\\\\n"));

@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 @ApplicationScoped
 public class MastodonStatusProcessor {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MastodonStatusProcessor.class);
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     @Inject
     private MastodonStatusRepository mastodonStatusRepository;
@@ -42,26 +42,26 @@ public class MastodonStatusProcessor {
         final MastodonStatus status = mentionEvent.mastodonStatus();
 
         if (this.mastodonStatusRepository.findById(status.id().value()).isPresent()) {
-            LOG.trace("Skipping Toot [{}] because it was already replied to.", status.id());
+            log.trace("Skipping Toot [{}] because it was already replied to.", status.id());
             return;
         }
 
         if (this.unprocessedTweetQueueHolder.contains(status)) {
-            LOG.debug("Skipping Toot [{}] because it will be processed soon.", status.id());
+            log.debug("Skipping Toot [{}] because it will be processed soon.", status.id());
             return;
         }
 
         final Instant createdAt = status.createdAt();
         // only reply to mentions in the last 10 minutes
         if (createdAt.isBefore(Instant.now().minusSeconds(60 * 10L))) {
-            LOG.info("Skipping Toot [{}] because it is too old: [{}].", status.id(), createdAt);
+            log.info("Skipping Toot [{}] because it is too old: [{}].", status.id(), createdAt);
             this.mastodonStatusRepository.upsert(status.id().value(), status.createdAt(), null, Instant.now());
 
             return;
         }
 
         if (containsBlockedWord(status)) {
-            LOG.debug("Skipping Toot [{}] because it is from a blocked user.", status.id());
+            log.debug("Skipping Toot [{}] because it is from a blocked user.", status.id());
             this.mastodonStatusRepository.upsert(status.id().value(), status.createdAt(), null, Instant.now());
 
             return;
