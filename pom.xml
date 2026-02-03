@@ -446,14 +446,6 @@
             </sortPom>
           </pom>
         </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>apply</goal>
-            </goals>
-            <phase>validate</phase>
-          </execution>
-        </executions>
       </plugin>
 
       <plugin>
