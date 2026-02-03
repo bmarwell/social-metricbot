@@ -1,0 +1,24 @@
+version: 2
+updates:
+  # Enable version updates for Maven dependencies
+  - package-ecosystem: "maven"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    # Ignore internal packages (matches renovate.json packageRules)
+    ignore:
+      - dependency-name: "io.github.bmarwell.social.metricbot:common"
+      - dependency-name: "io.github.bmarwell.social.metricbot:social-metricbot-mastodon"
+      - dependency-name: "io.github.bmarwell.social.metricbot:social-metricbot-bsky-client"
+      - dependency-name: "io.github.bmarwell.social.metricbot:metricbot-db"
+    # Group all Maven plugin updates together for easier management
+    groups:
+      maven-plugins:
+        patterns:
+          - "org.apache.maven.plugins:*"
+
+  # Enable version updates for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
