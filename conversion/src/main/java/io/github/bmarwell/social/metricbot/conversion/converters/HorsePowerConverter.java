@@ -36,7 +36,7 @@ public class HorsePowerConverter implements io.github.bmarwell.social.metricbot.
 
     private static final long serialVersionUID = -4122166957202486050L;
 
-    private final Logger log = LoggerFactory.getLogger(getClass());
+    private static final Logger LOG = LoggerFactory.getLogger(HorsePowerConverter.class);
 
     private static final Pattern PATTERN_HP = Pattern.compile(
             "\\b((?:[0-9],)*(?:[0-9]*[.]?)?[0-9]+)[^A-Za-z0-9]?(?:\\s|\\b)?hp(?:s)?\\b",
@@ -84,7 +84,7 @@ public class HorsePowerConverter implements io.github.bmarwell.social.metricbot.
 
                 conversions.add(unitConversion);
             } catch (final RuntimeException rtEx) {
-                log.error("Unable to convert found text: [{}].", text, rtEx);
+                LOG.error("Unable to convert found text: [{}].", text, rtEx);
             }
         }
 

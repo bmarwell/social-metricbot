@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 @Dependent
 public class TemperatureConverter implements io.github.bmarwell.social.metricbot.conversion.converters.UsUnitConverter {
 
-    private final Logger log = LoggerFactory.getLogger(getClass());
+    private static final Logger LOG = LoggerFactory.getLogger(TemperatureConverter.class);
 
     private static final long serialVersionUID = -1586935341494577390L;
 
@@ -91,7 +91,7 @@ public class TemperatureConverter implements io.github.bmarwell.social.metricbot
                     .metricAmount(FORMAT_NO_FRAC.format(tempCelsius))
                     .metricUnit(DEGREE_CELSIUS)
                     .build();
-            log.debug("Adding: [{}].", unitConversion);
+            LOG.debug("Adding: [{}].", unitConversion);
             outputUnits.add(unitConversion);
         }
 

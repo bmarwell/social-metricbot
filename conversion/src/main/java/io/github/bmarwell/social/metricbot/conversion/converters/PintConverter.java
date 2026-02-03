@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 @Dependent
 public class PintConverter implements UsUnitConverter {
 
-    private final Logger log = LoggerFactory.getLogger(getClass());
+    private static final Logger LOG = LoggerFactory.getLogger(PintConverter.class);
 
     private static final Pattern PATTERN_SOURCE =
             Pattern.compile("\\b((?:\\d+\\.)?([\\d,/]+|a))\\s?pt\\b", Pattern.MULTILINE | Pattern.CANON_EQ);
@@ -86,7 +86,7 @@ public class PintConverter implements UsUnitConverter {
             try {
                 parseUnitOccurence(conversions, matcher);
             } catch (final NumberFormatException | ArithmeticException nfe) {
-                log.error("Unable to convert [{}].", text, nfe);
+                LOG.error("Unable to convert [{}].", text, nfe);
             }
         }
     }
@@ -100,7 +100,7 @@ public class PintConverter implements UsUnitConverter {
 
         final UnitConversion conversion = getUnitConversion(gallonsDouble, sourceUnitDecimalString);
 
-        log.debug(
+        LOG.debug(
                 "Converted [{}]{} to [{}]{}.",
                 sourceUnitDecimalString,
                 SYMBOL_SOURCE,

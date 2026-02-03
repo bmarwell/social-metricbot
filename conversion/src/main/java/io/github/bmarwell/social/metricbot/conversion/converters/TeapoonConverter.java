@@ -37,7 +37,7 @@ public class TeapoonConverter implements io.github.bmarwell.social.metricbot.con
 
     private static final long serialVersionUID = -3692749135515082850L;
 
-    private final Logger log = LoggerFactory.getLogger(getClass());
+    private static final Logger LOG = LoggerFactory.getLogger(TeapoonConverter.class);
 
     private static final Pattern PATTERN_TSP = Pattern.compile(
             "\\b((?:[0-9]+,)?(?:[0-9]+\\.)?[0-9/]+)\\s?(?:tsp|teaspoon)(?:s)?\\b",
@@ -93,7 +93,7 @@ public class TeapoonConverter implements io.github.bmarwell.social.metricbot.con
 
                 conversions.add(conversion);
             } catch (final NumberFormatException | ArithmeticException nfe) {
-                log.error("Unable to parse: [{}].", text, nfe);
+                LOG.error("Unable to parse: [{}].", text, nfe);
             }
         }
 
@@ -115,7 +115,7 @@ public class TeapoonConverter implements io.github.bmarwell.social.metricbot.con
 
                 conversions.add(conversion);
             } catch (final NumberFormatException | ArithmeticException nfe) {
-                log.error("Unable to parse: [{}].", text, nfe);
+                LOG.error("Unable to parse: [{}].", text, nfe);
             }
         }
 

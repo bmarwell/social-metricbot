@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 
 public class DefaultMastodonClient implements MastodonClient {
 
-    private final Logger log = LoggerFactory.getLogger(getClass());
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultMastodonClient.class);
 
     private final ParserUtil parserUtil = new ParserUtil();
     private final MastodonConfigurationBuilder mastodonConfig;
@@ -99,10 +99,10 @@ public class DefaultMastodonClient implements MastodonClient {
                 .header("Authorization", "Bearer " + this.token)
                 .post(postContent)) {
             if (response.getStatus() != 200) {
-                log.error("RC of post reply: [{}]", response.getStatus());
+                LOG.error("RC of post reply: [{}]", response.getStatus());
 
                 if (response.hasEntity()) {
-                    log.error("post response: [{}]", response.readEntity(String.class));
+                    LOG.error("post response: [{}]", response.readEntity(String.class));
                 }
 
                 return Optional.empty();

@@ -35,7 +35,7 @@ public class MilesConverter implements io.github.bmarwell.social.metricbot.conve
 
     private static final long serialVersionUID = 2837876326659237432L;
 
-    private final Logger log = LoggerFactory.getLogger(getClass());
+    private static final Logger LOG = LoggerFactory.getLogger(MilesConverter.class);
 
     private static final Pattern MILES = Pattern.compile(
             "((\\b|[^0-9]-)?([0-9]+,){0,4}([0-9]+\\.)?[0-9]+|a)(\\s)?(mi(le(s)?)?\\b)",
@@ -87,7 +87,7 @@ public class MilesConverter implements io.github.bmarwell.social.metricbot.conve
 
                 outputUnits.add(unitConversion);
             } catch (final NumberFormatException | ArithmeticException nfEx) {
-                log.error("Unable to convert [{}].", text, nfEx);
+                LOG.error("Unable to convert [{}].", text, nfEx);
             }
         }
 
@@ -112,7 +112,7 @@ public class MilesConverter implements io.github.bmarwell.social.metricbot.conve
 
                 outputUnits.add(unitConversion);
             } catch (final NumberFormatException | ArithmeticException nfEx) {
-                log.error("Unable to convert [{}].", text, nfEx);
+                LOG.error("Unable to convert [{}].", text, nfEx);
             }
         }
 
@@ -123,7 +123,7 @@ public class MilesConverter implements io.github.bmarwell.social.metricbot.conve
                         matcherMilesWord.group(1).toLowerCase(Locale.ENGLISH).replaceAll(",", "");
                 final Optional<Double> milesDecimalOpt = NumberNames.convert(group);
                 if (milesDecimalOpt.isEmpty()) {
-                    log.info("Unable to convert [{}] from [{}].", group, text);
+                    LOG.info("Unable to convert [{}] from [{}].", group, text);
                     continue;
                 }
 
@@ -140,7 +140,7 @@ public class MilesConverter implements io.github.bmarwell.social.metricbot.conve
 
                 outputUnits.add(unitConversion);
             } catch (final NumberFormatException | ArithmeticException nfEx) {
-                log.error("Unable to convert [{}].", text, nfEx);
+                LOG.error("Unable to convert [{}].", text, nfEx);
             }
         }
 

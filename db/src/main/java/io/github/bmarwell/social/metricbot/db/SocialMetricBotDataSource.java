@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 @Dependent
 public class SocialMetricBotDataSource {
 
-    private final Logger log = LoggerFactory.getLogger(getClass());
+    private static final Logger LOG = LoggerFactory.getLogger(SocialMetricBotDataSource.class);
 
     private final AtomicBoolean initialized = new AtomicBoolean();
 
@@ -49,7 +49,7 @@ public class SocialMetricBotDataSource {
             flyway.migrate();
             this.initialized.compareAndSet(false, true);
         } catch (final FlywayException flywayException) {
-            log.error("Unable to run flyway migration.", flywayException);
+            LOG.error("Unable to run flyway migration.", flywayException);
         }
     }
 }

@@ -36,7 +36,7 @@ public class CalorieConverter implements io.github.bmarwell.social.metricbot.con
 
     private static final long serialVersionUID = 4539101040460638085L;
 
-    private final Logger log = LoggerFactory.getLogger(getClass());
+    private static final Logger LOG = LoggerFactory.getLogger(CalorieConverter.class);
 
     private static final Pattern PATTERN_CALORIES = Pattern.compile(
             "\\b((?:[0-9]+,)?[0-9]+)\\s?cal(?:s|orie(?:s)?)?\\b", Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
@@ -83,7 +83,7 @@ public class CalorieConverter implements io.github.bmarwell.social.metricbot.con
 
                 convertedUnits.add(conversion);
             } catch (final NumberFormatException | ArithmeticException nfe) {
-                log.error("Unable to convert text[{}].", text);
+                LOG.error("Unable to convert text[{}].", text);
             }
         }
 

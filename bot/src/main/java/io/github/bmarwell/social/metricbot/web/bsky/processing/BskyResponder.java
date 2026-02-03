@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
 @Dependent
 public class BskyResponder extends AbstractResponder implements Serializable {
 
-    private final Logger log = LoggerFactory.getLogger(getClass());
+    private static final Logger LOG = LoggerFactory.getLogger(BskyResponder.class);
 
     @Serial
     private static final long serialVersionUID = -6151380892941404038L;
@@ -63,19 +63,19 @@ public class BskyResponder extends AbstractResponder implements Serializable {
     private UsConversion converter;
 
     public void onMastodonStatusFound(@ObservesAsync final BskyProcessRequest event) {
-        log.debug("Checking response to event [{}].", event);
+        LOG.debug("Checking response to event [{}].", event);
         final BskyStatus status = event.status();
 
         final Optional<BskyStatusPdo> alreadyRespondedToMention =
                 this.self.get().findById(status.uri());
         if (alreadyRespondedToMention.isPresent()) {
             final BskyStatusPdo tweetPdo = alreadyRespondedToMention.orElseThrow();
-            log.debug("Already responded: [{}]", tweetPdo);
+            LOG.debug("Already responded: [{}]", tweetPdo);
 
             return;
         }
 
-        log.debug("Trying to respond now.");
+        LOG.debug("Trying to respond now.");
 
         // check for units
         tryRespond(status);
@@ -86,7 +86,7 @@ public class BskyResponder extends AbstractResponder implements Serializable {
         // either this tweet, or quoted or retweeted or reply to (in this order).
         final Optional<BskyStatus> optStatusWithUnits = getStatusWithUnits(status);
         if (optStatusWithUnits.isEmpty()) {
-            log.debug("No units found.");
+            LOG.debug("No units found.");
             this.self.get().upsert(status.uri(), status.createdAt(), null, Instant.now());
 
             return;
@@ -98,7 +98,7 @@ public class BskyResponder extends AbstractResponder implements Serializable {
 
         if (optExistingResponse.isPresent()) {
             final BskyStatusPdo existingResponse = optExistingResponse.orElseThrow();
-            log.debug("Already responded: [{}].", existingResponse);
+            LOG.debug("Already responded: [{}].", existingResponse);
             // final URI botResponseAtUri = existingResponse.getBotResponseAtUri();
             // this.self.get().upsert(status.uri(), status.createdAt(), botResponseAtUri, Instant.now());
 
@@ -107,18 +107,18 @@ public class BskyResponder extends AbstractResponder implements Serializable {
             return;
         }
 
-        log.debug("no existing response known.");
+        LOG.debug("no existing response known.");
 
         try {
             doRespond(status, statusWithUnits);
         } catch (final Throwable ex) {
-            log.error("Unexpected problem", ex);
+            LOG.error("Unexpected problem", ex);
         }
     }
 
     private void doRespond(final BskyStatus status, final BskyStatus statusWithUnits) {
         if (!this.converter.containsUsUnits(statusWithUnits.text())) {
-            log.error(
+            LOG.error(
                     "No units found, although they were found earlier?! [{}:{}]",
                     statusWithUnits.uri(),
                     statusWithUnits.text());
@@ -129,7 +129,7 @@ public class BskyResponder extends AbstractResponder implements Serializable {
         final var responseText = this.converter.returnConverted(statusWithUnits.text(), "\n");
 
         if (responseText.endsWith(":")) {
-            log.error(
+            LOG.error(
                     "No units converted, although they were found earlier?! [{}:{}]",
                     statusWithUnits.uri(),
                     statusWithUnits.text());
@@ -138,12 +138,12 @@ public class BskyResponder extends AbstractResponder implements Serializable {
         }
 
         if (status.uri().equals(statusWithUnits.uri())) {
-            log.info("Only respond to first");
+            LOG.info("Only respond to first");
             doRespondToFirst(status, responseText);
             return;
         }
 
-        log.info("Responding to potentially both.");
+        LOG.info("Responding to potentially both.");
 
         doRespondToPotentiallyBoth(status, statusWithUnits, responseText);
     }
@@ -152,7 +152,7 @@ public class BskyResponder extends AbstractResponder implements Serializable {
         final var fullResponseText = CONVENIENCE_TEXT + responseText;
         final var statusDraft = new BskyResponseDraft(fullResponseText, status);
 
-        log.info("Sending response: " + statusDraft);
+        LOG.info("Sending response: " + statusDraft);
         this.self.get().sendOrLog(status, statusDraft);
     }
 
@@ -160,7 +160,7 @@ public class BskyResponder extends AbstractResponder implements Serializable {
             final BskyStatus foundStatus, final BskyStatus statusWithUnits, final String responseText) {
         if (!this.bskyClient.isByOtherUser(statusWithUnits)) {
             // don't respond to self
-            log.info("Don't respond to self.");
+            LOG.info("Don't respond to self.");
 
             return;
         }
@@ -168,7 +168,7 @@ public class BskyResponder extends AbstractResponder implements Serializable {
         final var fullResponseText = CONVENIENCE_TEXT + responseText;
         final var statusDraft = new BskyResponseDraft(fullResponseText, statusWithUnits);
 
-        log.info("Sending response: " + statusDraft);
+        LOG.info("Sending response: " + statusDraft);
         final Optional<BskyStatus> sentReply = this.self.get().sendOrLog(statusWithUnits, statusDraft);
 
         if (foundStatus.uri().equals(statusWithUnits.uri())) {
@@ -190,7 +190,7 @@ public class BskyResponder extends AbstractResponder implements Serializable {
     }
 
     private Optional<BskyStatus> sendHintOrTimeout(final BskyResponseDraft hereYouGoDraft) {
-        log.info(
+        LOG.info(
                 "Sending status response to quoter [{}]: [{}].",
                 hereYouGoDraft.postToReplyTo().uri(),
                 hereYouGoDraft.postStatus().replaceAll("\n", "\\\\n"));
@@ -202,21 +202,21 @@ public class BskyResponder extends AbstractResponder implements Serializable {
             final Optional<BskyStatus> responseStatus = this.bskyClient.sendReply(statusDraft);
 
             if (responseStatus.isEmpty()) {
-                log.error("Unable to send reply: [{}].", statusDraft);
+                LOG.error("Unable to send reply: [{}].", statusDraft);
                 this.self.get().upsert(statusWithUnits.uri(), statusWithUnits.createdAt(), null, Instant.now());
 
                 return responseStatus;
             }
 
             final var response = responseStatus.orElseThrow();
-            log.info("Response sent: [{}] => [{}].", response.uri(), response.text());
+            LOG.info("Response sent: [{}] => [{}].", response.uri(), response.text());
             this.self
                     .get()
                     .upsert(statusWithUnits.uri(), statusWithUnits.createdAt(), response.uri(), response.createdAt());
 
             return Optional.of(response);
         } catch (final Throwable ex) {
-            log.error("Unknown error when responding to post.", ex);
+            LOG.error("Unknown error when responding to post.", ex);
 
             return Optional.empty();
         }
@@ -225,7 +225,7 @@ public class BskyResponder extends AbstractResponder implements Serializable {
     private Optional<BskyStatus> getStatusWithUnits(final BskyStatus status) {
         // tweet itself?
         if (containsUnits(status) && this.bskyClient.isByOtherUser(status)) {
-            log.debug("Post itself contains units.");
+            LOG.debug("Post itself contains units.");
             return Optional.of(status);
         }
 
@@ -235,7 +235,7 @@ public class BskyResponder extends AbstractResponder implements Serializable {
                     this.bskyClient.getRepostedStatus(status).orElseThrow();
 
             if (containsUnits(rebloggedStatus) && this.bskyClient.isByOtherUser(rebloggedStatus)) {
-                log.debug("found units in post which was replied to.");
+                LOG.debug("found units in post which was replied to.");
                 return Optional.of(rebloggedStatus);
             }
         }
@@ -250,7 +250,7 @@ public class BskyResponder extends AbstractResponder implements Serializable {
 
             final BskyStatus replyToStatus = repliedTo.orElseThrow();
             if (containsUnits(replyToStatus) && this.bskyClient.isByOtherUser(replyToStatus)) {
-                log.debug("found units in post which was replied to.");
+                LOG.debug("found units in post which was replied to.");
                 return Optional.of(replyToStatus);
             }
         }

@@ -42,7 +42,7 @@ public class BskyResponseProducer implements ServletContextListener, Serializabl
     @Serial
     private static final long serialVersionUID = -4508296428501306541L;
 
-    private final Logger log = LoggerFactory.getLogger(getClass());
+    private static final Logger LOG = LoggerFactory.getLogger(BskyResponseProducer.class);
 
     @Resource
     private ManagedScheduledExecutorService scheduler;
@@ -75,12 +75,12 @@ public class BskyResponseProducer implements ServletContextListener, Serializabl
 
     private void emitMention() {
         if (this.unprocessedBskyStatusQueueHolder.isEmpty()) {
-            log.trace("No BskyStatus to reply to.");
+            LOG.trace("No BskyStatus to reply to.");
             return;
         }
 
         final var bskyStatus = this.unprocessedBskyStatusQueueHolder.poll();
-        log.debug(
+        LOG.debug(
                 "Emitting event for BskyStatus: [{}]/[{}].",
                 bskyStatus.uri(),
                 bskyStatus.text().replaceAll("\n", "\\\\n"));

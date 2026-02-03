@@ -34,7 +34,7 @@ public class GallonConverter implements io.github.bmarwell.social.metricbot.conv
 
     private static final long serialVersionUID = 3577857810056970727L;
 
-    private final Logger log = LoggerFactory.getLogger(getClass());
+    private static final Logger LOG = LoggerFactory.getLogger(GallonConverter.class);
 
     private static final Pattern PATTERN_SOURCE = Pattern.compile(
             "\\b((?:\\d+\\.)?([\\d,/]+|a))\\s?(?<exp>(mil|bil)(lion(s)?)? )?gallon(?:s)?\\b",
@@ -87,7 +87,7 @@ public class GallonConverter implements io.github.bmarwell.social.metricbot.conv
             try {
                 parseUnitOccurence(conversions, matcher);
             } catch (final NumberFormatException | ArithmeticException nfe) {
-                log.error("Unable to convert [{}].", text, nfe);
+                LOG.error("Unable to convert [{}].", text, nfe);
             }
         }
     }
@@ -101,7 +101,7 @@ public class GallonConverter implements io.github.bmarwell.social.metricbot.conv
 
         final UnitConversion conversion = getUnitConversion(gallonsDouble, sourceUnitDecimalString);
 
-        log.debug(
+        LOG.debug(
                 "Converted [{}]{} to [{}]{}.",
                 sourceUnitDecimalString,
                 SYMBOL_SOURCE,
@@ -158,7 +158,7 @@ public class GallonConverter implements io.github.bmarwell.social.metricbot.conv
         } else if (exp.toLowerCase(Locale.ROOT).startsWith("tril")) {
             return 1_000_000_000_000d;
         } else {
-            log.error("unknown multiplicator: " + exp.toLowerCase(Locale.ROOT));
+            LOG.error("unknown multiplicator: " + exp.toLowerCase(Locale.ROOT));
             return 1d;
         }
     }

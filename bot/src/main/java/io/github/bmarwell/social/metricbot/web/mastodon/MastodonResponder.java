@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
 @Dependent
 public class MastodonResponder extends AbstractResponder {
 
-    private final Logger log = LoggerFactory.getLogger(getClass());
+    private static final Logger LOG = LoggerFactory.getLogger(MastodonResponder.class);
 
     @Resource
     private ManagedExecutorService executor;
@@ -62,14 +62,14 @@ public class MastodonResponder extends AbstractResponder {
     private UsConversion converter;
 
     public void onMastodonStatusFound(@Observes MastodonProcessRequest event) {
-        log.info("Checking response to event [{}].", event);
+        LOG.info("Checking response to event [{}].", event);
         final MastodonStatus status = event.status();
 
         final Optional<MastodonStatusPdo> alreadyRespondedToMention =
                 this.self.get().findById(status.id());
         if (alreadyRespondedToMention.isPresent()) {
             final MastodonStatusPdo tweetPdo = alreadyRespondedToMention.orElseThrow();
-            log.debug("Already responded: [{}]", tweetPdo);
+            LOG.debug("Already responded: [{}]", tweetPdo);
 
             return;
         }
@@ -83,7 +83,7 @@ public class MastodonResponder extends AbstractResponder {
         // either this tweet, or quoted or retweeted or reply to (in this order).
         final Optional<MastodonStatus> optStatusWithUnits = getStatusWithUnits(status);
         if (optStatusWithUnits.isEmpty()) {
-            log.debug("No units found.");
+            LOG.debug("No units found.");
             this.self.get().upsert(status.id(), status.createdAt(), MastodonStatusId.empty(), Instant.now());
 
             return;
@@ -95,7 +95,7 @@ public class MastodonResponder extends AbstractResponder {
 
         if (optExistingResponse.isPresent()) {
             final MastodonStatusPdo existingResponse = optExistingResponse.orElseThrow();
-            log.debug("Already responded: [{}].", existingResponse);
+            LOG.debug("Already responded: [{}].", existingResponse);
             final MastodonStatusId botResponseId = new MastodonStatusId(existingResponse.getBotResponseId());
             this.self.get().upsert(status.id(), status.createdAt(), botResponseId, Instant.now());
 
@@ -109,7 +109,7 @@ public class MastodonResponder extends AbstractResponder {
 
     private void doRespond(MastodonStatus status, MastodonStatus statusWithUnits) {
         if (!this.converter.containsUsUnits(statusWithUnits.rawContent())) {
-            log.error(
+            LOG.error(
                     "No units found, although they were found earlier?! [{}:{}]",
                     statusWithUnits.id(),
                     statusWithUnits.rawContent());
@@ -120,7 +120,7 @@ public class MastodonResponder extends AbstractResponder {
         var responseText = this.converter.returnConverted(statusWithUnits.rawContent(), "\n");
 
         if (responseText.endsWith(":")) {
-            log.error(
+            LOG.error(
                     "No units converted, although they were found earlier?! [{}:{}]",
                     statusWithUnits.id(),
                     statusWithUnits.rawContent());
@@ -194,7 +194,7 @@ public class MastodonResponder extends AbstractResponder {
             Optional<MastodonStatus> responseStatus = sendTootOrTimeout(statusToSend);
 
             if (responseStatus.isEmpty()) {
-                log.error("Unable to send reply: [{}].", statusToSend);
+                LOG.error("Unable to send reply: [{}].", statusToSend);
                 this.self
                         .get()
                         .upsert(
@@ -207,19 +207,19 @@ public class MastodonResponder extends AbstractResponder {
             }
 
             MastodonStatus status = responseStatus.orElseThrow();
-            log.info("Response sent: [{}] => [{}].", status.id(), status.rawContent());
+            LOG.info("Response sent: [{}] => [{}].", status.id(), status.rawContent());
             this.self.get().upsert(statusWithUnits.id(), statusWithUnits.createdAt(), status.id(), status.createdAt());
 
             return Optional.of(status);
         } catch (Throwable ex) {
-            log.error("Unknown error when responding to toot.", ex);
+            LOG.error("Unknown error when responding to toot.", ex);
 
             return Optional.empty();
         }
     }
 
     private Optional<MastodonStatus> sendTootOrTimeout(MastodonTextStatusDraft statusToSend) {
-        log.info(
+        LOG.info(
                 "Sending status response to [{}]: [{}].",
                 statusToSend.replyToId(),
                 statusToSend.tootText().replaceAll("\n", "\\\\n"));
@@ -233,7 +233,7 @@ public class MastodonResponder extends AbstractResponder {
 
     private static Optional<MastodonStatus> resultOrLog(Optional<MastodonStatus> result, @Nullable Throwable error) {
         if (error != null) {
-            log.error("No result retrieved.", error);
+            LOG.error("No result retrieved.", error);
 
             return Optional.<MastodonStatus>empty();
         }
@@ -243,7 +243,7 @@ public class MastodonResponder extends AbstractResponder {
     private Optional<MastodonStatus> getStatusWithUnits(MastodonStatus status) {
         // tweet itself?
         if (containsUnits(status) && isByOtherUser(status)) {
-            log.info("Toot itself contains units.");
+            LOG.info("Toot itself contains units.");
             return Optional.of(status);
         }
 
@@ -284,7 +284,7 @@ public class MastodonResponder extends AbstractResponder {
             return Optional.empty();
         }
         if (error != null) {
-            log.error("not found, status: " + inReplyToStatusId, error);
+            LOG.error("not found, status: " + inReplyToStatusId, error);
             return Optional.empty();
         }
         return result;

@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 @WebListener
 public class BskyMentionListener implements ServletContextListener {
 
-    private final Logger log = LoggerFactory.getLogger(getClass());
+    private static final Logger LOG = LoggerFactory.getLogger(BskyMentionListener.class);
 
     @Resource
     private ManagedScheduledExecutorService scheduler;
@@ -59,7 +59,7 @@ public class BskyMentionListener implements ServletContextListener {
     @Override
     public void contextInitialized(final ServletContextEvent sce) {
         ServletContextListener.super.contextInitialized(sce);
-        log.info("init: [{}].", this);
+        LOG.info("init: [{}].", this);
 
         this.bsky = this.bskyProducer.produceBlueSky();
 
@@ -77,13 +77,13 @@ public class BskyMentionListener implements ServletContextListener {
                 // no method returning void?
                 .handle((final List<BskyStatus> result, final Throwable error) -> {
                     if (error != null) {
-                        log.error("could not retrieve mentions: [" + error.getMessage() + "].", error);
+                        LOG.error("could not retrieve mentions: [" + error.getMessage() + "].", error);
                         return null;
                     }
 
                     for (final BskyStatus recentMention : result) {
-                        if (log.isTraceEnabled()) {
-                            log.trace("[BSKY] Found mention: " + recentMention);
+                        if (LOG.isTraceEnabled()) {
+                            LOG.trace("[BSKY] Found mention: " + recentMention);
                         }
                         mentionEvent.fire(new BskyMentionEvent(recentMention));
                     }

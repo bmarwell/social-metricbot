@@ -46,7 +46,7 @@ public class DefaultBlueSkyClient implements BlueSkyClient {
     @Serial
     private static final long serialVersionUID = -6379484000282531656L;
 
-    private final Logger log = LoggerFactory.getLogger(getClass());
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultBlueSkyClient.class);
     private static final long SLEEP_MS = 500L;
     private final Client client;
     private final MutableBlueSkyConfiguration bskyConfig;
@@ -68,7 +68,7 @@ public class DefaultBlueSkyClient implements BlueSkyClient {
 
     private CompletableFuture<Void> ensureLoggedIn() {
         if (isLoggedIn) {
-            log.debug("[BSKY] Already logged in.");
+            LOG.debug("[BSKY] Already logged in.");
 
             if (isTokenExpired()) {
                 return doLoginAndSetVariables();
@@ -78,7 +78,7 @@ public class DefaultBlueSkyClient implements BlueSkyClient {
         }
 
         if (loginNotSuccessfull) {
-            log.warn("[BSKY] Previous login not successful. Don't attempt again.");
+            LOG.warn("[BSKY] Previous login not successful. Don't attempt again.");
             return CompletableFuture.failedFuture(new IllegalStateException("Already tried to log in."));
         }
 
@@ -93,7 +93,7 @@ public class DefaultBlueSkyClient implements BlueSkyClient {
         return CompletableFuture.supplyAsync(this::doLogin)
                 .handle((final Optional<AtProtoLoginResponse> result, final Throwable error) -> {
                     if (error != null) {
-                        log.error("[BSKY] Login not successful.", error);
+                        LOG.error("[BSKY] Login not successful.", error);
 
                         this.accessToken.set("");
                         this.isLoggedIn = false;
@@ -102,7 +102,7 @@ public class DefaultBlueSkyClient implements BlueSkyClient {
                         return null;
                     }
 
-                    log.info("[BSKY] Login was successful.");
+                    LOG.info("[BSKY] Login was successful.");
 
                     this.accessToken.set(result.orElseThrow().accessJwt());
                     this.isLoggedIn = true;
@@ -172,7 +172,7 @@ public class DefaultBlueSkyClient implements BlueSkyClient {
                     entity = "<empty>";
                 }
 
-                log.error(
+                LOG.error(
                         "Unable to get post [{}]. Status = [{}]. Response body: [{}].",
                         replyTo,
                         response.getStatus(),
@@ -181,13 +181,13 @@ public class DefaultBlueSkyClient implements BlueSkyClient {
             }
 
             if (!response.hasEntity()) {
-                log.error("Unable to get post [{}] body: no entity. Status = [{}]", replyTo, response.getStatus());
+                LOG.error("Unable to get post [{}] body: no entity. Status = [{}]", replyTo, response.getStatus());
                 return Optional.empty();
             }
 
             final var responseEntity = response.readEntity(AtGetPostsResponseWrapper.class);
             if (responseEntity.posts().isEmpty()) {
-                log.error("Empty posts response for URI [{}]: [{}].", replyTo, responseEntity);
+                LOG.error("Empty posts response for URI [{}]: [{}].", replyTo, responseEntity);
                 return Optional.empty();
             }
 
@@ -196,7 +196,7 @@ public class DefaultBlueSkyClient implements BlueSkyClient {
 
             return Optional.of(atGetPostsStatus);
         } catch (RuntimeException rtEx) {
-            log.error("Problem mapping the entity. Entity.", rtEx);
+            LOG.error("Problem mapping the entity. Entity.", rtEx);
 
             return Optional.empty();
         }
@@ -288,10 +288,10 @@ public class DefaultBlueSkyClient implements BlueSkyClient {
                 } else {
                     responseEntity = "";
                 }
-                log.error("Response != 200: [{}].", responseEntity);
+                LOG.error("Response != 200: [{}].", responseEntity);
             } else {
                 final var atEmbedRecord = response.readEntity(AtEmbedRecord.class);
-                log.debug("Response sent successfully! [{}]", atEmbedRecord);
+                LOG.debug("Response sent successfully! [{}]", atEmbedRecord);
                 int tries = 0;
                 while (tries <= 5) {
                     final var singlePost = this.getSinglePost(atEmbedRecord.uri());
@@ -307,7 +307,7 @@ public class DefaultBlueSkyClient implements BlueSkyClient {
                 }
             }
         } catch (final RuntimeException rtEx) {
-            log.error("Problem sending data.", rtEx);
+            LOG.error("Problem sending data.", rtEx);
         }
 
         return Optional.empty();
@@ -365,8 +365,8 @@ public class DefaultBlueSkyClient implements BlueSkyClient {
             if (response.getStatus() == 200 && response.hasEntity()) {
                 final var atNotificationResponse = response.readEntity(AtNotificationResponseWrapper.class);
 
-                if (log.isTraceEnabled()) {
-                    log.trace("[BSKY] got notifications: >>" + atNotificationResponse + "<<");
+                if (LOG.isTraceEnabled()) {
+                    LOG.trace("[BSKY] got notifications: >>" + atNotificationResponse + "<<");
                 }
 
                 return atNotificationResponse.notifications().stream()

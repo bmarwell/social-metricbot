@@ -25,8 +25,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class FractionUtil {
+
+    private static final Logger LOG = LoggerFactory.getLogger(FractionUtil.class);
 
     private static final Map<String, String> FRACTION_DICTIONARY = createFractionDictionary();
 
@@ -94,9 +98,11 @@ public final class FractionUtil {
 
             final String decimalString = NUMBERFORMAT_OUT.format(divident / divisor);
 
+            LOG.debug("Replacing [{}] with [{}].", dividentStr + "/" + divisorStr, decimalString);
+
             return old.replace(dividentStr + "/" + divisorStr, decimalString);
         } catch (final NumberFormatException | ArithmeticException nfe) {
-            // Unable to calculate fraction, return original string
+            LOG.error("Unable to calculate [{}]/[{}].", dividentStr, divisorStr, nfe);
         }
 
         return old;

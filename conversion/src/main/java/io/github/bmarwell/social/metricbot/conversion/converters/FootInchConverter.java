@@ -33,7 +33,7 @@ public class FootInchConverter implements io.github.bmarwell.social.metricbot.co
 
     private static final long serialVersionUID = 1869416432498279219L;
 
-    private final Logger log = LoggerFactory.getLogger(getClass());
+    private static final Logger LOG = LoggerFactory.getLogger(FootInchConverter.class);
 
     /** 1st matcher is single quotation mark to find numbers. */
     private static final Pattern FOOT_OR_FEET = Pattern.compile(
@@ -210,7 +210,7 @@ public class FootInchConverter implements io.github.bmarwell.social.metricbot.co
         final String[] footAndInches = group.split("\'");
 
         if (footAndInches.length > 2) {
-            log.info("Can only split foot and inches.");
+            LOG.info("Can only split foot and inches.");
             return Optional.empty();
         }
 

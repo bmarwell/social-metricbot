@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 @WebListener
 public class MastodonMentionListener implements ServletContextListener {
 
-    private final Logger log = LoggerFactory.getLogger(getClass());
+    private static final Logger LOG = LoggerFactory.getLogger(MastodonMentionListener.class);
 
     @Resource
     private ManagedScheduledExecutorService scheduler;
@@ -58,7 +58,7 @@ public class MastodonMentionListener implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         ServletContextListener.super.contextInitialized(sce);
-        log.info("init: [{}].", this);
+        LOG.info("init: [{}].", this);
         this.mastodon = this.mastodonProducer.produceMastodon();
 
         // set up scheduler
@@ -75,7 +75,7 @@ public class MastodonMentionListener implements ServletContextListener {
                 // no method returning void?
                 .handle((List<MastodonStatus> result, Throwable error) -> {
                     if (error != null) {
-                        log.error("could not retrieve mentions: [" + error.getMessage() + "].", error);
+                        LOG.error("could not retrieve mentions: [" + error.getMessage() + "].", error);
                         return null;
                     }
 
