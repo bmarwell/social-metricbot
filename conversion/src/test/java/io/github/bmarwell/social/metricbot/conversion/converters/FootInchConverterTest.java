@@ -141,4 +141,32 @@ public class FootInchConverterTest {
         assertTrue(footInchConverter.matches("5'6\""), "5'6\" should match");
         assertTrue(footInchConverter.matches("a foot"), "a foot should match");
     }
+
+    @Test
+    void testUnitWordsAloneShouldNotMatch() {
+        // given - these would have matched with the old pattern and hit the feet.isEmpty() check
+        final var footInchConverter = new FootInchConverter();
+
+        // when/then - unit words without numbers should not match
+        assertFalse(footInchConverter.matches("ft alone"), "bare 'ft' should not match");
+        assertFalse(footInchConverter.matches("feet alone"), "bare 'feet' should not match");
+        assertFalse(footInchConverter.matches("foot alone"), "bare 'foot' should not match");
+        assertFalse(footInchConverter.matches("the ft is"), "bare 'ft' in sentence should not match");
+    }
+
+    @Test
+    void testUnitWordsAloneShouldNotConvert() {
+        // given - ensure no conversions happen for bare unit words
+        final var footInchConverter = new FootInchConverter();
+
+        // when/then
+        assertTrue(
+                footInchConverter.getConvertedUnits("ft alone").isEmpty(), "bare 'ft' should not produce conversions");
+        assertTrue(
+                footInchConverter.getConvertedUnits("feet alone").isEmpty(),
+                "bare 'feet' should not produce conversions");
+        assertTrue(
+                footInchConverter.getConvertedUnits("foot alone").isEmpty(),
+                "bare 'foot' should not produce conversions");
+    }
 }
