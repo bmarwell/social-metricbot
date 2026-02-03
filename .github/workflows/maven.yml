@@ -13,6 +13,9 @@ jobs:
   build:
     if: github.ref_name == 'main' || github.event_name != 'push' && github.event.pull_request.head.repo.full_name == github.event.pull_request.base.repo.full_name
     runs-on: [ 'ubuntu-latest' ]
+    strategy:
+      matrix:
+        java: [25, 26]
     steps:
 
     - name: Checkout
@@ -23,7 +26,7 @@ jobs:
     - name: Set up JDK
       uses: actions/setup-java@v5.2.0
       with:
-        java-version: 25
+        java-version: ${{ matrix.java }}
         distribution: semeru
         cache: 'maven'
 
