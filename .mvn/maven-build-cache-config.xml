@@ -4,7 +4,7 @@
     <enabled>true</enabled>
     <hashAlgorithm>XX</hashAlgorithm>
     <validateXml>true</validateXml>
-    <!-- Remote cache disabled by default. Developers with global mirrors will use their own cache. -->
+    <!-- Remote cache disabled by default. Developers may use Mimir extension for enhanced caching. -->
     <remote enabled="false" />
     <local>
       <maxBuildsCached>64</maxBuildsCached>
