@@ -1,4 +1,4 @@
-FROM icr.io/appcafe/open-liberty:kernel-slim-java17-openj9-ubi
+FROM icr.io/appcafe/open-liberty:kernel-slim-java25-openj9-ubi
 
 COPY --chown=1001:0 maven/h2 /config/h2/
 COPY --chown=1001:0 maven/config/* /config/
