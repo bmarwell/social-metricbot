@@ -16,9 +16,12 @@
   <input>
     <global>
       <!-- Include common source file types -->
-      <glob>
-        {*.java,*.xml,*.properties,*.yaml,*.yml,*.json}
-      </glob>
+      <glob>**/*.java</glob>
+      <glob>**/*.xml</glob>
+      <glob>**/*.properties</glob>
+      <glob>**/*.yaml</glob>
+      <glob>**/*.yml</glob>
+      <glob>**/*.json</glob>
       <excludes>
         <!-- Exclude generated files and build artifacts -->
         <exclude>**/target/**</exclude>
