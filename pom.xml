@@ -536,6 +536,8 @@
             <configuration>
               <compilerArgs>
                 <arg>-XDcompilePolicy=simple</arg>
+                <arg>--should-stop=ifError=FLOW</arg>
+                <arg>-XDaddTypeAnnotationsToSymbol=true</arg>
                 <arg>-Xplugin:ErrorProne
                   -Xep:MixedMutabilityReturnType:ERROR
                   -Xep:NonApiType:ERROR
