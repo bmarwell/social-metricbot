@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2023 The social-metricbot contributors
+ * Copyright 2019-2026 The social-metricbot contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,8 +75,7 @@ public class TemperatureConverterTest {
     @Test
     public void shouldNotFindTemperatures() {
         // given
-        final String input =
-                """
+        final String input = """
                 - 2.25 teaspoons active instant yeast\s
                 - 2 large baking potatoes\s
                 -3.5 cups of flour\s
