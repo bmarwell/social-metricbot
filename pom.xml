@@ -412,10 +412,6 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <argLine>@{argLine} -javaagent:${org.mockito:mockito-core:jar}</argLine>
-          <systemPropertyVariables>
-            <slf4j.internal.verbosity>ERROR</slf4j.internal.verbosity>
-            <slf4j.provider>ch.qos.logback.classic.spi.LogbackServiceProvider</slf4j.provider>
-          </systemPropertyVariables>
         </configuration>
       </plugin>
       <plugin>
@@ -423,10 +419,6 @@
         <artifactId>maven-failsafe-plugin</artifactId>
         <configuration>
           <argLine>@{argLine} -javaagent:${org.mockito:mockito-core:jar}</argLine>
-          <systemPropertyVariables>
-            <slf4j.internal.verbosity>ERROR</slf4j.internal.verbosity>
-            <slf4j.provider>ch.qos.logback.classic.spi.LogbackServiceProvider</slf4j.provider>
-          </systemPropertyVariables>
         </configuration>
         <executions>
           <execution>
