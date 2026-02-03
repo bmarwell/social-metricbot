@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2023 The social-metricbot contributors
+ * Copyright 2020-2026 The social-metricbot contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ public class FootInchConverter implements io.github.bmarwell.social.metricbot.co
      * 2nd matcher is using foot|feet|ft find numbers.
      */
     private static final Pattern FOOT_OR_FEET_TEXT = Pattern.compile(
-            "\\b([0-9]+,[0-9]{3,}|[0-9]{0,2}|a)\\s*(foot|feet|ft)\\s*(([0-9]{0,2}(\\.[0-9]{0,2})?)(\")?|\\b)",
+            "\\b([0-9]+,[0-9]{3,}|[0-9]{1,2}|a)\\s*(foot|feet|ft)\\b\\s*(([0-9]{0,2}(\\.[0-9]{0,2})?)(\")?|\\b)",
             Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
 
     /**
@@ -59,7 +59,8 @@ public class FootInchConverter implements io.github.bmarwell.social.metricbot.co
      * 4th matcher for literal foot/feet only.
      */
     private static final Pattern FT_TEXT = Pattern.compile(
-            "\\b(?<num>\\d+(,\\d+)?|\\d{0,2}|a)\\s*(?:foot|feet|ft)", Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
+            "\\b(?<num>[0-9]+(?:,[0-9]{3,})?|[0-9]{1,2}|a)\\s*(?:foot|feet|ft)\\b",
+            Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
 
     private static final NumberFormat numberFormatCm = DecimalFormats.atMostOneFractionDigits();
     private static final NumberFormat numberFormatFt = DecimalFormats.atMostTwoFractionDigits();
