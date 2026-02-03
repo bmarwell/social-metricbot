@@ -17,11 +17,10 @@
     <global>
       <!-- Include common source file types -->
       <glob>
-        {*.java,*.xml,*.properties,*.yaml,*.yml,*.json,*.adoc,*.md}
+        {*.java,*.xml,*.properties,*.yaml,*.yml,*.json}
       </glob>
       <excludes>
         <!-- Exclude generated files and build artifacts -->
-        <exclude>target/**</exclude>
         <exclude>**/target/**</exclude>
         <exclude>.mvn/wrapper/**</exclude>
       </excludes>
