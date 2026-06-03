@@ -129,6 +129,11 @@
       <artifactId>jakarta.inject-api</artifactId>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.johnzon</groupId>
+      <artifactId>johnzon-jsonb</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
