@@ -1,5 +1,5 @@
 /*
- * Copyright 2021-2023 The social-metricbot contributors
+ * Copyright 2021-2026 The social-metricbot contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,6 +50,11 @@ public class MastodonResponseProducer implements ServletContextListener {
 
     @Override
     public void contextInitialized(final ServletContextEvent sce) {
+        if (!this.mastodonConfig.isConfigured()) {
+            LOG.warn("Mastodon is not configured — skipping response producer setup.");
+            return;
+        }
+
         ScheduledFuture<?> scheduledFuture = this.scheduler.scheduleAtFixedRate(
                 this::emitMention,
                 this.mastodonConfig.getTweetFinderInitialDelay().getSeconds(),
