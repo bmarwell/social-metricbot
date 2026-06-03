@@ -32,4 +32,6 @@ jobs:
         --batch-mode
         --no-transfer-progress
         -Dspotless.skip=true
+        -am
+        -pl '!:social-metricbot-app-ol-docker'
         test-compile org.pitest:pitest-maven:mutationCoverage
