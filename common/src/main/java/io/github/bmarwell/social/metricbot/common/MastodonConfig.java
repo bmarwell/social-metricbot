@@ -76,6 +76,6 @@ public class MastodonConfig implements Serializable {
     }
 
     public boolean isConfigured() {
-        return !this.instanceHostname.isBlank() && !this.accessToken.isBlank();
+        return !this.instanceHostname.isBlank() && !this.accessToken.isBlank() && !this.accountName.isBlank();
     }
 }
