@@ -36,6 +36,7 @@ jobs:
       uses: github/codeql-action/init@v3
       with:
         languages: java
+        build-mode: manual
         config-file: .github/codeql/codeql-config.yml
 
     - name: Build with Maven
