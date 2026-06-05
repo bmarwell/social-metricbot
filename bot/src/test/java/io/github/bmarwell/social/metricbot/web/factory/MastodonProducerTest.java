@@ -42,6 +42,10 @@ class MastodonProducerTest {
     void produceMastodon_throwsIllegalStateException_whenNotConfigured() {
         when(mastodonConfig.isConfigured()).thenReturn(false);
 
-        assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() -> producer.produceMastodon());
+        assertThatExceptionOfType(IllegalStateException.class)
+                .isThrownBy(() -> producer.produceMastodon())
+                .withMessageContaining("accountname")
+                .withMessageContaining("instancehostname")
+                .withMessageContaining("accesstoken");
     }
 }

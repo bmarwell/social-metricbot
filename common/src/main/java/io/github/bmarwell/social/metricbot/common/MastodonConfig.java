@@ -75,6 +75,11 @@ public class MastodonConfig implements Serializable {
         return Duration.ofSeconds(this.initialDelay);
     }
 
+    /**
+     * Returns whether Mastodon is fully configured.
+     *
+     * @return {@code true} only when instance hostname, access token, and account name are all non-blank.
+     */
     public boolean isConfigured() {
         return !this.instanceHostname.isBlank() && !this.accessToken.isBlank() && !this.accountName.isBlank();
     }

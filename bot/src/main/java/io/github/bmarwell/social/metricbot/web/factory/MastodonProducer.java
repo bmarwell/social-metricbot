@@ -40,7 +40,7 @@ public class MastodonProducer {
     public MastodonClient produceMastodon() {
         if (!mastodonConfig.isConfigured()) {
             throw new IllegalStateException(
-                    "Mastodon is not configured; check instancehostname and accesstoken properties.");
+                    "Mastodon is not configured; check accountname, instancehostname, and accesstoken properties.");
         }
 
         MastodonConfigurationBuilder configurationBuilder = new MastodonConfigurationBuilder()
