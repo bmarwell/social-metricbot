@@ -109,22 +109,22 @@
       name="io.github.bmarwell.social.metricbot.bsky.skipOldPosts"
       defaultValue="true"
   />
-  <!-- mastodon -->
+  <!-- mastodon (leave blank to disable) -->
   <variable
       name="io.github.bmarwell.social.metricbot.mastodon.accountname"
-      defaultValue="handle_without_@s_on_your_instance"
+      defaultValue=""
   />
   <variable
       name="io.github.bmarwell.social.metricbot.mastodon.instancehostname"
-      defaultValue="host_hostname_of_your_instance"
+      defaultValue=""
   />
   <variable
       name="io.github.bmarwell.social.metricbot.mastodon.website"
-      defaultValue="a_url_to_the_website_of_the_bot"
+      defaultValue=""
   />
   <variable
       name="io.github.bmarwell.social.metricbot.mastodon.accesstoken"
-      defaultValue="the_access_token_of_the_bot_account"
+      defaultValue=""
   />
   <variable
       name="io.github.bmarwell.social.metricbot.mastodon.initialDelay"
