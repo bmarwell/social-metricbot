@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The social-metricbot contributors
+ * Copyright 2023-2026 The social-metricbot contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -148,7 +148,8 @@ public class DefaultMastodonClient implements MastodonClient {
                 entity = response.readEntity(String.class);
             }
 
-            throw new IllegalStateException("Not found, RC=" + response.getStatus() + "; entity = " + entity);
+            throw new IllegalStateException("HTTP call not successful, URL=" + mastodonConfig.getInstanceHost()
+                    + "/api/v1/notifications, SC=" + response.getStatus() + "; entity = " + entity);
         }
 
         //noinspection unchecked

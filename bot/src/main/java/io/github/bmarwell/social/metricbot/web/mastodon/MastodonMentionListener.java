@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The social-metricbot contributors
+ * Copyright 2023-2026 The social-metricbot contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package io.github.bmarwell.social.metricbot.web.mastodon;
 
+import io.github.bmarwell.social.metricbot.common.MastodonConfig;
 import io.github.bmarwell.social.metricbot.mastodon.MastodonClient;
 import io.github.bmarwell.social.metricbot.mastodon.MastodonStatus;
 import io.github.bmarwell.social.metricbot.web.factory.MastodonProducer;
@@ -47,6 +48,9 @@ public class MastodonMentionListener implements ServletContextListener {
     private MastodonProducer mastodonProducer;
 
     @Inject
+    private MastodonConfig mastodonConfig;
+
+    @Inject
     private Event<MastodonMentionEvent> mentionEvent;
 
     private MastodonClient mastodon;
@@ -59,6 +63,12 @@ public class MastodonMentionListener implements ServletContextListener {
     public void contextInitialized(ServletContextEvent sce) {
         ServletContextListener.super.contextInitialized(sce);
         LOG.info("init: [{}].", this);
+
+        if (!this.mastodonConfig.isConfigured()) {
+            LOG.warn("Mastodon is not configured — skipping mention listener setup.");
+            return;
+        }
+
         this.mastodon = this.mastodonProducer.produceMastodon();
 
         // set up scheduler

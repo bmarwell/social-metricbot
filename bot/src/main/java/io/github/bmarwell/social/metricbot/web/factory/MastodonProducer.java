@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The social-metricbot contributors
+ * Copyright 2023-2026 The social-metricbot contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,11 @@ public class MastodonProducer {
 
     @Produces
     public MastodonClient produceMastodon() {
+        if (!mastodonConfig.isConfigured()) {
+            throw new IllegalStateException(
+                    "Mastodon is not configured; check accountname, instancehostname, and accesstoken properties.");
+        }
+
         MastodonConfigurationBuilder configurationBuilder = new MastodonConfigurationBuilder()
                 .withInstanceHost(URI.create(mastodonConfig.getInstanceHostname()))
                 .withAccessToken(mastodonConfig.getAccessToken());

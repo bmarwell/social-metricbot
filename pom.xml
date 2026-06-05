@@ -65,7 +65,7 @@
     <dependency.assertj.version>3.27.7</dependency.assertj.version>
     <dependency.cxf.version>4.1.4</dependency.cxf.version>
     <junit5.version>6.1.0</junit5.version>
-    <dependency.johnzon.version>1.2.21</dependency.johnzon.version>
+    <dependency.johnzon.version>2.1.0</dependency.johnzon.version>
     <dependency.h2.version>2.4.240</dependency.h2.version>
     <dependency.mockito.version>5.23.0</dependency.mockito.version>
     <dependency.bytebuddy.version>1.18.10</dependency.bytebuddy.version>
@@ -160,6 +160,11 @@
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-annotations</artifactId>
+        <version>2.22</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-core</artifactId>
         <version>${dependency.jackson.version}</version>
       </dependency>
@@ -222,6 +227,14 @@
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-rt-rs-client</artifactId>
         <version>${dependency.cxf.version}</version>
+        <scope>test</scope>
+      </dependency>
+
+      <!-- JSON-B implementation for tests -->
+      <dependency>
+        <groupId>org.apache.johnzon</groupId>
+        <artifactId>johnzon-jsonb</artifactId>
+        <version>${dependency.johnzon.version}</version>
         <scope>test</scope>
       </dependency>
 

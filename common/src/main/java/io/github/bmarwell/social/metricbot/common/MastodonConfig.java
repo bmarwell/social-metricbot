@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The social-metricbot contributors
+ * Copyright 2023-2026 The social-metricbot contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,23 +25,23 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 public class MastodonConfig implements Serializable {
 
     @Inject
-    @ConfigProperty(name = "io.github.bmarwell.social.metricbot.mastodon.accountname")
+    @ConfigProperty(name = "io.github.bmarwell.social.metricbot.mastodon.accountname", defaultValue = "")
     private String accountName;
 
     @Inject
-    @ConfigProperty(name = "io.github.bmarwell.social.metricbot.mastodon.instancehostname")
+    @ConfigProperty(name = "io.github.bmarwell.social.metricbot.mastodon.instancehostname", defaultValue = "")
     private String instanceHostname;
 
     @Inject
-    @ConfigProperty(name = "io.github.bmarwell.social.metricbot.mastodon.website")
+    @ConfigProperty(name = "io.github.bmarwell.social.metricbot.mastodon.website", defaultValue = "")
     private String website;
 
     @Inject
-    @ConfigProperty(name = "io.github.bmarwell.social.metricbot.mastodon.accesstoken")
+    @ConfigProperty(name = "io.github.bmarwell.social.metricbot.mastodon.accesstoken", defaultValue = "")
     private String accessToken;
 
     @Inject
-    @ConfigProperty(name = "io.github.bmarwell.social.metricbot.mastodon.initialDelay")
+    @ConfigProperty(name = "io.github.bmarwell.social.metricbot.mastodon.initialDelay", defaultValue = "30")
     private long initialDelay;
 
     public MastodonConfig() {
@@ -53,7 +53,7 @@ public class MastodonConfig implements Serializable {
     }
 
     public String getInstanceHostname() {
-        if (!instanceHostname.startsWith("http")) {
+        if (!instanceHostname.isBlank() && !instanceHostname.startsWith("http")) {
             return "https://" + instanceHostname;
         }
         return instanceHostname;
@@ -73,5 +73,14 @@ public class MastodonConfig implements Serializable {
 
     public Duration getTweetFinderInitialDelay() {
         return Duration.ofSeconds(this.initialDelay);
+    }
+
+    /**
+     * Returns whether Mastodon is fully configured.
+     *
+     * @return {@code true} only when instance hostname, access token, and account name are all non-blank.
+     */
+    public boolean isConfigured() {
+        return !this.instanceHostname.isBlank() && !this.accessToken.isBlank() && !this.accountName.isBlank();
     }
 }
