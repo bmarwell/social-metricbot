@@ -18,6 +18,7 @@ package io.github.bmarwell.social.metricbot.common;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.lang.reflect.Field;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -28,10 +29,10 @@ class MastodonConfigTest {
     @BeforeEach
     void setUp() throws Exception {
         config = new MastodonConfig();
-        setField("instanceHostname", "");
-        setField("accessToken", "");
-        setField("accountName", "");
-        setField("website", "");
+        setField("instanceHostname", Optional.empty());
+        setField("accessToken", Optional.empty());
+        setField("accountName", Optional.empty());
+        setField("website", Optional.empty());
     }
 
     @Test
@@ -41,43 +42,43 @@ class MastodonConfigTest {
 
     @Test
     void isConfigured_returnsFalse_whenOnlyInstanceHostname() throws Exception {
-        setField("instanceHostname", "mastodon.social");
+        setField("instanceHostname", Optional.of("mastodon.social"));
 
         assertThat(config.isConfigured()).isFalse();
     }
 
     @Test
     void isConfigured_returnsFalse_whenAccountNameBlank() throws Exception {
-        setField("instanceHostname", "mastodon.social");
-        setField("accessToken", "my-token");
+        setField("instanceHostname", Optional.of("mastodon.social"));
+        setField("accessToken", Optional.of("my-token"));
 
         assertThat(config.isConfigured()).isFalse();
     }
 
     @Test
     void isConfigured_returnsTrue_whenAllThreeSet() throws Exception {
-        setField("instanceHostname", "mastodon.social");
-        setField("accessToken", "my-token");
-        setField("accountName", "bot@mastodon.social");
+        setField("instanceHostname", Optional.of("mastodon.social"));
+        setField("accessToken", Optional.of("my-token"));
+        setField("accountName", Optional.of("bot@mastodon.social"));
 
         assertThat(config.isConfigured()).isTrue();
     }
 
     @Test
     void getInstanceHostname_prependsHttps_whenNoScheme() throws Exception {
-        setField("instanceHostname", "mastodon.social");
+        setField("instanceHostname", Optional.of("mastodon.social"));
 
         assertThat(config.getInstanceHostname()).isEqualTo("https://mastodon.social");
     }
 
     @Test
-    void getInstanceHostname_returnsBlank_whenBlank() {
+    void getInstanceHostname_returnsBlank_whenAbsent() {
         assertThat(config.getInstanceHostname()).isBlank();
     }
 
     @Test
     void getInstanceHostname_doesNotPrepend_whenAlreadyHttps() throws Exception {
-        setField("instanceHostname", "https://mastodon.social");
+        setField("instanceHostname", Optional.of("https://mastodon.social"));
 
         assertThat(config.getInstanceHostname()).isEqualTo("https://mastodon.social");
     }

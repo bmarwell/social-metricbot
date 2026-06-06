@@ -19,26 +19,27 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.io.Serializable;
 import java.time.Duration;
+import java.util.Optional;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @ApplicationScoped
 public class MastodonConfig implements Serializable {
 
     @Inject
-    @ConfigProperty(name = "io.github.bmarwell.social.metricbot.mastodon.accountname", defaultValue = "")
-    private String accountName;
+    @ConfigProperty(name = "io.github.bmarwell.social.metricbot.mastodon.accountname")
+    private Optional<String> accountName;
 
     @Inject
-    @ConfigProperty(name = "io.github.bmarwell.social.metricbot.mastodon.instancehostname", defaultValue = "")
-    private String instanceHostname;
+    @ConfigProperty(name = "io.github.bmarwell.social.metricbot.mastodon.instancehostname")
+    private Optional<String> instanceHostname;
 
     @Inject
-    @ConfigProperty(name = "io.github.bmarwell.social.metricbot.mastodon.website", defaultValue = "")
-    private String website;
+    @ConfigProperty(name = "io.github.bmarwell.social.metricbot.mastodon.website")
+    private Optional<String> website;
 
     @Inject
-    @ConfigProperty(name = "io.github.bmarwell.social.metricbot.mastodon.accesstoken", defaultValue = "")
-    private String accessToken;
+    @ConfigProperty(name = "io.github.bmarwell.social.metricbot.mastodon.accesstoken")
+    private Optional<String> accessToken;
 
     @Inject
     @ConfigProperty(name = "io.github.bmarwell.social.metricbot.mastodon.initialDelay", defaultValue = "30")
@@ -49,18 +50,18 @@ public class MastodonConfig implements Serializable {
     }
 
     public String getAccountName() {
-        return accountName;
+        return accountName.orElse("");
     }
 
     public String getInstanceHostname() {
-        if (!instanceHostname.isBlank() && !instanceHostname.startsWith("http")) {
-            return "https://" + instanceHostname;
-        }
-        return instanceHostname;
+        return instanceHostname
+                .filter(s -> !s.isBlank())
+                .map(s -> s.startsWith("http") ? s : "https://" + s)
+                .orElse("");
     }
 
     public String getWebsite() {
-        return website;
+        return website.orElse("");
     }
 
     public String getRedirectUri() {
@@ -68,7 +69,7 @@ public class MastodonConfig implements Serializable {
     }
 
     public String getAccessToken() {
-        return this.accessToken;
+        return accessToken.orElse("");
     }
 
     public Duration getTweetFinderInitialDelay() {
@@ -81,6 +82,8 @@ public class MastodonConfig implements Serializable {
      * @return {@code true} only when instance hostname, access token, and account name are all non-blank.
      */
     public boolean isConfigured() {
-        return !this.instanceHostname.isBlank() && !this.accessToken.isBlank() && !this.accountName.isBlank();
+        return instanceHostname.filter(s -> !s.isBlank()).isPresent()
+                && accessToken.filter(s -> !s.isBlank()).isPresent()
+                && accountName.filter(s -> !s.isBlank()).isPresent();
     }
 }
