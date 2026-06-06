@@ -83,6 +83,39 @@ class MastodonConfigTest {
         assertThat(config.getInstanceHostname()).isEqualTo("https://mastodon.social");
     }
 
+    @Test
+    void getAccountName_returnsValue_whenSet() throws Exception {
+        setField("accountName", Optional.of("bot@mastodon.social"));
+
+        assertThat(config.getAccountName()).isEqualTo("bot@mastodon.social");
+    }
+
+    @Test
+    void getAccessToken_returnsValue_whenSet() throws Exception {
+        setField("accessToken", Optional.of("my-token"));
+
+        assertThat(config.getAccessToken()).isEqualTo("my-token");
+    }
+
+    @Test
+    void getWebsite_returnsValue_whenSet() throws Exception {
+        setField("website", Optional.of("https://mastodon.social/@bot"));
+
+        assertThat(config.getWebsite()).isEqualTo("https://mastodon.social/@bot");
+    }
+
+    @Test
+    void getRedirectUri_returnsOobUri() {
+        assertThat(config.getRedirectUri()).isEqualTo("urn:ietf:wg:oauth:2.0:oob");
+    }
+
+    @Test
+    void getTweetFinderInitialDelay_returnsConfiguredSeconds() throws Exception {
+        setField("initialDelay", 60L);
+
+        assertThat(config.getTweetFinderInitialDelay().getSeconds()).isEqualTo(60L);
+    }
+
     private void setField(String fieldName, Object value) throws Exception {
         Field field = MastodonConfig.class.getDeclaredField(fieldName);
         field.setAccessible(true);
