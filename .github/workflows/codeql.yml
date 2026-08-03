@@ -21,19 +21,19 @@ jobs:
     steps:
 
     - name: Checkout
-      uses: actions/checkout@v6.0.2
+      uses: actions/checkout@v7.0.1
       with:
         show-progress: false
 
     - name: Set up JDK
-      uses: actions/setup-java@v5.2.0
+      uses: actions/setup-java@v5.6.0
       with:
         java-version: 25
         distribution: semeru
         cache: 'maven'
 
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@v4
+      uses: github/codeql-action/init@v4.37.3
       with:
         languages: java
         build-mode: manual
@@ -53,6 +53,6 @@ jobs:
         -Dmaven.build.cache.enabled=false
 
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v4
+      uses: github/codeql-action/analyze@v4.37.3
       with:
         category: '/language:java'
