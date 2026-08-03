@@ -35,7 +35,7 @@
     <plugin.maven.war.version>3.5.1</plugin.maven.war.version>
     <plugin.maven.resources.version>3.4.0</plugin.maven.resources.version>
     <plugin.dockerfile-maven.version>1.4.13</plugin.dockerfile-maven.version>
-    <plugin.pitest.version>1.25.3</plugin.pitest.version>
+    <plugin.pitest.version>1.25.8</plugin.pitest.version>
     <extension.dockerfile-maven.version>${plugin.dockerfile-maven.version}</extension.dockerfile-maven.version>
 
     <!-- java EE + MP -->
@@ -53,26 +53,26 @@
     <!-- 3rd party -->
     <dependency.immutables.version>2.12.2</dependency.immutables.version>
     <dependency.jsoup.version>1.22.2</dependency.jsoup.version>
-    <dependency.eclipselink.version>4.0.9</dependency.eclipselink.version>
-    <dependency.error-prone.version>2.49.0</dependency.error-prone.version>
-    <dependency.jackson.version>2.22.0</dependency.jackson.version>
+    <dependency.eclipselink.version>5.0.1</dependency.eclipselink.version>
+    <dependency.error-prone.version>2.50.0</dependency.error-prone.version>
+    <dependency.jackson.version>2.22.1</dependency.jackson.version>
 
     <!-- logging -->
     <dependency.slf4j-api.version>2.0.18</dependency.slf4j-api.version>
-    <logback-classic.version>1.5.34</logback-classic.version>
+    <logback-classic.version>1.6.0</logback-classic.version>
 
     <!-- testing -->
     <dependency.assertj.version>3.27.7</dependency.assertj.version>
-    <dependency.cxf.version>4.1.4</dependency.cxf.version>
-    <junit5.version>6.1.0</junit5.version>
+    <dependency.cxf.version>4.2.2</dependency.cxf.version>
+    <junit5.version>6.1.2</junit5.version>
     <dependency.johnzon.version>2.1.0</dependency.johnzon.version>
     <dependency.h2.version>2.4.240</dependency.h2.version>
     <dependency.mockito.version>5.23.0</dependency.mockito.version>
-    <dependency.bytebuddy.version>1.18.10</dependency.bytebuddy.version>
+    <dependency.bytebuddy.version>1.18.11</dependency.bytebuddy.version>
     <dependency.wiremock.version>3.13.2</dependency.wiremock.version>
 
     <!-- build time plugins -->
-    <dependency.palantir-java-format.version>2.91.0</dependency.palantir-java-format.version>
+    <dependency.palantir-java-format.version>2.96.0</dependency.palantir-java-format.version>
   </properties>
 
   <dependencyManagement>
@@ -146,7 +146,7 @@
       <dependency>
         <groupId>org.flywaydb</groupId>
         <artifactId>flyway-core</artifactId>
-        <version>12.7.0</version>
+        <version>13.0.0</version>
       </dependency>
       <dependency>
         <groupId>com.h2database</groupId>
@@ -410,13 +410,13 @@
         <plugin>
           <groupId>com.diffplug.spotless</groupId>
           <artifactId>spotless-maven-plugin</artifactId>
-          <version>3.6.0</version>
+          <version>3.8.0</version>
         </plugin>
 
         <plugin>
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
-          <version>0.8.14</version>
+          <version>0.8.15</version>
         </plugin>
 
         <plugin>
